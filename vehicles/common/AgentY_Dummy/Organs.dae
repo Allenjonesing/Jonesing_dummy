@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA version="1.4.1" xmlns="http://www.collada.org/2005/11/COLLADASchema">
+  <asset><unit name="meter" meter="1"/><up_axis>Z_UP</up_axis></asset>
+
+  <!-- One simple effect all materials can share -->
+  <library_effects>
+    <effect id="fx_flat">
+      <profile_COMMON><technique sid="common"><lambert/></technique></profile_COMMON>
+    </effect>
+  </library_effects>
+
+  <!-- IMPORTANT: ids and names == the strings we will map to -->
+  <library_materials>
+    <material id="organs_heart"   name="organs_heart"><instance_effect url="#fx_flat"/></material>
+    <material id="organs_lung"    name="organs_lung"><instance_effect  url="#fx_flat"/></material>
+    <material id="organs_liver"   name="organs_liver"><instance_effect url="#fx_flat"/></material>
+    <material id="organs_guts"    name="organs_guts"><instance_effect  url="#fx_flat"/></material>
+  </library_materials>
+
+  <library_geometries>
+    <!-- simple unit cube; we scale in JBeam -->
+    <geometry id="org_cube_heart-lib" name="org_cube_heart">
+      <mesh>
+        <source id="org_cube_heart-positions">
+          <float_array id="org_cube_heart-positions-array" count="24">
+            -0.5 -0.5 -0.5   0.5 -0.5 -0.5   0.5  0.5 -0.5  -0.5  0.5 -0.5
+            -0.5 -0.5  0.5   0.5 -0.5  0.5   0.5  0.5  0.5  -0.5  0.5  0.5
+          </float_array>
+          <technique_common>
+            <accessor source="#org_cube_heart-positions-array" count="8" stride="3">
+              <param name="X" type="float"/><param name="Y" type="float"/><param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="org_cube_heart-vertices"><input semantic="POSITION" source="#org_cube_heart-positions"/></vertices>
+        <!-- KEY: triangles carry the material name -->
+        <triangles count="12" material="organs_heart">
+          <input semantic="VERTEX" source="#org_cube_heart-vertices" offset="0"/>
+          <p>0 1 2  0 2 3  4 6 5  4 7 6  0 4 5  0 5 1  1 5 6  1 6 2  2 6 7  2 7 3  3 7 4  3 4 0</p>
+        </triangles>
+      </mesh>
+    </geometry>
+
+    <geometry id="org_cube_lung-lib" name="org_cube_lung">
+      <mesh>
+        <source id="org_cube_lung-positions">
+          <float_array id="org_cube_lung-positions-array" count="24">
+            -0.5 -0.5 -0.5   0.5 -0.5 -0.5   0.5  0.5 -0.5  -0.5  0.5 -0.5
+            -0.5 -0.5  0.5   0.5 -0.5  0.5   0.5  0.5  0.5  -0.5  0.5  0.5
+          </float_array>
+          <technique_common>
+            <accessor source="#org_cube_lung-positions-array" count="8" stride="3">
+              <param name="X" type="float"/><param name="Y" type="float"/><param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="org_cube_lung-vertices"><input semantic="POSITION" source="#org_cube_lung-positions"/></vertices>
+        <triangles count="12" material="organs_lung">
+          <input semantic="VERTEX" source="#org_cube_lung-vertices" offset="0"/>
+          <p>0 1 2  0 2 3  4 6 5  4 7 6  0 4 5  0 5 1  1 5 6  1 6 2  2 6 7  2 7 3  3 7 4  3 4 0</p>
+        </triangles>
+      </mesh>
+    </geometry>
+
+    <geometry id="org_cube_liver-lib" name="org_cube_liver">
+      <mesh>
+        <source id="org_cube_liver-positions">
+          <float_array id="org_cube_liver-positions-array" count="24">
+            -0.5 -0.5 -0.5   0.5 -0.5 -0.5   0.5  0.5 -0.5  -0.5  0.5 -0.5
+            -0.5 -0.5  0.5   0.5 -0.5  0.5   0.5  0.5  0.5  -0.5  0.5  0.5
+          </float_array>
+          <technique_common>
+            <accessor source="#org_cube_liver-positions-array" count="8" stride="3">
+              <param name="X" type="float"/><param name="Y" type="float"/><param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="org_cube_liver-vertices"><input semantic="POSITION" source="#org_cube_liver-positions"/></vertices>
+        <triangles count="12" material="organs_liver">
+          <input semantic="VERTEX" source="#org_cube_liver-vertices" offset="0"/>
+          <p>0 1 2  0 2 3  4 6 5  4 7 6  0 4 5  0 5 1  1 5 6  1 6 2  2 6 7  2 7 3  3 7 4  3 4 0</p>
+        </triangles>
+      </mesh>
+    </geometry>
+
+    <geometry id="org_cube_guts-lib" name="org_cube_guts">
+      <mesh>
+        <source id="org_cube_guts-positions">
+          <float_array id="org_cube_guts-positions-array" count="24">
+            -0.5 -0.5 -0.5   0.5 -0.5 -0.5   0.5  0.5 -0.5  -0.5  0.5 -0.5
+            -0.5 -0.5  0.5   0.5 -0.5  0.5   0.5  0.5  0.5  -0.5  0.5  0.5
+          </float_array>
+          <technique_common>
+            <accessor source="#org_cube_guts-positions-array" count="8" stride="3">
+              <param name="X" type="float"/><param name="Y" type="float"/><param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="org_cube_guts-vertices"><input semantic="POSITION" source="#org_cube_guts-positions"/></vertices>
+        <triangles count="12" material="organs_guts">
+          <input semantic="VERTEX" source="#org_cube_guts-vertices" offset="0"/>
+          <p>0 1 2  0 2 3  4 6 5  4 7 6  0 4 5  0 5 1  1 5 6  1 6 2  2 6 7  2 7 3  3 7 4  3 4 0</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="org_cube_heart" name="org_cube_heart"><instance_geometry url="#org_cube_heart-lib"/></node>
+      <node id="org_cube_lung"  name="org_cube_lung"><instance_geometry  url="#org_cube_lung-lib"/></node>
+      <node id="org_cube_liver" name="org_cube_liver"><instance_geometry url="#org_cube_liver-lib"/></node>
+      <node id="org_cube_guts"  name="org_cube_guts"><instance_geometry  url="#org_cube_guts-lib"/></node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene><instance_visual_scene url="#Scene"/></scene>
+</COLLADA>

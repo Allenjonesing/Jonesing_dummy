@@ -1,0 +1,54 @@
+{
+    "name" : "uncanny-valley-Default",
+    "version": 2,
+    "data": {
+      "gen":{
+        "pattern" : ["UV%D%d%d%d%d%d", "UV %D%d%d%d%d"]
+
+      },
+      "format": {
+        "30-15": { //US
+          "size" : {"x" : 512, "y": 256},
+          "text" : { "x" : 0.5, "y" : 0.65, "scale" : 0.9,  "color" : "black", "limit" : 10},
+          "diffuse" : {
+            "spriteImg" : "vehicles/common/licenseplates/default/platefont_d.png",
+            "backgroundImg" : "vehicles/common/licenseplates/UncannyValley/license_plate_UncannyValley_usformat_d.png",
+            "fillStyle" : "black"
+          },
+
+          "bump" : {
+            "spriteImg" : "vehicles/common/licenseplates/default/platefont_n.png",
+            "backgroundImg" : "vehicles/common/licenseplates/default/licenseplate-default_n.png",
+            "fillStyle" : "rgb(0,0,255)"
+          },
+
+          "specular" : {
+            "spriteImg" : "vehicles/common/licenseplates/default/platefont_s.png",
+            "fillStyle" : "rgb(233,233,233)"
+          }
+        },
+        "52-11": { //EU
+          "size" : {"x" : 1024, "y": 196},
+          "text" : { "x" : 0.50, "y" : 0.5, "scale" : 1.35, "color" : "black", "limit" : 11},
+        "generator": "vehicles/common/licenseplates/driver_training/licenseplate-de.html",
+          "characterLayout" : "vehicles/common/licenseplates/default/platefont.json",
+          "diffuse" : {
+            "spriteImg" : "vehicles/common/licenseplates/default/platefont_d.png",
+            "backgroundImg" : "vehicles/common/licenseplates/UncannyValley/license_plate_UncannyValley_wide_d.png",
+            "fillStyle" : "black"
+          },
+
+          "bump" : {
+            "spriteImg" : "vehicles/common/licenseplates/default/platefont_n.png",
+          "backgroundImg": "vehicles/common/licenseplates/driver_training/license_plate_german_new_wide_n.png",
+            "fillStyle" : "rgb(0,0,255)"
+          },
+
+          "specular" : {
+            "spriteImg" : "vehicles/common/licenseplates/default/platefont_s.png",
+            "fillStyle" : "rgb(233,233,233)"
+          }
+        }
+      }
+    }
+  }

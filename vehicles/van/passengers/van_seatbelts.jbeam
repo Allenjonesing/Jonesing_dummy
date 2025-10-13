@@ -1,0 +1,58 @@
+{
+"agenty_dummy_mod_seatbelts_van": {
+    "information":{
+        "authors":"AgentY",
+        "name":"2-Point Seatbelts for Gavril H-Series",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts",
+    
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+
+	//Dual attached to the B pillar with the end in the seat
+
+	{"beamSpring": 100000,"beamDamp":10},
+     	{"beamDeform": 10000, "beamStrength":10000}, 
+	{"optional":true},
+	
+	//--DRIVER--
+	{"breakGroup":"driver_seatbelt"},
+	
+	//pelvis to sf2l and sf2ll
+
+	["sf2l", "Dummy1_pelvistfl"],
+	["sf2l", "Dummy1_pelvistfr"],
+	["sf2l", "Dummy1_pelvistrl"],
+	["sf2l", "Dummy1_pelvistrr"],
+
+	["sf2ll","Dummy1_pelvistfl"],
+	["sf2ll","Dummy1_pelvistfr"],
+	["sf2ll","Dummy1_pelvistrl"],
+	["sf2ll","Dummy1_pelvistrr"],
+
+
+	//--FRONT PASSENGER--
+	{"breakGroup":"Fpass_seatbelt"},
+	
+	//pelvis to sf2r and sf2rr
+
+	["sf2r", "Dummy2_pelvistfr"],
+	["sf2r", "Dummy2_pelvistfl"],
+	["sf2r", "Dummy2_pelvistrr"],
+	["sf2r", "Dummy2_pelvistrl"],
+
+	["sf2rr","Dummy2_pelvistfr"],
+	["sf2rr","Dummy2_pelvistfl"],
+	["sf2rr","Dummy2_pelvistrr"],
+	["sf2rr","Dummy2_pelvistrl"],
+
+
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+
+}

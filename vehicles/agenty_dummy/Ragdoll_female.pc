@@ -1,0 +1,26 @@
+{
+  "format":2,
+  "mainPartName":"AgentY_Dummy",
+  "model":"agenty_dummy",
+  "parts":{
+    "AgentY_Dummy0_arm_L":"AgentY_Dummy0_arm_L",
+    "AgentY_Dummy0_arm_R":"AgentY_Dummy0_arm_R",
+    "AgentY_Dummy0_body_extra":"",
+    "AgentY_Dummy0_extras":"",
+    "AgentY_Dummy0_head":"AgentY_Dummy0_head",
+    "AgentY_Dummy0_legs":"AgentY_Dummy0_legs",
+    "AgentY_Dummy0_torso":"AgentY_Dummy0_torso_female",
+    "AgentY_Dummy_breakable":"Breakable_yes",
+    "AgentY_Dummy_connectors":"AgentY_Dummy_connectors",
+    "AgentY_Dummy_mod":"",
+    "AgentY_Dummy_stabilizers":"",
+    "licenseplate_design_2_1":"",
+    "skin_dummy":""
+  },
+  "vars":{
+    "$adummy1weight":1.20967742,
+    "$adummy1scale":1,
+    "$adummy1stabilizers":1000,
+    "$adummy1strength":6700
+  }
+}

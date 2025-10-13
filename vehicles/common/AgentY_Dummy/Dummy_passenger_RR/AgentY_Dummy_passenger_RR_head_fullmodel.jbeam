@@ -1,0 +1,197 @@
+{
+"AgentY_Dummy4_head_fullmodel": {
+    "information":{
+        "name":"Head (full model)",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy4_head",
+    "slots": [
+        ["type", "default", "description"],
+        ["AgentY_Dummy4_camera","AgentY_Dummy4_camera", "Camera"],
+    ],
+    "flexbodies": [
+        ["mesh", "[group]:", "nonFlexMaterials"],
+        ["AgentY_Dummy_head",    ["agenty_Dummy4_head"], [],{"pos":{"x":0,"y":"$=$aDummy4scale*0.02","z":"$=$aDummy4scale*-0.05"},"rot":{"x":0,"y":0,"z":0},"scale":{"x":"$aDummy4scale", "y":"$aDummy4scale", "z":"$aDummy4scale"}}],
+    ["AgentY_Dummy_head_int",["agenty_Dummy4_head"], [],{"pos":{"x":0,"y":"$=$aDummy4scale*0.02","z":"$=$aDummy4scale*-0.05"},"rot":{"x":0,"y":0,"z":0},"scale":{"x":"$aDummy4scale", "y":"$aDummy4scale", "z":"$aDummy4scale"}}],
+    ["AgentY_Dummy_neck",    ["agenty_Dummy4_head"], [],{"pos":{"x":0,"y":"$=$aDummy4scale*0.02","z":"$=$aDummy4scale*-0.05"},"rot":{"x":0,"y":0,"z":0},"scale":{"x":"$aDummy4scale", "y":"$aDummy4scale", "z":"$aDummy4scale"}}],
+    ],
+    "nodes": [
+        ["id", "posX", "posY", "posZ"],
+    {"nodeWeight":"$=$aDummy4weight*0.36314"},
+    {"nodeMaterial":"|NM_PLASTIC"},
+        {"frictionCoef":0.5},
+        {"collision":true},
+        {"group":"agenty_Dummy4_head"},
+
+        //main shape
+        {"selfCollision":false},
+        ["Dummy4_neckb",0.00,"$=$aDummy4scale*-0.02", "$=$aDummy4scale*1.45"],
+        {"selfCollision":true},
+
+        ["Dummy4_headbfl", "$=$aDummy4scale*0.05","$=$aDummy4scale*-0.15", "$=$aDummy4scale*1.46"],
+        ["Dummy4_headbfr","$=$aDummy4scale*-0.05","$=$aDummy4scale*-0.15", "$=$aDummy4scale*1.46"],
+        ["Dummy4_headbrl", "$=$aDummy4scale*0.07","$=$aDummy4scale*-0.05", "$=$aDummy4scale*1.50"],
+        ["Dummy4_headbrr","$=$aDummy4scale*-0.07","$=$aDummy4scale*-0.05", "$=$aDummy4scale*1.50"],
+
+        ["Dummy4_headmfl", "$=$aDummy4scale*0.10","$=$aDummy4scale*-0.15", "$=$aDummy4scale*1.55"],
+        ["Dummy4_headmfr","$=$aDummy4scale*-0.10","$=$aDummy4scale*-0.15", "$=$aDummy4scale*1.55"],
+        ["Dummy4_headmrl", "$=$aDummy4scale*0.10", "$=$aDummy4scale*0.10", "$=$aDummy4scale*1.55"],
+        ["Dummy4_headmrr","$=$aDummy4scale*-0.10", "$=$aDummy4scale*0.10", "$=$aDummy4scale*1.55"],
+
+        ["Dummy4_headtfl", "$=$aDummy4scale*0.10","$=$aDummy4scale*-0.15", "$=$aDummy4scale*1.68"],
+        ["Dummy4_headtfr","$=$aDummy4scale*-0.10","$=$aDummy4scale*-0.15", "$=$aDummy4scale*1.68"],
+        ["Dummy4_headtrl", "$=$aDummy4scale*0.10", "$=$aDummy4scale*0.09", "$=$aDummy4scale*1.68"],
+        ["Dummy4_headtrr","$=$aDummy4scale*-0.10", "$=$aDummy4scale*0.09", "$=$aDummy4scale*1.68"],
+
+        {"selfCollision":false},
+
+        ["Dummy4_headtip",0.00, "$=$aDummy4scale*0.00", "$=$aDummy4scale*1.73"],
+
+        {"selfCollision":true},
+        {"group":""},
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+        {"beamSpring": "$=$aDummy4weight*60000","beamDamp":"$=$aDummy4weight*50"},
+        {"beamDeform": 500000, "beamStrength":"FLT_MAX"},
+    {"deformLimitExpansion":1.1},
+        {"breakGroup":""},
+
+        //main shape
+        ["Dummy4_headmfl", "Dummy4_headmfr"],
+        ["Dummy4_headmfr", "Dummy4_headmrr"],
+        ["Dummy4_headmrr", "Dummy4_headmrl"],
+        ["Dummy4_headmrl", "Dummy4_headmfl"],
+
+        ["Dummy4_headmfl", "Dummy4_headtfl"],
+        ["Dummy4_headmfr", "Dummy4_headtfr"],
+        ["Dummy4_headmrl", "Dummy4_headtrl"],
+        ["Dummy4_headmrr", "Dummy4_headtrr"],
+
+            ["Dummy4_headtfl", "Dummy4_headtfr"],
+        ["Dummy4_headtfr", "Dummy4_headtrr"],
+        ["Dummy4_headtrr", "Dummy4_headtrl"],
+        ["Dummy4_headtrl", "Dummy4_headtfl"],
+
+        ["Dummy4_headbfl", "Dummy4_headbfr"],
+        ["Dummy4_headbfr", "Dummy4_headbrr"],
+        ["Dummy4_headbrr", "Dummy4_headbrl"],
+        ["Dummy4_headbrl", "Dummy4_headbfl"],
+
+        ["Dummy4_headbfl", "Dummy4_headmfl"],
+        ["Dummy4_headbfr", "Dummy4_headmfr"],
+        ["Dummy4_headbrl", "Dummy4_headmrl"],
+        ["Dummy4_headbrr", "Dummy4_headmrr"],
+
+        ["Dummy4_headmfl", "Dummy4_neckb"],
+        ["Dummy4_headmfr", "Dummy4_neckb"],
+        ["Dummy4_headmrl", "Dummy4_neckb"],
+        ["Dummy4_headmrr", "Dummy4_neckb"],
+
+        ["Dummy4_headtfl", "Dummy4_headtip"],
+        ["Dummy4_headtfr", "Dummy4_headtip"],
+        ["Dummy4_headtrr", "Dummy4_headtip"],
+        ["Dummy4_headtrl", "Dummy4_headtip"],
+
+        //cross
+        ["Dummy4_headtfl", "Dummy4_headtrr"],
+        ["Dummy4_headtfr", "Dummy4_headtrl"],
+
+        ["Dummy4_headmfr", "Dummy4_headtrr"],
+        ["Dummy4_headmrr", "Dummy4_headtfr"],
+        ["Dummy4_headmfl", "Dummy4_headtrl"],
+        ["Dummy4_headmrl", "Dummy4_headtfl"],
+
+        ["Dummy4_headmrr", "Dummy4_headtrl"],
+        ["Dummy4_headmrl", "Dummy4_headtrr"],
+        ["Dummy4_headmfr", "Dummy4_headtfl"],
+        ["Dummy4_headmfl", "Dummy4_headtfr"],
+
+        ["Dummy4_headmrr", "Dummy4_headtfl"],
+        ["Dummy4_headmrl", "Dummy4_headtfr"],
+        ["Dummy4_headmfr", "Dummy4_headtrl"],
+        ["Dummy4_headmfl", "Dummy4_headtrr"],
+
+        ["Dummy4_headbfl", "Dummy4_headbrr"],
+        ["Dummy4_headbfr", "Dummy4_headbrl"],
+        ["Dummy4_headmfl", "Dummy4_headmrr"],
+        ["Dummy4_headmfr", "Dummy4_headmrl"],
+
+        ["Dummy4_headbfr", "Dummy4_headmrr"],
+        ["Dummy4_headbrr", "Dummy4_headmfr"],
+        ["Dummy4_headbfl", "Dummy4_headmrl"],
+        ["Dummy4_headbrl", "Dummy4_headmfl"],
+
+        ["Dummy4_headbrr", "Dummy4_headmrl"],
+        ["Dummy4_headbrl", "Dummy4_headmrr"],
+        ["Dummy4_headbfr", "Dummy4_headmfl"],
+        ["Dummy4_headbfl", "Dummy4_headmfr"],
+
+        ["Dummy4_headbrr", "Dummy4_headmfl"],
+        ["Dummy4_headbrl", "Dummy4_headmfr"],
+        ["Dummy4_headbfr", "Dummy4_headmrl"],
+        ["Dummy4_headbfl", "Dummy4_headmrr"],
+
+        ["Dummy4_headbrr", "Dummy4_headtfl"],
+        ["Dummy4_headbrl", "Dummy4_headtfr"],
+        ["Dummy4_headbfr", "Dummy4_headtrl"],
+        ["Dummy4_headbfl", "Dummy4_headtrr"],
+
+        ["Dummy4_headtfl", "Dummy4_neckb"],
+        ["Dummy4_headtfr", "Dummy4_neckb"],
+        ["Dummy4_headtrl", "Dummy4_neckb"],
+        ["Dummy4_headtrr", "Dummy4_neckb"],
+
+        ["Dummy4_headbrl", "Dummy4_neckb"],
+        ["Dummy4_headbrr", "Dummy4_neckb"],
+
+        ["Dummy4_headmfl", "Dummy4_headtip"],
+        ["Dummy4_headmfr", "Dummy4_headtip"],
+        ["Dummy4_headmrr", "Dummy4_headtip"],
+        ["Dummy4_headmrl", "Dummy4_headtip"],
+
+    ],
+    "triangles": [
+        ["id1:","id2:","id3:"],
+        {"groundModel":"plastic"},
+        {"group":"agenty_Dummy4_head"},
+    {"dragCoef":0},
+
+        ["Dummy4_headmfr","Dummy4_headmfl","Dummy4_headtfr"],
+            ["Dummy4_headtfl","Dummy4_headtfr","Dummy4_headmfl"],
+        ["Dummy4_headmrl","Dummy4_headmrr","Dummy4_headtrl"],
+            ["Dummy4_headtrr","Dummy4_headtrl","Dummy4_headmrr"],
+
+        ["Dummy4_headmrr","Dummy4_headmfr","Dummy4_headtrr"],
+        ["Dummy4_headmfr","Dummy4_headtfr","Dummy4_headtrr"],
+        ["Dummy4_headmfl","Dummy4_headmrl","Dummy4_headtfl"],
+        ["Dummy4_headmrl","Dummy4_headtrl","Dummy4_headtfl"],
+
+        ["Dummy4_headbfl","Dummy4_headbfr","Dummy4_headbrr"],
+            ["Dummy4_headbrr","Dummy4_headbrl","Dummy4_headbfl"],
+
+        ["Dummy4_headbfr","Dummy4_headbfl","Dummy4_headmfl"],
+            ["Dummy4_headbfr","Dummy4_headmfl","Dummy4_headmfr"],
+
+        ["Dummy4_headbrr","Dummy4_headbfr","Dummy4_headmrr"],
+        ["Dummy4_headbfr","Dummy4_headmfr","Dummy4_headmrr"],
+        ["Dummy4_headbfl","Dummy4_headbrl","Dummy4_headmfl"],
+        ["Dummy4_headbrl","Dummy4_headmrl","Dummy4_headmfl"],
+
+        {"triangleType":"NONCOLLIDABLE"},
+        ["Dummy4_headtfr","Dummy4_headtfl","Dummy4_headtip"],
+        ["Dummy4_headtfl","Dummy4_headtrl","Dummy4_headtip"],
+        ["Dummy4_headtrl","Dummy4_headtrr","Dummy4_headtip"],
+        ["Dummy4_headtrr","Dummy4_headtfr","Dummy4_headtip"],
+        {"triangleType":"NORMALTYPE"},
+
+
+        ["Dummy4_headbrl","Dummy4_headbrr","Dummy4_neckb"],
+        ["Dummy4_headbrr","Dummy4_headmrr","Dummy4_neckb"],
+        ["Dummy4_headmrr","Dummy4_headmrl","Dummy4_neckb"],
+        ["Dummy4_headmrl","Dummy4_headmfl","Dummy4_neckb"],
+    ],
+},
+
+}

@@ -1,0 +1,19 @@
+{
+"agenty_dummy_mod_passengers_R_roamer_lxt": {
+    "information":{
+        "authors":"AgentY",
+        "name":"Back Seat Passengers (Extended Body)",
+    },
+    "slotType" : "agenty_dummy_mod_passengers_R",
+    "slots": [
+	["type", "default", "description"],
+	["agenty_dummy_mod_passenger_RR","","Rear Right Passenger",{"nodeMove":{"x":-0.47, "y":1.24, "z":0.15}}],
+	["agenty_dummy_mod_passenger_RL","","Rear Left Passenger", {"nodeMove":{"x": 0.47, "y":1.24, "z":0.15}}],
+	["agenty_dummy_mod_seatbelts_R","","Back Seatbelts"],
+	["agenty_dummy_mod_intcollision_R","agenty_dummy_mod_intcollision_R","Rear Seat Collision Fix"],
+	["agenty_dummy_mod_passengers_R_mod","","Additional Modifications"],
+    ],
+},
+
+
+}

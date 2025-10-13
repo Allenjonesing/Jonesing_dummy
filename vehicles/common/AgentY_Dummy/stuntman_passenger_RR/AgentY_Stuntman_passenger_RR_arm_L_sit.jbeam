@@ -1,0 +1,100 @@
+{
+"AgentY_Stuntman4_arm_L_sit": {
+    "information":{
+        "name":"Left Arm",
+        "authors":"B25Mitch, Felipe Maciel, AgentY",
+
+    },
+    "slotType":"AgentY_Stuntman4_arm_L",
+    
+     "flexbodies": [
+        ["mesh", "[group]:", "nonFlexMaterials"],
+        ["AgentY_Driver_armLa",		["agenty_Dummy4_arm_L"],[]{"pos":{"x":0,"y":0,"z":0},"rot":{"x":0, "y":0,"z":0},"scale":{"x":"$aDummy4scale", "y":"$aDummy4scale", "z":"$aDummy4scale"}}],
+		["AgentY_Driver_armLb", 		["agenty_Dummy4_arm_L"], []{"pos":{"x":0,"y":0,"z":0},"rot":{"x":0,"y":0,"z":0},"scale":{"x":"$aDummy4scale", "y":"$aDummy4scale", "z":"$aDummy4scale"}}],
+		["AgentY_Driver_handL", 		["agenty_Dummy4_fingers_L"], []{"pos":{"x":0,"y":0,"z":0},"rot":{"x":0,"y":0,"z":0},"scale":{"x":"$aDummy4scale", "y":"$aDummy4scale", "z":"$aDummy4scale"}}],
+    ],
+	
+     "nodes": [
+       		["id", "posX", "posY", "posZ"],
+
+		{"nodeMaterial":"|NM_CLOTH"},
+        	{"frictionCoef":0.5},
+        	{"collision":true},
+		{"selfCollision":false},
+
+		//--LEFT UPPER ARM--
+        	{"group":"agenty_Dummy4_arm_L"},
+		//4.03kg -> 0.50375 kg/node
+		{"nodeWeight":"$=$aDummy4weight*0.50375"},
+     	
+		["Dummy4_L_upperarm1","$=$aDummy4scale*0.14","$=$aDummy4scale*0.01","$=$aDummy4scale*1.38"],
+		{"selfCollision":true},	
+		["Dummy4_L_upperarm2", "$=$aDummy4scale*0.25", "$=$aDummy4scale*0.02", "$=$aDummy4scale*1.44"],
+		["Dummy4_L_upperarm3", "$=$aDummy4scale*0.25", "$=$aDummy4scale*0.06", "$=$aDummy4scale*1.36"],	
+		{"selfCollision":false},
+		["Dummy4_L_upperarm4", "$=$aDummy4scale*0.25", "$=$aDummy4scale*-0.21", "$=$aDummy4scale*1.29"],
+		{"selfCollision":true},	
+		
+		
+		//--LEFT FOREARM--
+        	{"group":"agenty_Dummy4_arm_L"},
+		//2.3188kg -> 0.2895 kg/node
+		{"nodeWeight":"$=$aDummy4weight*0.2895"},
+		
+		["Dummy4_L_forearm1","$=$aDummy4scale*0.33", "$=$aDummy4scale*-0.21", "$=$aDummy4scale*1.29",{"group":""}],
+		{"selfCollision":false},
+		["Dummy4_L_forearm2","$=$aDummy4scale*0.18", "$=$aDummy4scale*-0.21", "$=$aDummy4scale*1.29"],			
+		["Dummy4_L_forearm3","$=$aDummy4scale*0.22", "$=$aDummy4scale*-0.46", "$=$aDummy4scale*1.37"],
+		//limiter + flexbody help + rigidifier
+		{"collision":false},
+		["Dummy4_L_forearm4","$=$aDummy4scale*0.26", "$=$aDummy4scale*-0.30", "$=$aDummy4scale*1.20"],
+		{"collision":true},
+		{"selfCollision":true},
+	
+		//--LEFT HAND--
+        	{"group":"agenty_Dummy4_fingers_L"},
+
+		//0.806kg -> 0.13433 kg/node
+		{"nodeWeight":"$=$aDummy4weight*0.13433"},
+	
+		["Dummy4_L_hand1","$=$aDummy4scale*0.215", "$=$aDummy4scale*-0.450", "$=$aDummy4scale*1.310"],
+		["Dummy4_L_hand2","$=$aDummy4scale*0.225", "$=$aDummy4scale*-0.450", "$=$aDummy4scale*1.400"],
+		["Dummy4_L_hand3","$=$aDummy4scale*0.170", "$=$aDummy4scale*-0.635", "$=$aDummy4scale*1.370"],
+
+		{"group":""},
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+     	{"beamDeform": 500000, "beamStrength":"FLT_MAX"}, 
+        {"breakGroup":""},
+		
+	//--LEFT UPPER ARM--
+	{"beamSpring": "$=$aDummy4weight*1001000","beamDamp":"$=$aDummy4weight*10"},				
+	["Dummy4_L_upperarm1", "Dummy4_L_upperarm2"],
+	["Dummy4_L_upperarm1", "Dummy4_L_upperarm3"],
+	["Dummy4_L_upperarm1", "Dummy4_L_upperarm4"],
+	["Dummy4_L_upperarm2", "Dummy4_L_upperarm3"],
+	["Dummy4_L_upperarm2", "Dummy4_L_upperarm4"],
+	["Dummy4_L_upperarm3", "Dummy4_L_upperarm4"],
+
+	//--LEFT FOREARM--
+	{"beamSpring": "$=$aDummy4weight*601000","beamDamp":"$=$aDummy4weight*10"},
+	["Dummy4_L_forearm1", "Dummy4_L_forearm2"],
+	["Dummy4_L_forearm1", "Dummy4_L_forearm3"],
+	["Dummy4_L_forearm1", "Dummy4_L_forearm4"],
+	["Dummy4_L_forearm2", "Dummy4_L_forearm3"],
+	["Dummy4_L_forearm2", "Dummy4_L_forearm4"],
+	["Dummy4_L_forearm3", "Dummy4_L_forearm4"],
+
+	//--LEFT HAND--
+	{"beamSpring": "$=$aDummy4weight*301000","beamDamp":"$=$aDummy4weight*10"},
+	["Dummy4_L_hand1", "Dummy4_L_hand2"],
+	["Dummy4_L_hand2", "Dummy4_L_hand3"],
+	["Dummy4_L_hand3", "Dummy4_L_hand1"],
+
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+    ],
+},
+
+}

@@ -1,0 +1,518 @@
+{
+"AgentY_Dummy0_arm_R_sit": {
+    "information":{
+        "name":"Right Arm (Sitting Position)",
+        "authors":"AgentY",
+
+    },
+    "slotType":"AgentY_Dummy0_arm_R_sit",
+    
+    "flexbodies": [
+        ["mesh", "[group]:"],
+        ["AgentY_Dummy_upperarm_r",		["agenty_dummy1_upperarm_R"]{"pos":{"x":0,"y":"$=$adummy1scale*-1.05","z":"$=$adummy1scale*0.46"},"rot":{"x":-50, "y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+		["AgentY_Dummy_forearm_r", 		["agenty_dummy1_forearm_R"]{"pos":{"x":0,"y":"$=$adummy1scale*-1.34","z":"$=$adummy1scale*1.22"},"rot":{"x":-90,"y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+		["AgentY_Dummy_armconnector_r", ["agenty_dummy1_upperarm_R"]{"pos":{"x":0,"y":"$=$adummy1scale*-1.05","z":"$=$adummy1scale*0.46"},"rot":{"x":-50, "y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+		["AgentY_Dummy_wrist_r",  		["agenty_dummy1_forearm_R"]{"pos":{"x":0,"y":"$=$adummy1scale*-1.34","z":"$=$adummy1scale*1.22"},"rot":{"x":-90,"y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+		["AgentY_Dummy_fingers_r", 		["agenty_dummy1_fingers_R"]{"pos":{"x":0,"y":"$=$adummy1scale*-1.34","z":"$=$adummy1scale*1.22"},"rot":{"x":-90,"y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+    ],
+	
+     "nodes": [
+        ["id", "posX", "posY", "posZ"],
+		{"nodeWeight":"$=$adummy1weight*0.14393"},
+		{"nodeMaterial":"|NM_PLASTIC"},
+        {"frictionCoef":0.5},
+        {"collision":true},
+
+		//--RIGHT UPPER ARM--
+        {"group":"agenty_dummy1_upperarm_R"},
+
+        {"selfCollision":false},
+		["dummy1_R_upperarmthorax","$=$adummy1scale*-0.14","$=$adummy1scale*0.01","$=$adummy1scale*1.41"],
+		["dummy1_R_upperarmmid", "$=$adummy1scale*-0.22", "$=$adummy1scale*0.01", "$=$adummy1scale*1.38"],
+		{"selfCollision":true},
+		
+		["dummy1_R_upperarmtfr", "$=$adummy1scale*-0.25", "$=$adummy1scale*-0.01", "$=$adummy1scale*1.46"],
+		["dummy1_R_upperarmtrr", "$=$adummy1scale*-0.25", "$=$adummy1scale* 0.06", "$=$adummy1scale*1.39"],
+		["dummy1_R_upperarmtfl", "$=$adummy1scale*-0.17", "$=$adummy1scale*-0.00", "$=$adummy1scale*1.45"],
+		["dummy1_R_upperarmtrl", "$=$adummy1scale*-0.17", "$=$adummy1scale*0.04", "$=$adummy1scale*1.37"],
+		
+		["dummy1_R_upperarmmfr", "$=$adummy1scale*-0.29", "$=$adummy1scale*-0.15", "$=$adummy1scale*1.28"],
+		["dummy1_R_upperarmmrr", "$=$adummy1scale*-0.29", "$=$adummy1scale*-0.09", "$=$adummy1scale*1.24"],
+		["dummy1_R_upperarmmfl", "$=$adummy1scale*-0.20", "$=$adummy1scale*-0.15", "$=$adummy1scale*1.28"],
+		["dummy1_R_upperarmmrl", "$=$adummy1scale*-0.20", "$=$adummy1scale*-0.09", "$=$adummy1scale*1.24"],
+		
+		["dummy1_R_upperarmbfr", "$=$adummy1scale*-0.27", "$=$adummy1scale*-0.14", "$=$adummy1scale*1.22"],
+		["dummy1_R_upperarmbrr", "$=$adummy1scale*-0.27", "$=$adummy1scale*-0.12", "$=$adummy1scale*1.20"],
+		["dummy1_R_upperarmbfl", "$=$adummy1scale*-0.23", "$=$adummy1scale*-0.14", "$=$adummy1scale*1.22"],
+		["dummy1_R_upperarmbrl", "$=$adummy1scale*-0.23", "$=$adummy1scale*-0.12", "$=$adummy1scale*1.20"],
+		
+		
+		 //--RIGHT FOREARM--
+        {"group":"agenty_dummy1_forearm_R"},
+		{"nodeWeight":"$=$adummy1weight*0.09662"},
+		
+		["dummy1_R_forearmtipr","$=$adummy1scale*-0.29", "$=$adummy1scale*-0.16", "$=$adummy1scale*1.22"],
+		["dummy1_R_forearmtipl","$=$adummy1scale*-0.19", "$=$adummy1scale*-0.16", "$=$adummy1scale*1.22"],
+		
+		["dummy1_R_forearmmrr", "$=$adummy1scale*-0.30", "$=$adummy1scale*-0.16", "$=$adummy1scale*1.18"],
+		["dummy1_R_forearmmrl", "$=$adummy1scale*-0.20", "$=$adummy1scale*-0.16", "$=$adummy1scale*1.18"],
+		["dummy1_R_forearmmfr", "$=$adummy1scale*-0.30", "$=$adummy1scale*-0.17", "$=$adummy1scale*1.28"],
+		["dummy1_R_forearmmfl", "$=$adummy1scale*-0.20", "$=$adummy1scale*-0.17", "$=$adummy1scale*1.28"],
+		
+		["dummy1_R_forearmbrr", "$=$adummy1scale*-0.31", "$=$adummy1scale*-0.41", "$=$adummy1scale*1.20"],
+		["dummy1_R_forearmbrl", "$=$adummy1scale*-0.22", "$=$adummy1scale*-0.41", "$=$adummy1scale*1.20"],
+		["dummy1_R_forearmbfr", "$=$adummy1scale*-0.31", "$=$adummy1scale*-0.41", "$=$adummy1scale*1.27"],
+		["dummy1_R_forearmbfl", "$=$adummy1scale*-0.22", "$=$adummy1scale*-0.41", "$=$adummy1scale*1.27"],
+		
+		{"selfCollision":false},
+		["dummy1_R_forearmmid", "$=$adummy1scale*-0.267", "$=$adummy1scale*-0.25", "$=$adummy1scale*1.23"],
+		["dummy1_R_forearmhand","$=$adummy1scale*-0.267", "$=$adummy1scale*-0.45", "$=$adummy1scale*1.23"],
+		{"selfCollision":true},
+		
+		
+		//--RIGHT HAND--
+        {"group":"agenty_dummy1_fingers_R"},
+		{"nodeWeight":"$=$adummy1weight*0.031"},
+		
+		["dummy1_R_handtrr","$=$adummy1scale*-0.29", "$=$adummy1scale*-0.430", "$=$adummy1scale*1.170"],
+		["dummy1_R_handtfr","$=$adummy1scale*-0.29", "$=$adummy1scale*-0.430", "$=$adummy1scale*1.260"],
+		["dummy1_R_handbrr","$=$adummy1scale*-0.29", "$=$adummy1scale*-0.500", "$=$adummy1scale*1.170"],
+		["dummy1_R_handbfr","$=$adummy1scale*-0.29", "$=$adummy1scale*-0.500", "$=$adummy1scale*1.260"],
+		
+		["dummy1_R_handtrl","$=$adummy1scale*-0.23", "$=$adummy1scale*-0.430", "$=$adummy1scale*1.170"],
+		["dummy1_R_handtfl","$=$adummy1scale*-0.23", "$=$adummy1scale*-0.430", "$=$adummy1scale*1.260"],
+		["dummy1_R_handbrl","$=$adummy1scale*-0.23", "$=$adummy1scale*-0.500", "$=$adummy1scale*1.170"],
+		["dummy1_R_handbfl","$=$adummy1scale*-0.23", "$=$adummy1scale*-0.500", "$=$adummy1scale*1.260"],
+		
+		["dummy1_R_thumb", "$=$adummy1scale*-0.219","$=$adummy1scale*-0.530", "$=$adummy1scale*1.295"],
+		
+		["dummy1_R_finger1","$=$adummy1scale*-0.267","$=$adummy1scale*-0.600", "$=$adummy1scale*1.260"],
+		["dummy1_R_finger2","$=$adummy1scale*-0.267","$=$adummy1scale*-0.610", "$=$adummy1scale*1.210"],
+		["dummy1_R_finger3","$=$adummy1scale*-0.267","$=$adummy1scale*-0.600", "$=$adummy1scale*1.170"],
+		["dummy1_R_finger4","$=$adummy1scale*-0.250","$=$adummy1scale*-0.570", "$=$adummy1scale*1.145"],
+		
+		{"group":""},
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+        {"beamSpring": 50000,"beamDamp":50},
+     	{"beamDeform": 500000, "beamStrength":"FLT_MAX"}, 
+        {"breakGroup":""},
+		
+		//--RIGHT UPPER ARM--
+		{"beamSpring": "$=$adummy1weight*10000","beamDamp":"$=$adummy1weight*10"},
+		{"deformLimitExpansion":1.01}, 
+		
+		//main shape		
+		["dummy1_R_upperarmbfl", "dummy1_R_upperarmbfr"],
+		["dummy1_R_upperarmbfr", "dummy1_R_upperarmbrr"],
+		["dummy1_R_upperarmbrr", "dummy1_R_upperarmbrl"],
+		["dummy1_R_upperarmbrl", "dummy1_R_upperarmbfl"],
+		
+		["dummy1_R_upperarmbfl", "dummy1_R_upperarmmfl"],
+		["dummy1_R_upperarmbfr", "dummy1_R_upperarmmfr"],
+		["dummy1_R_upperarmbrl", "dummy1_R_upperarmmrl"],
+		["dummy1_R_upperarmbrr", "dummy1_R_upperarmmrr"],
+		
+        ["dummy1_R_upperarmmfl", "dummy1_R_upperarmmfr"],
+		["dummy1_R_upperarmmfr", "dummy1_R_upperarmmrr"],
+		["dummy1_R_upperarmmrr", "dummy1_R_upperarmmrl"],
+		["dummy1_R_upperarmmrl", "dummy1_R_upperarmmfl"],
+
+		["dummy1_R_upperarmmfl", "dummy1_R_upperarmtfl"],
+		["dummy1_R_upperarmmfr", "dummy1_R_upperarmtfr"],
+		["dummy1_R_upperarmmrl", "dummy1_R_upperarmtrl"],
+		["dummy1_R_upperarmmrr", "dummy1_R_upperarmtrr"],
+
+		["dummy1_R_upperarmtfl", "dummy1_R_upperarmtfr"],
+		["dummy1_R_upperarmtfr", "dummy1_R_upperarmtrr"],
+		["dummy1_R_upperarmtrr", "dummy1_R_upperarmtrl"],
+		["dummy1_R_upperarmtrl", "dummy1_R_upperarmtfl"],
+		
+		//cross		
+		["dummy1_R_upperarmtfl", "dummy1_R_upperarmtrr"],
+		["dummy1_R_upperarmtfr", "dummy1_R_upperarmtrl"],
+
+		["dummy1_R_upperarmmfr", "dummy1_R_upperarmtrr"],
+		["dummy1_R_upperarmmrr", "dummy1_R_upperarmtfr"],
+		["dummy1_R_upperarmmfl", "dummy1_R_upperarmtrl"],
+		["dummy1_R_upperarmmrl", "dummy1_R_upperarmtfl"],
+
+		["dummy1_R_upperarmmrr", "dummy1_R_upperarmtrl"],
+		["dummy1_R_upperarmmrl", "dummy1_R_upperarmtrr"],
+		["dummy1_R_upperarmmfr", "dummy1_R_upperarmtfl"],
+		["dummy1_R_upperarmmfl", "dummy1_R_upperarmtfr"],
+
+		["dummy1_R_upperarmmrr", "dummy1_R_upperarmtfl"],
+		["dummy1_R_upperarmmrl", "dummy1_R_upperarmtfr"],
+		["dummy1_R_upperarmmfr", "dummy1_R_upperarmtrl"],
+		["dummy1_R_upperarmmfl", "dummy1_R_upperarmtrr"],
+		
+		["dummy1_R_upperarmbfl", "dummy1_R_upperarmbrr"],
+		["dummy1_R_upperarmbfr", "dummy1_R_upperarmbrl"],
+		["dummy1_R_upperarmmfl", "dummy1_R_upperarmmrr"],
+		["dummy1_R_upperarmmfr", "dummy1_R_upperarmmrl"],
+
+		["dummy1_R_upperarmbfr", "dummy1_R_upperarmmrr"],
+		["dummy1_R_upperarmbrr", "dummy1_R_upperarmmfr"],
+		["dummy1_R_upperarmbfl", "dummy1_R_upperarmmrl"],
+		["dummy1_R_upperarmbrl", "dummy1_R_upperarmmfl"],
+
+		["dummy1_R_upperarmbrr", "dummy1_R_upperarmmrl"],
+		["dummy1_R_upperarmbrl", "dummy1_R_upperarmmrr"],
+		["dummy1_R_upperarmbfr", "dummy1_R_upperarmmfl"],
+		["dummy1_R_upperarmbfl", "dummy1_R_upperarmmfr"],
+
+		["dummy1_R_upperarmbrr", "dummy1_R_upperarmmfl"],
+		["dummy1_R_upperarmbrl", "dummy1_R_upperarmmfr"],
+		["dummy1_R_upperarmbfr", "dummy1_R_upperarmmrl"],
+		["dummy1_R_upperarmbfl", "dummy1_R_upperarmmrr"],
+		
+		["dummy1_R_upperarmbrr", "dummy1_R_upperarmtfl"],
+		["dummy1_R_upperarmbrl", "dummy1_R_upperarmtfr"],
+		["dummy1_R_upperarmbfr", "dummy1_R_upperarmtrl"],
+		["dummy1_R_upperarmbfl", "dummy1_R_upperarmtrr"],
+		
+		//rigidifier
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*10"},
+		
+		["dummy1_R_upperarmbfl", "dummy1_R_upperarmmid"],
+		["dummy1_R_upperarmbfr", "dummy1_R_upperarmmid"],
+		["dummy1_R_upperarmbrr", "dummy1_R_upperarmmid"],
+		["dummy1_R_upperarmbrl", "dummy1_R_upperarmmid"],
+		
+		["dummy1_R_upperarmmfl", "dummy1_R_upperarmmid"],
+		["dummy1_R_upperarmmfr", "dummy1_R_upperarmmid"],
+		["dummy1_R_upperarmmrr", "dummy1_R_upperarmmid"],
+		["dummy1_R_upperarmmrl", "dummy1_R_upperarmmid"],
+		
+		["dummy1_R_upperarmtfl", "dummy1_R_upperarmmid"],
+		["dummy1_R_upperarmtfr", "dummy1_R_upperarmmid"],
+		["dummy1_R_upperarmtrr", "dummy1_R_upperarmmid"],
+		["dummy1_R_upperarmtrl", "dummy1_R_upperarmmid"],
+		
+		["dummy1_R_upperarmthorax","dummy1_R_upperarmmid"],
+		
+		//thorax attach	
+		{"beamSpring": "$=$adummy1weight*10000","beamDamp":"$=$adummy1weight*10"},
+		
+		["dummy1_R_upperarmthorax","dummy1_R_upperarmtrr"],
+		["dummy1_R_upperarmthorax","dummy1_R_upperarmtfr"],
+		["dummy1_R_upperarmthorax","dummy1_R_upperarmtrl"],
+		["dummy1_R_upperarmthorax","dummy1_R_upperarmtfl"],
+		
+		["dummy1_R_upperarmthorax","dummy1_R_upperarmmrr"],
+		["dummy1_R_upperarmthorax","dummy1_R_upperarmmfr"],
+		["dummy1_R_upperarmthorax","dummy1_R_upperarmmrl"],
+		["dummy1_R_upperarmthorax","dummy1_R_upperarmmfl"],
+
+
+		//--RIGHT FOREARM--
+		{"beamSpring": "$=$adummy1weight*25000","beamDamp":"$=$adummy1weight*15"},
+		{"deformLimitExpansion":1.005}, 
+		
+		//main shape
+		["dummy1_R_forearmbfl","dummy1_R_forearmhand"],
+		["dummy1_R_forearmbfr","dummy1_R_forearmhand"],
+		["dummy1_R_forearmbrr","dummy1_R_forearmhand"],
+		["dummy1_R_forearmbrl","dummy1_R_forearmhand"],
+		
+		["dummy1_R_forearmbfl", "dummy1_R_forearmbfr"],
+		["dummy1_R_forearmbfr", "dummy1_R_forearmbrr"],
+		["dummy1_R_forearmbrr", "dummy1_R_forearmbrl"],
+		["dummy1_R_forearmbrl", "dummy1_R_forearmbfl"],
+		
+		["dummy1_R_forearmbfl", "dummy1_R_forearmmfl"],
+		["dummy1_R_forearmbfr", "dummy1_R_forearmmfr"],
+		["dummy1_R_forearmbrl", "dummy1_R_forearmmrl"],
+		["dummy1_R_forearmbrr", "dummy1_R_forearmmrr"],
+		
+        ["dummy1_R_forearmmfl", "dummy1_R_forearmmfr"],
+		["dummy1_R_forearmmfr", "dummy1_R_forearmmrr"],
+		["dummy1_R_forearmmrr", "dummy1_R_forearmmrl"],
+		["dummy1_R_forearmmrl", "dummy1_R_forearmmfl"],
+		
+		["dummy1_R_forearmmfl","dummy1_R_forearmtipl"],
+		["dummy1_R_forearmmfr","dummy1_R_forearmtipr"],
+		["dummy1_R_forearmmrr","dummy1_R_forearmtipr"],
+		["dummy1_R_forearmmrl","dummy1_R_forearmtipl"],
+		
+		["dummy1_R_forearmtipr", "dummy1_R_forearmtipl"],
+		
+		//cross
+		["dummy1_R_forearmbfl", "dummy1_R_forearmbrr"],
+		["dummy1_R_forearmbfr", "dummy1_R_forearmbrl"],
+		["dummy1_R_forearmmfl", "dummy1_R_forearmmrr"],
+		["dummy1_R_forearmmfr", "dummy1_R_forearmmrl"],
+
+		["dummy1_R_forearmbfr", "dummy1_R_forearmmrr"],
+		["dummy1_R_forearmbrr", "dummy1_R_forearmmfr"],
+		["dummy1_R_forearmbfl", "dummy1_R_forearmmrl"],
+		["dummy1_R_forearmbrl", "dummy1_R_forearmmfl"],
+
+		["dummy1_R_forearmbrr", "dummy1_R_forearmmrl"],
+		["dummy1_R_forearmbrl", "dummy1_R_forearmmrr"],
+		["dummy1_R_forearmbfr", "dummy1_R_forearmmfl"],
+		["dummy1_R_forearmbfl", "dummy1_R_forearmmfr"],
+
+		["dummy1_R_forearmbrr", "dummy1_R_forearmmfl"],
+		["dummy1_R_forearmbrl", "dummy1_R_forearmmfr"],
+		["dummy1_R_forearmbfr", "dummy1_R_forearmmrl"],
+		["dummy1_R_forearmbfl", "dummy1_R_forearmmrr"],
+		
+		["dummy1_R_forearmmfl","dummy1_R_forearmtipr"],
+		["dummy1_R_forearmmfr","dummy1_R_forearmtipl"],
+		["dummy1_R_forearmmrr","dummy1_R_forearmtipl"],
+		["dummy1_R_forearmmrl","dummy1_R_forearmtipr"],
+		
+		["dummy1_R_forearmbfl","dummy1_R_forearmtipr"],
+		["dummy1_R_forearmbfr","dummy1_R_forearmtipl"],
+		["dummy1_R_forearmbrr","dummy1_R_forearmtipl"],
+		["dummy1_R_forearmbrl","dummy1_R_forearmtipr"],
+		
+		["dummy1_R_forearmbfl","dummy1_R_forearmtipl"],
+		["dummy1_R_forearmbfr","dummy1_R_forearmtipr"],
+		["dummy1_R_forearmbrr","dummy1_R_forearmtipr"],
+		["dummy1_R_forearmbrl","dummy1_R_forearmtipl"],
+		
+		["dummy1_R_forearmmfl","dummy1_R_forearmhand"],
+		["dummy1_R_forearmmfr","dummy1_R_forearmhand"],
+		["dummy1_R_forearmmrr","dummy1_R_forearmhand"],
+		["dummy1_R_forearmmrl","dummy1_R_forearmhand"],
+		
+		["dummy1_R_forearmtipl","dummy1_R_forearmhand"],
+		["dummy1_R_forearmtipr","dummy1_R_forearmhand"],
+		
+		//rigidifier
+		["dummy1_R_forearmbfl", "dummy1_R_forearmmid"],
+		["dummy1_R_forearmbfr", "dummy1_R_forearmmid"],
+		["dummy1_R_forearmbrr", "dummy1_R_forearmmid"],
+		["dummy1_R_forearmbrl", "dummy1_R_forearmmid"],
+		
+		["dummy1_R_forearmmfl","dummy1_R_forearmmid"],
+		["dummy1_R_forearmmfr", "dummy1_R_forearmmid"],
+		["dummy1_R_forearmmrr", "dummy1_R_forearmmid"],
+		["dummy1_R_forearmmrl", "dummy1_R_forearmmid"],
+		
+		["dummy1_R_forearmtipr","dummy1_R_forearmmid"],
+		["dummy1_R_forearmtipl","dummy1_R_forearmmid"],
+		["dummy1_R_forearmhand","dummy1_R_forearmmid"],
+		
+		
+		//--RIGHT HAND--
+		{"beamSpring": "$=$adummy1weight*10000","beamDamp":"$=$adummy1weight*2"},
+		{"deformLimitExpansion":1.0001}, 
+		
+		//main shape
+		["dummy1_R_handbfl","dummy1_R_handbrl"],
+		["dummy1_R_handbrl","dummy1_R_handtrl"],
+		["dummy1_R_handtrl","dummy1_R_handtfl"],
+		["dummy1_R_handtfl","dummy1_R_handbfl"],
+		
+		["dummy1_R_handbfr","dummy1_R_handbrr"],
+		["dummy1_R_handbrr","dummy1_R_handtrr"],
+		["dummy1_R_handtrr","dummy1_R_handtfr"],
+		["dummy1_R_handtfr","dummy1_R_handbfr"],
+		
+		["dummy1_R_handbfl","dummy1_R_handbfr"],
+		["dummy1_R_handbrl","dummy1_R_handbrr"],
+		["dummy1_R_handtfl","dummy1_R_handtfr"],
+		["dummy1_R_handtrl","dummy1_R_handtrr"],
+		
+		//cross
+		["dummy1_R_handbfl","dummy1_R_handtrl"],
+		["dummy1_R_handtfl","dummy1_R_handbrl"],
+		["dummy1_R_handbfr","dummy1_R_handtrr"],
+		["dummy1_R_handtfr","dummy1_R_handbrr"],
+		
+		["dummy1_R_handbfl","dummy1_R_handbrr"],
+		["dummy1_R_handbfr","dummy1_R_handbrl"],
+		["dummy1_R_handtfl","dummy1_R_handtrr"],
+		["dummy1_R_handtfr","dummy1_R_handtrl"],
+		
+		["dummy1_R_handtrl","dummy1_R_handbrr"],
+		["dummy1_R_handtrr","dummy1_R_handbrl"],
+		["dummy1_R_handtfl","dummy1_R_handbfr"],
+		["dummy1_R_handtfr","dummy1_R_handbfl"],
+		
+		["dummy1_R_handbrr","dummy1_R_handtfl"],
+		["dummy1_R_handbrl","dummy1_R_handtfr"],
+		["dummy1_R_handbfr","dummy1_R_handtrl"],
+		["dummy1_R_handbfl","dummy1_R_handtrr"],
+		
+		
+		//thumb
+		["dummy1_R_thumb","dummy1_R_handtfl"],
+		["dummy1_R_thumb","dummy1_R_handbfl"],
+		["dummy1_R_thumb","dummy1_R_handtrl"],
+		["dummy1_R_thumb","dummy1_R_handbrl"],
+		
+		["dummy1_R_thumb","dummy1_R_handtfr"],
+		["dummy1_R_thumb","dummy1_R_handbfr"],
+		["dummy1_R_thumb","dummy1_R_handtrr"],
+		["dummy1_R_thumb","dummy1_R_handbrr"],
+		
+		//fingers
+		["dummy1_R_finger1","dummy1_R_handbfl"],
+		["dummy1_R_finger1","dummy1_R_handbrl"],
+		["dummy1_R_finger1","dummy1_R_handbfr"],
+		["dummy1_R_finger1","dummy1_R_handbrr"],
+		
+		["dummy1_R_finger1","dummy1_R_handtfl"],
+		["dummy1_R_finger1","dummy1_R_handtrl"],
+		["dummy1_R_finger1","dummy1_R_handtfr"],
+		["dummy1_R_finger1","dummy1_R_handtrr"],
+		
+		["dummy1_R_finger2","dummy1_R_handbfl"],
+		["dummy1_R_finger2","dummy1_R_handbrl"],
+		["dummy1_R_finger2","dummy1_R_handbfr"],
+		["dummy1_R_finger2","dummy1_R_handbrr"],
+		
+		["dummy1_R_finger2","dummy1_R_handtfl"],
+		["dummy1_R_finger2","dummy1_R_handtrl"],
+		["dummy1_R_finger2","dummy1_R_handtfr"],
+		["dummy1_R_finger2","dummy1_R_handtrr"],
+		
+		["dummy1_R_finger3","dummy1_R_handbfl"],
+		["dummy1_R_finger3","dummy1_R_handbrl"],
+		["dummy1_R_finger3","dummy1_R_handbfr"],
+		["dummy1_R_finger3","dummy1_R_handbrr"],
+		
+		["dummy1_R_finger3","dummy1_R_handtfl"],
+		["dummy1_R_finger3","dummy1_R_handtrl"],
+		["dummy1_R_finger3","dummy1_R_handtfr"],
+		["dummy1_R_finger3","dummy1_R_handtrr"],
+		
+		["dummy1_R_finger4","dummy1_R_handbfl"],
+		["dummy1_R_finger4","dummy1_R_handbrl"],
+		["dummy1_R_finger4","dummy1_R_handbfr"],
+		["dummy1_R_finger4","dummy1_R_handbrr"],
+		
+		["dummy1_R_finger4","dummy1_R_handtfl"],
+		["dummy1_R_finger4","dummy1_R_handtrl"],
+		["dummy1_R_finger4","dummy1_R_handtfr"],
+		["dummy1_R_finger4","dummy1_R_handtrr"],
+		
+    ],
+    "triangles": [
+        ["id1:","id2:","id3:"],
+        {"groundModel":"plastic"},
+		{"dragCoef":4},
+        
+		//right upperarm
+        {"group":"agenty_dummy1_upperarm_R"},
+		
+        ["dummy1_R_upperarmmfr","dummy1_R_upperarmmfl","dummy1_R_upperarmtfr"],
+        ["dummy1_R_upperarmtfl","dummy1_R_upperarmtfr","dummy1_R_upperarmmfl"],
+		["dummy1_R_upperarmmrl","dummy1_R_upperarmmrr","dummy1_R_upperarmtrl"],
+        ["dummy1_R_upperarmtrr","dummy1_R_upperarmtrl","dummy1_R_upperarmmrr"],
+
+		["dummy1_R_upperarmmrr","dummy1_R_upperarmmfr","dummy1_R_upperarmtrr"],
+		["dummy1_R_upperarmmfr","dummy1_R_upperarmtfr","dummy1_R_upperarmtrr"],
+		["dummy1_R_upperarmmfl","dummy1_R_upperarmmrl","dummy1_R_upperarmtfl"],
+		["dummy1_R_upperarmmrl","dummy1_R_upperarmtrl","dummy1_R_upperarmtfl"],
+		
+		["dummy1_R_upperarmbfr","dummy1_R_upperarmbfl","dummy1_R_upperarmmfr"],
+        ["dummy1_R_upperarmmfl","dummy1_R_upperarmmfr","dummy1_R_upperarmbfl"],
+		["dummy1_R_upperarmbrl","dummy1_R_upperarmbrr","dummy1_R_upperarmmrl"],
+        ["dummy1_R_upperarmmrr","dummy1_R_upperarmmrl","dummy1_R_upperarmbrr"],
+
+		["dummy1_R_upperarmbfr","dummy1_R_upperarmbrl","dummy1_R_upperarmbfl"],
+		["dummy1_R_upperarmbrr","dummy1_R_upperarmbrl","dummy1_R_upperarmbfr"],
+		
+		["dummy1_R_upperarmtfr","dummy1_R_upperarmtfl","dummy1_R_upperarmthorax"],
+		["dummy1_R_upperarmtfl","dummy1_R_upperarmtrl","dummy1_R_upperarmthorax"],
+		["dummy1_R_upperarmtrl","dummy1_R_upperarmtrr","dummy1_R_upperarmthorax"],
+		["dummy1_R_upperarmtrr","dummy1_R_upperarmtfr","dummy1_R_upperarmthorax"],
+		
+		//non-collidable tris
+		{"triangleType":"NONCOLLIDABLE"},
+		["dummy1_R_upperarmbrr","dummy1_R_upperarmbfr","dummy1_R_upperarmmrr"],
+		["dummy1_R_upperarmbfr","dummy1_R_upperarmmfr","dummy1_R_upperarmmrr"],
+		["dummy1_R_upperarmbfl","dummy1_R_upperarmbrl","dummy1_R_upperarmmfl"],
+		["dummy1_R_upperarmbrl","dummy1_R_upperarmmrl","dummy1_R_upperarmmfl"],
+		{"triangleType":"NORMALTYPE"},
+		
+		
+		//right forearm
+        {"group":"agenty_dummy1_forearm_R"},
+		
+		["dummy1_R_forearmbfr","dummy1_R_forearmbfl","dummy1_R_forearmmfr"],
+        ["dummy1_R_forearmmfl","dummy1_R_forearmmfr","dummy1_R_forearmbfl"],
+		["dummy1_R_forearmbrl","dummy1_R_forearmbrr","dummy1_R_forearmmrl"],
+        ["dummy1_R_forearmmrr","dummy1_R_forearmmrl","dummy1_R_forearmbrr"],
+
+		["dummy1_R_forearmbrr","dummy1_R_forearmbfr","dummy1_R_forearmmrr"],
+		["dummy1_R_forearmbfr","dummy1_R_forearmmfr","dummy1_R_forearmmrr"],
+		["dummy1_R_forearmbfl","dummy1_R_forearmbrl","dummy1_R_forearmmfl"],
+		["dummy1_R_forearmbrl","dummy1_R_forearmmrl","dummy1_R_forearmmfl"],
+		
+		["dummy1_R_forearmmfr", "dummy1_R_forearmmfl","dummy1_R_forearmtipl"],
+		["dummy1_R_forearmtipl","dummy1_R_forearmtipr","dummy1_R_forearmmfr"],
+		["dummy1_R_forearmmrl", "dummy1_R_forearmmrr","dummy1_R_forearmtipl"],
+		["dummy1_R_forearmtipr","dummy1_R_forearmtipl","dummy1_R_forearmmrr"],
+		
+		["dummy1_R_forearmbrl","dummy1_R_forearmbfl","dummy1_R_forearmhand"],
+		["dummy1_R_forearmbfl","dummy1_R_forearmbfr","dummy1_R_forearmhand"],
+		["dummy1_R_forearmbfr","dummy1_R_forearmbrr","dummy1_R_forearmhand"],
+		["dummy1_R_forearmbrr","dummy1_R_forearmbrl","dummy1_R_forearmhand"],
+		
+		//non-collidable tris
+		{"triangleType":"NONCOLLIDABLE"},		
+		["dummy1_R_forearmmfr","dummy1_R_forearmmrr","dummy1_R_forearmtipr"],
+		["dummy1_R_forearmmfl","dummy1_R_forearmmrl","dummy1_R_forearmtipl"],
+		{"triangleType":"NORMALTYPE"},
+		
+		
+		//left hand
+		{"group":"agenty_dummy1_fingers_R"},
+		["dummy1_R_handbfr","dummy1_R_handbfl","dummy1_R_handtfr"],
+        ["dummy1_R_handtfl","dummy1_R_handtfr","dummy1_R_handbfl"],
+		["dummy1_R_handbrl","dummy1_R_handbrr","dummy1_R_handtrl"],
+        ["dummy1_R_handtrr","dummy1_R_handtrl","dummy1_R_handbrr"],
+
+		["dummy1_R_handbrr","dummy1_R_handbfr","dummy1_R_handtrr"],
+		["dummy1_R_handbfr","dummy1_R_handtfr","dummy1_R_handtrr"],
+		["dummy1_R_handbfl","dummy1_R_handbrl","dummy1_R_handtfl"],
+		["dummy1_R_handbrl","dummy1_R_handtrl","dummy1_R_handtfl"],
+		
+		["dummy1_R_handbfl","dummy1_R_handbfr","dummy1_R_handbrr"],
+		["dummy1_R_handbfl","dummy1_R_handbrr","dummy1_R_handbrl"],
+		
+		//non-collidable tris
+		{"triangleType":"NONCOLLIDABLE"},
+		
+		["dummy1_R_handtfl","dummy1_R_handtfr","dummy1_R_handtrr"],
+		["dummy1_R_handtfl","dummy1_R_handtrr","dummy1_R_handtrl"],
+		
+		["dummy1_R_handbfr", "dummy1_R_handbrr", "dummy1_R_thumb"],
+		["dummy1_R_handbrr", "dummy1_R_handbrl", "dummy1_R_thumb"],
+		["dummy1_R_handbrl", "dummy1_R_handbfl", "dummy1_R_thumb"],
+		["dummy1_R_handbfl", "dummy1_R_handbfr", "dummy1_R_thumb"],
+		
+		["dummy1_R_handbfr","dummy1_R_handbrr","dummy1_R_finger1"],
+		["dummy1_R_handbrr","dummy1_R_handbrl","dummy1_R_finger1"],
+		["dummy1_R_handbrl","dummy1_R_handbfl","dummy1_R_finger1"],
+		["dummy1_R_handbfl","dummy1_R_handbfr","dummy1_R_finger1"],
+		
+		["dummy1_R_handbfr","dummy1_R_handbrr","dummy1_R_finger2"],
+		["dummy1_R_handbrr","dummy1_R_handbrl","dummy1_R_finger2"],
+		["dummy1_R_handbrl","dummy1_R_handbfl","dummy1_R_finger2"],
+		["dummy1_R_handbfl","dummy1_R_handbfr","dummy1_R_finger2"],
+		
+		["dummy1_R_handbfr","dummy1_R_handbrr","dummy1_R_finger3"],
+		["dummy1_R_handbrr","dummy1_R_handbrl","dummy1_R_finger3"],
+		["dummy1_R_handbrl","dummy1_R_handbfl","dummy1_R_finger3"],
+		["dummy1_R_handbfl","dummy1_R_handbfr","dummy1_R_finger3"],
+		
+		["dummy1_R_handbfr","dummy1_R_handbrr","dummy1_R_finger4"],
+		["dummy1_R_handbrr","dummy1_R_handbrl","dummy1_R_finger4"],
+		["dummy1_R_handbrl","dummy1_R_handbfl","dummy1_R_finger4"],
+		["dummy1_R_handbfl","dummy1_R_handbfr","dummy1_R_finger4"],
+		
+		{"triangleType":"NORMALTYPE"},
+    ],
+},
+
+}

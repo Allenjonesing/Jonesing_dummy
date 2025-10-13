@@ -1,0 +1,74 @@
+{ //This file can be used to create your own automatic setup for a mod car.
+"agenty_dummy_mod_passengers_setup":{ //DO NOT CHANGE THE NAME
+    "information":{
+        "authors":"AgentY",
+        "name":"FPU Wydra Setup", //You can put the name of the car here
+    }
+    "slotType" : "agenty_dummy_mod_passengers_setup", //DON'T CHANGE THIS
+
+    "variables": [ //Change the FIRST number ("default") in each variable into an appropriate offset in m
+
+	["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+
+	["$cbpdriverOffsetX_setup", "range", "m", "Driver and Passengers", -0.25, -5, 5,  "Driver position X", "Move the driver left or right",{"stepDis":0.001,"subCategory":"AUTOMATIC OFFSET SETUP - USE THIS FOR VANILLA CARS"}],
+	["$cbpdriverOffsetY_setup", "range", "m", "Driver and Passengers",  0.14, -5, 5,  "Driver position Y", "Move the driver front or back",{"stepDis":0.001,"subCategory":"AUTOMATIC OFFSET SETUP - USE THIS FOR VANILLA CARS"}],
+	["$cbpdriverOffsetZ_setup", "range", "m", "Driver and Passengers",  0.05, -5, 5,  "Driver position Z", "Move the driver up or down",   {"stepDis":0.001,"subCategory":"AUTOMATIC OFFSET SETUP - USE THIS FOR VANILLA CARS"}],
+
+	//no back seat passengers
+    ],
+
+	//--SETUP SPECIFIC BUG FIXES--
+
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+        {"breakGroup":""},
+
+	//Stabilize sitting position while steering
+	{"beamSpring": 10000,"beamDamp":10},
+     	{"beamDeform": 1000, "beamStrength":2000}, 
+	{"breakGroup":"driver_sit"},
+	{"optional":true},
+	["s1l", "Dummy1_thoraxtrl"],
+	["s1r",  "Dummy1_thoraxtrr"],
+	{"optional":false},
+	{"breakGroup":""},
+
+
+	//--DRIVER HANDS ON HANDLEBAR--
+	{"beamSpring": 10000,"beamDamp":10},
+	{"beamDeform": 5000, "beamStrength":5000}, 
+	{"optional":true},
+	{"beamPrecompression":0.1},
+	{"beamPrecompressionTime":0.5},
+
+	{"breakGroup":"driver_hand_hold_latch_L"},
+	["hb1l", "Dummy1_L_hand1"],
+	["hb1l", "Dummy1_L_hand2"],
+	["hb1l", "Dummy1_L_hand3"],
+	
+	{"breakGroup":"driver_hand_hold_latch_R"},
+	["hb1r", "Dummy1_R_hand1"],
+	["hb1r", "Dummy1_R_hand2"],
+	["hb1r", "Dummy1_R_hand3"],
+	
+
+	//--POSITION RESET TRIGGERS--
+	{"beamPrecompression":1,"beamType":"|SUPPORT", "beamLongBound":5},
+	{"beamSpring": 0,"beamDamp":0},
+	{"beamDeform": "FLT_MAX", "beamStrength":"FLT_MAX"},
+	{"breakGroup":"driver_sit"},
+	["Dummy1_headtip", "s1l"],
+	["Dummy1_headtip", "s1r"],
+	{"breakGroup":"Fpass_sit"},
+	["Dummy2_headtip", "s1l"],
+	["Dummy2_headtip", "s1r"],
+
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompressionTime":0},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+}

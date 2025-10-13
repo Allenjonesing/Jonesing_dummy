@@ -1,0 +1,108 @@
+{
+"agenty_dummy_mod_seatbelts_md_series": {
+    "information":{
+        "authors":"AgentY",
+        "name":"2-Point Seatbelts for Gavril MD-Series (Bench Seat)",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts",
+
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+
+  //Dual attached to the B pillar with the end in the seat
+
+  {"beamSpring": 100000,"beamDamp":10},
+      {"beamDeform": 10000, "beamStrength":10000},
+  {"optional":true},
+
+  //--DRIVER--
+  {"breakGroup":"driver_seatbelt"},
+
+  //pelvis to sf2l and p3l
+
+  ["sf2", "Dummy1_pelvistfl"],
+  ["sf2", "Dummy1_pelvistfr"],
+  ["sf2", "Dummy1_pelvistrl"],
+  ["sf2", "Dummy1_pelvistrr"],
+
+  ["p3l","Dummy1_pelvistfl"],
+  ["p3l","Dummy1_pelvistfr"],
+  ["p3l","Dummy1_pelvistrl"],
+  ["p3l","Dummy1_pelvistrr"],
+
+
+  //--FRONT PASSENGER--
+  {"breakGroup":"Fpass_seatbelt"},
+
+  //pelvis to sf2r and p3r
+
+  ["sf2", "Dummy2_pelvistfr"],
+  ["sf2", "Dummy2_pelvistfl"],
+  ["sf2", "Dummy2_pelvistrr"],
+  ["sf2", "Dummy2_pelvistrl"],
+
+  ["p3r","Dummy2_pelvistfr"],
+  ["p3r","Dummy2_pelvistfl"],
+  ["p3r","Dummy2_pelvistrr"],
+  ["p3r","Dummy2_pelvistrl"],
+
+
+  {"optional":false},
+  {"breakGroup":""},
+  {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+"agenty_dummy_mod_seatbelts_R_md_series": {
+    "information":{
+        "authors":"AgentY",
+        "name":"2-Point Seatbelts for Gavril MD-Series",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts_R",
+
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+  {"beamSpring": 100000,"beamDamp":10},
+      {"beamDeform": 10000, "beamStrength":10000},
+  {"optional":true},
+
+  //--L--
+  {"breakGroup":"RLpass_seatbelt"},
+
+  //pelvis to seat
+
+  ["sr2", "Dummy3_pelvistfl"],
+  ["sr2", "Dummy3_pelvistfr"],
+  ["sr2", "Dummy3_pelvistrl"],
+  ["sr2", "Dummy3_pelvistrr"],
+
+  ["sr2ll","Dummy3_pelvistfl"],
+  ["sr2ll","Dummy3_pelvistfr"],
+  ["sr2ll","Dummy3_pelvistrl"],
+  ["sr2ll","Dummy3_pelvistrr"],
+
+
+  //--R--
+  {"breakGroup":"RRpass_seatbelt"},
+
+  //pelvis to seat
+
+  ["sr2rr", "Dummy4_pelvistfl"],
+  ["sr2rr", "Dummy4_pelvistfr"],
+  ["sr2rr", "Dummy4_pelvistrl"],
+  ["sr2rr", "Dummy4_pelvistrr"],
+
+  ["sr2","Dummy4_pelvistfl"],
+  ["sr2","Dummy4_pelvistfr"],
+  ["sr2","Dummy4_pelvistrl"],
+  ["sr2","Dummy4_pelvistrr"],
+
+  {"optional":false},
+  {"breakGroup":""},
+  {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+}

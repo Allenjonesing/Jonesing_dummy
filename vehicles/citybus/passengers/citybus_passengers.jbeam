@@ -1,0 +1,233 @@
+{
+"agenty_dummy_mod_passengers_citybus": {
+    "information":{
+        "authors":"AgentY",
+        "name":"AgentY Universal Dummy Mod (BUS)",
+    },
+    "slotType" : "licenseplate_design_2_1",
+    "slots": [
+	["type", "default", "description"],
+
+	["agenty_dummy_mod_driver","agenty_dummy_mod_driver_dummy","Driver", {"nodeMove":{"x":0.74, "y":-4.97, "z":0.35}}],
+	["agenty_dummy_mod_citybus_passengers","agenty_dummy_mod_citybus_passengers","Passengers"],
+
+	["agenty_dummy_mod_citybus_seatbelts","","Driver Seatbelt"],
+	["agenty_dummy_mod_citybus_steer","agenty_dummy_mod_citybus_steer","Animated Hands", {"nodeMove":{"x":0.74, "y":-4.97, "z":0.35}}],
+	["agenty_dummy_mod_passengers_mod","","Additional Modifications"],
+
+	["agenty_dummy_mod_car_strength_setting","","Car Strength Settings"],
+
+	["skin_dummy","","Dummy Skin"],
+	["skin_dummyhead","","Dummy Head Skin"],
+	["skin_stuntman_shirt","","Stuntman Shirt Skin"],
+	["skin_stuntman_trousers","","Stuntman Trousers Skin"],
+	["skin_stuntman_extras","","Stuntman Extras Skin"],
+	["skin_stuntman_helmet","","Stuntman Helmet Skin"],
+
+	["licenseplate_design_vanilla_duplicate","","License Plate Design"],
+    ],	
+    "beams": [
+        ["id1:", "id2:"],
+	//disable leaking of uncommon beam values
+	{"breakGroupType":0},
+	{"beamLimitSpring":1,"beamLimitDamp":1},
+	{"beamDampRebound":false},
+
+	//Stabilize sitting position while steering
+	{"beamSpring": 10000,"beamDamp":10},
+     	{"beamDeform": 1000, "beamStrength":2000}, 
+	{"breakGroup":"driver_sit"},
+	{"optional":true},
+	["de1l_5", "Dummy1_thoraxtrl"],
+	["de1l_6", "Dummy1_thoraxtrr"],
+	["de1l_3", "Dummy1_thoraxbrl"],
+	["de1l_4", "Dummy1_thoraxbrr"],
+
+	//--POSITION RESET TRIGGERS--
+	{"beamPrecompression":1,"beamType":"|SUPPORT", "beamLongBound":5},
+	{"beamSpring": 0,"beamDamp":0},
+	{"beamDeform": "FLT_MAX", "beamStrength":"FLT_MAX"},
+	{"breakGroup":"driver_sit"},
+	["Dummy1_headtip", "de1l_6"],
+	["Dummy1_headtip", "de1l_5"],
+
+	
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1},
+	{"beamPrecompressionTime":0},
+
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+   ],
+},
+
+"agenty_dummy_mod_citybus_passengers": {
+    "information":{
+        "authors":"AgentY",
+        "name":"Passengers",
+    },
+    "slotType" : "agenty_dummy_mod_citybus_passengers",
+    "slots": [
+	["type", "default", "description"],
+	
+	["agenty_dummy_mod_citybus_passenger01","agenty_dummy_mod_citybus_passenger01","Passenger 01", {"nodeMove":{"x": 0.50, "y":-1.70, "z":-0.15}}],
+	["agenty_dummy_mod_citybus_passenger02","agenty_dummy_mod_citybus_passenger02","Passenger 02", {"nodeMove":{"x": 1.00, "y":-1.70, "z":-0.15}}],
+	["agenty_dummy_mod_citybus_passenger03","agenty_dummy_mod_citybus_passenger03","Passenger 03", {"nodeMove":{"x":-0.50, "y":-1.70, "z":-0.15}}],
+	["agenty_dummy_mod_citybus_passenger04","agenty_dummy_mod_citybus_passenger04","Passenger 04", {"nodeMove":{"x":-1.00, "y":-1.70, "z":-0.15}}],
+
+	["agenty_dummy_mod_citybus_passenger05","agenty_dummy_mod_citybus_passenger05","Passenger 05", {"nodeMove":{"x": 0.50, "y":-0.85, "z":-0.15}}],
+	["agenty_dummy_mod_citybus_passenger06","agenty_dummy_mod_citybus_passenger06","Passenger 06", {"nodeMove":{"x": 1.00, "y":-0.85, "z":-0.15}}],
+	["agenty_dummy_mod_citybus_passenger07","agenty_dummy_mod_citybus_passenger07","Passenger 07", {"nodeMove":{"x":-0.50, "y":-0.85, "z":-0.15}}],
+	["agenty_dummy_mod_citybus_passenger08","agenty_dummy_mod_citybus_passenger08","Passenger 08", {"nodeMove":{"x":-1.00, "y":-0.85, "z":-0.15}}],
+
+	["agenty_dummy_mod_citybus_passenger09","agenty_dummy_mod_citybus_passenger09","Passenger 09", {"nodeMove":{"x": 0.50, "y": 0.00, "z":-0.15}}],
+	["agenty_dummy_mod_citybus_passenger10","agenty_dummy_mod_citybus_passenger10","Passenger 10", {"nodeMove":{"x": 1.00, "y": 0.00, "z":-0.15}}],
+	["agenty_dummy_mod_citybus_passenger11","agenty_dummy_mod_citybus_passenger11","Passenger 11", {"nodeMove":{"x":-0.50, "y": 0.00, "z":-0.15}}],
+	["agenty_dummy_mod_citybus_passenger12","agenty_dummy_mod_citybus_passenger12","Passenger 12", {"nodeMove":{"x":-1.00, "y": 0.00, "z":-0.15}}],
+
+	["agenty_dummy_mod_citybus_passenger13","agenty_dummy_mod_citybus_passenger13","Passenger 13", {"nodeMove":{"x": 0.50, "y": 2.45, "z": 0.30}}],
+	["agenty_dummy_mod_citybus_passenger14","agenty_dummy_mod_citybus_passenger14","Passenger 14", {"nodeMove":{"x": 1.00, "y": 2.45, "z": 0.30}}],
+	["agenty_dummy_mod_citybus_passenger15","agenty_dummy_mod_citybus_passenger15","Passenger 15", {"nodeMove":{"x":-0.50, "y": 2.45, "z": 0.30}}],
+	["agenty_dummy_mod_citybus_passenger16","agenty_dummy_mod_citybus_passenger16","Passenger 16", {"nodeMove":{"x":-1.00, "y": 2.45, "z": 0.30}}],
+	
+	["agenty_dummy_mod_citybus_passenger17","agenty_dummy_mod_citybus_passenger17","Passenger 17", {"nodeMove":{"x": 0.40, "y": 4.98, "z": 0.33}}],
+	["agenty_dummy_mod_citybus_passenger18","agenty_dummy_mod_citybus_passenger18","Passenger 18", {"nodeMove":{"x": 0.95, "y": 4.98, "z": 0.33}}],
+	["agenty_dummy_mod_citybus_passenger19","agenty_dummy_mod_citybus_passenger19","Passenger 19", {"nodeMove":{"x":-0.40, "y": 4.98, "z": 0.33}}],
+	["agenty_dummy_mod_citybus_passenger20","agenty_dummy_mod_citybus_passenger20","Passenger 20", {"nodeMove":{"x":-0.95, "y": 4.98, "z": 0.33}}],
+    ],	
+},
+
+"agenty_dummy_mod_citybus_steer": {
+    "information":{
+        "authors":"AgentY",
+        "name":"Animated Hands",
+    },
+    "slotType" : "agenty_dummy_mod_citybus_steer",
+    "nodes": [
+        ["id", "posX", "posY", "posZ"],
+        {"collision":false},
+        {"selfCollision":false},
+        {"nodeWeight":0.1},
+        {"frictionCoef":0},
+        {"nodeMaterial":"|NM_PLASTIC"},
+	{"group":""},
+	{"breakGroup":""},
+
+	//steering wheel	
+	["intcollision_steertr",-0.15, -0.60, 1.15],
+	["intcollision_steertl", 0.15, -0.60, 1.15],
+	["intcollision_steerbr",-0.15, -0.40, 1.05],
+	["intcollision_steerbl", 0.15, -0.40, 1.05],
+	["intcollision_steermf", 0.00, -0.50, 1.20],
+	["intcollision_steermr", 0.00, -0.60, 0.95],
+		
+	{"collision":true},
+        {"selfCollision":true},	
+    ],
+    "torsionHydros": [
+        ["id1:","id2:","id3:","id4:"],
+        {"spring":10000, "damp":0, "deform":15000, "strength":20000},
+	{"optional":true},
+        ["intcollision_steertr","intcollision_steermf","intcollision_steermr","gp1l", {"factor":-3.5,"inRate":2,"outRate":2,"inputSource":"steering_input"}],
+	{"optional":false},
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1}, 
+        {"breakGroup":""},
+
+	//--STEERING WHEEL--
+	{"beamSpring": 100000,"beamDamp":20},
+	{"beamDeform": 10000, "beamStrength":"FLT_MAX"}, 
+
+	//main shape
+	["intcollision_steertl", "intcollision_steertr"],
+	["intcollision_steerbl", "intcollision_steerbr"],
+	["intcollision_steertl", "intcollision_steerbl"],
+	["intcollision_steertr", "intcollision_steerbr"],
+	["intcollision_steertl", "intcollision_steerbr"],
+	["intcollision_steerbl", "intcollision_steertr"],
+
+	//center nodes
+	["intcollision_steertl", "intcollision_steermf"],
+	["intcollision_steertr", "intcollision_steermf"],
+	["intcollision_steerbl", "intcollision_steermf"],
+	["intcollision_steerbr", "intcollision_steermf"],
+	["intcollision_steertl", "intcollision_steermr"],
+	["intcollision_steertr", "intcollision_steermr"],
+	["intcollision_steerbl", "intcollision_steermr"],
+	["intcollision_steerbr", "intcollision_steermr"],
+	["intcollision_steermf", "intcollision_steermr"],
+
+	//attach to dash
+	["gp1l", "intcollision_steermf"],
+	["gp2l", "intcollision_steermf"],
+	["gp1r", "intcollision_steermf"],
+	["gp2r", "intcollision_steermf"],
+	["gp1l", "intcollision_steermr"],
+	["gp2l", "intcollision_steermr"],
+	["gp1r", "intcollision_steermr"],
+	["gp2r", "intcollision_steermr"],
+
+	
+	//--DRIVER HANDS ON WHEEL--
+	{"beamSpring": 5000,"beamDamp":10},
+	{"beamDeform": 2000, "beamStrength":1000}, 
+	{"optional":true},
+	{"beamPrecompression":0.95},
+	{"beamPrecompressionTime":0.5},
+
+	{"breakGroup":"driver_hand_hold_latch_L"},
+
+	["intcollision_steertr", "Dummy1_L_hand1"],
+	["intcollision_steerbr", "Dummy1_L_hand1"],
+	["intcollision_steertr", "Dummy1_L_hand2"],
+	["intcollision_steerbr", "Dummy1_L_hand2"],
+	["intcollision_steertr", "Dummy1_L_hand3"],
+	["intcollision_steerbr", "Dummy1_L_hand3"],
+
+	["intcollision_steertl", "Dummy1_L_hand1"],
+	["intcollision_steerbl", "Dummy1_L_hand1"],
+	["intcollision_steertl", "Dummy1_L_hand2"],
+	["intcollision_steerbl", "Dummy1_L_hand2"],
+	["intcollision_steertl", "Dummy1_L_hand3"],
+	["intcollision_steerbl", "Dummy1_L_hand3"],
+
+	{"breakGroup":"driver_hand_hold_latch_R"},
+	
+	["intcollision_steertr", "Dummy1_R_hand1"],
+	["intcollision_steerbr", "Dummy1_R_hand1"],
+	["intcollision_steertr", "Dummy1_R_hand2"],
+	["intcollision_steerbr", "Dummy1_R_hand2"],
+	["intcollision_steertr", "Dummy1_R_hand3"],
+	["intcollision_steerbr", "Dummy1_R_hand3"],
+
+	["intcollision_steertl", "Dummy1_R_hand1"],
+	["intcollision_steerbl", "Dummy1_R_hand1"],
+	["intcollision_steertl", "Dummy1_R_hand2"],
+	["intcollision_steerbl", "Dummy1_R_hand2"],
+	["intcollision_steertl", "Dummy1_R_hand3"],
+	["intcollision_steerbl", "Dummy1_R_hand3"]
+	
+
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompressionTime":0},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+    "triangles": [
+        ["id1:","id2:","id3:"],
+        {"groundModel":"plastic"},
+	{"dragCoef":0},
+        {"group":""},
+	{"breakGroup":""},
+
+	//steering wheel
+	["intcollision_steerbl", "intcollision_steerbr", "intcollision_steertl"],
+	["intcollision_steertl", "intcollision_steerbr", "intcollision_steertr"],
+		
+    ],	
+},
+
+
+}

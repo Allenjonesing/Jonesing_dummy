@@ -1,0 +1,436 @@
+{
+"Breakable_no": {
+    "information":{
+		"name":"No",
+		"authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy_breakable",
+    "slots": [
+	["type", "default", "description"],
+	["AgentY_Dummy_connectors","AgentY_Dummy_connectors", "Connectors"],
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+     	{"beamDeform": 500000, "beamStrength":"FLT_MAX"}, 
+    ],
+},
+"Breakable_yes": {
+    "information":{
+        "name":"Yes",
+        "authors":"AgentY",
+    },	
+    "slotType":"AgentY_Dummy_breakable",
+    "slots": [
+	["type", "default", "description"],
+	["AgentY_Dummy_connectors","AgentY_Dummy_connectors", "Connectors"],
+    ],
+    "variables": [
+        ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+        ["$aDummystrength", "range", "N", "Dummy", 10000, 0, 100000, "Driver Strength", "Min force needed to break off part of the dummy", {"stepDis":1000, "subCategory":"Body"}],
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+     	{"beamDeform": 10000, "beamStrength":"4000"}, 
+    ],
+},
+
+
+"AgentY_Dummy_connectors": {
+    "information":{
+		"name":"Connectors",
+		"authors":"AgentY",
+    },
+	
+    "slotType":"AgentY_Dummy_connectors",
+    
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+        
+		//thorax to abdomen
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50"},
+		{"deformLimitExpansion":1.1}, 
+		{"breakGroup":"dummy1_thoraxabdomen"},
+		
+		["dummy1_thoraxtfl", "dummy1_abdomentfl"],
+		["dummy1_thoraxtfr", "dummy1_abdomentfr"],
+		["dummy1_thoraxmrl", "dummy1_abdomentrl"],
+		["dummy1_thoraxmrr", "dummy1_abdomentrr"],
+		
+		["dummy1_thoraxbfl", "dummy1_abdomentfl"],
+		["dummy1_thoraxbfr", "dummy1_abdomentfr"],
+		["dummy1_thoraxbrl", "dummy1_abdomentrl"],
+		["dummy1_thoraxbrr", "dummy1_abdomentrr"],
+		
+		["dummy1_thoraxmrr", "dummy1_abdomentfl"],
+		["dummy1_thoraxmrl", "dummy1_abdomentfr"],
+		["dummy1_thoraxmfr", "dummy1_abdomentrl"],
+		["dummy1_thoraxmfl", "dummy1_abdomentrr"],
+		
+		["dummy1_thoraxbrr", "dummy1_abdomentfl"],
+		["dummy1_thoraxbrl", "dummy1_abdomentfr"],
+		["dummy1_thoraxbfr", "dummy1_abdomentrl"],
+		["dummy1_thoraxbfl", "dummy1_abdomentrr"],
+
+		
+		//pelvis to abdomen
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50"},
+		{"deformLimitExpansion":1.1}, 
+		{"breakGroup":"dummy1_pelvisabdomen"},
+		
+		["dummy1_pelvismfl", "dummy1_abdomenbfl"],
+		["dummy1_pelvismfr", "dummy1_abdomenbfr"],
+		["dummy1_pelvismrl", "dummy1_abdomenbrl"],
+		["dummy1_pelvismrr", "dummy1_abdomenbrr"],
+		
+		["dummy1_pelvistfl", "dummy1_abdomenbfl"],
+		["dummy1_pelvistfr", "dummy1_abdomenbfr"],
+		["dummy1_pelvistrl", "dummy1_abdomenbrl"],
+		["dummy1_pelvistrr", "dummy1_abdomenbrr"],
+		
+		["dummy1_pelvismrr", "dummy1_abdomenbfl"],
+		["dummy1_pelvismrl", "dummy1_abdomenbfr"],
+		["dummy1_pelvismfr", "dummy1_abdomenbrl"],
+		["dummy1_pelvismfl", "dummy1_abdomenbrr"],
+		
+		["dummy1_pelvistrr", "dummy1_abdomenbfl"],
+		["dummy1_pelvistrl", "dummy1_abdomenbfr"],
+		["dummy1_pelvistfr", "dummy1_abdomenbrl"],
+		["dummy1_pelvistfl", "dummy1_abdomenbrr"],
+
+
+		//head to thorax
+		{"breakGroup":"dummy1_headthorax"},
+		{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*50"},
+		{"deformLimitExpansion":1.1}, 
+		["dummy1_thoraxhead", "dummy1_neckb"],
+		
+		{"beamSpring": "$=$adummy1weight*70000","beamDamp":"$=$adummy1weight*60"},
+		["dummy1_thoraxtfl", "dummy1_neckb"],
+		["dummy1_thoraxtfr", "dummy1_neckb"],
+		["dummy1_thoraxtrl", "dummy1_neckb"],
+		["dummy1_thoraxtrr", "dummy1_neckb"],
+
+		["dummy1_thoraxmfl", "dummy1_neckb"],
+		["dummy1_thoraxmfr", "dummy1_neckb"],
+		["dummy1_thoraxmrl", "dummy1_neckb"],
+		["dummy1_thoraxmrr", "dummy1_neckb"],
+
+		{"beamSpring": "$=$adummy1weight*10000","beamDamp":"$=$adummy1weight*100"},
+		["dummy1_thoraxtfl", "dummy1_headbfl"],
+		["dummy1_thoraxtfr", "dummy1_headbfr"],
+		["dummy1_thoraxtrl", "dummy1_headmrl"],
+		["dummy1_thoraxtrr", "dummy1_headmrr"],
+
+
+		//left thigh to pelvis
+		{"breakGroup":"dummy1_L_thighpelvis"},
+		{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*50"},
+		{"deformLimitExpansion":1.01}, 
+
+		["dummy1_pelvismfl","dummy1_L_thighpelvis"],
+		["dummy1_pelvismfr","dummy1_L_thighpelvis"],
+		["dummy1_pelvismrl","dummy1_L_thighpelvis"],
+		["dummy1_pelvismrr","dummy1_L_thighpelvis"],
+		["dummy1_pelvisbf", "dummy1_L_thighpelvis"],
+		["dummy1_pelvisbr", "dummy1_L_thighpelvis"],
+
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50"},
+		["dummy1_pelvismfl", "dummy1_L_thightfr"],
+		["dummy1_pelvistfl", "dummy1_L_thightfl"],
+
+
+		//right thigh to pelvis
+		{"breakGroup":"dummy1_R_thighpelvis"},
+		{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*50"},
+		{"deformLimitExpansion":1.01}, 
+
+		["dummy1_pelvismfl","dummy1_R_thighpelvis"],
+		["dummy1_pelvismfr","dummy1_R_thighpelvis"],
+		["dummy1_pelvismrl","dummy1_R_thighpelvis"],
+		["dummy1_pelvismrr","dummy1_R_thighpelvis"],
+		["dummy1_pelvisbf", "dummy1_R_thighpelvis"],
+		["dummy1_pelvisbr", "dummy1_R_thighpelvis"],
+		
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50"},
+		["dummy1_pelvismfr", "dummy1_R_thightfl"],
+		["dummy1_pelvistfr", "dummy1_R_thightfr"],
+		
+		
+		//left thigh to legshin
+		{"breakGroup":"dummy1_L_thighlegshin"},
+		
+		{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*10"},
+		{"deformLimitExpansion":1.005}, 		
+		["dummy1_L_legshintipr","dummy1_L_thighbrr"],
+		["dummy1_L_legshintipl","dummy1_L_thighbrl"],
+		["dummy1_L_legshintipl","dummy1_L_thighbrr"],
+		["dummy1_L_legshintipr","dummy1_L_thighbrl"],
+
+		["dummy1_L_legshintipr","dummy1_L_thighmrr"],
+		["dummy1_L_legshintipl","dummy1_L_thighmrl"],
+		["dummy1_L_legshintipl","dummy1_L_thighmrr"],
+		["dummy1_L_legshintipr","dummy1_L_thighmrl"],
+		
+		{"beamSpring": "$=$adummy1weight*1000","beamDamp":"$=$adummy1weight*10"},
+		{"deformLimitExpansion":1.1}, 
+		["dummy1_L_legshinmrr", "dummy1_L_thighmrr"],
+		["dummy1_L_legshinmfr", "dummy1_L_thighmfr"],
+		["dummy1_L_legshinmrl", "dummy1_L_thighmrl"],
+		["dummy1_L_legshinmfl", "dummy1_L_thighmfl"],
+		
+		
+		//right thigh to legshin
+		{"breakGroup":"dummy1_R_thighlegshin"},
+		
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*10"},
+		{"deformLimitExpansion":1.005},
+		["dummy1_R_legshintipr", "dummy1_R_thighbrr"],
+		["dummy1_R_legshintipl", "dummy1_R_thighbrl"],
+		["dummy1_R_legshintipl", "dummy1_R_thighbrr"],
+		["dummy1_R_legshintipr", "dummy1_R_thighbrl"],
+
+		["dummy1_R_legshintipr", "dummy1_R_thighmrr"],
+		["dummy1_R_legshintipl", "dummy1_R_thighmrl"],
+		["dummy1_R_legshintipl", "dummy1_R_thighmrr"],
+		["dummy1_R_legshintipr", "dummy1_R_thighmrl"],
+		
+		{"beamSpring": "$=$adummy1weight*5000","beamDamp":"$=$adummy1weight*10"},
+		{"deformLimitExpansion":1.1}, 
+		["dummy1_R_legshinmrr", "dummy1_R_thighmrr"],
+		["dummy1_R_legshinmfr", "dummy1_R_thighmfr"],
+		["dummy1_R_legshinmrl", "dummy1_R_thighmrl"],
+		["dummy1_R_legshinmfl", "dummy1_R_thighmfl"],
+		
+		
+		//left foot to leg
+		{"breakGroup":"dummy1_L_footleg"},
+		
+		{"beamSpring": "$=$adummy1weight*25000","beamDamp":"$=$adummy1weight*25"},
+		{"deformLimitExpansion":1.01}, 
+		["dummy1_L_legshinfoot","dummy1_L_foottfr"],
+		["dummy1_L_legshinfoot","dummy1_L_foottfl"],
+		["dummy1_L_legshinfoot","dummy1_L_foottrl"],
+		["dummy1_L_legshinfoot","dummy1_L_foottrr"],
+		
+		["dummy1_L_legshinfoot","dummy1_L_footbfr"],
+		["dummy1_L_legshinfoot","dummy1_L_footbfl"],
+		["dummy1_L_legshinfoot","dummy1_L_footbml"],
+		["dummy1_L_legshinfoot","dummy1_L_footbmr"],
+		
+		{"beamSpring": "$=$adummy1weight*25000","beamDamp":"$=$adummy1weight*25"},
+		{"deformLimitExpansion":1.1}, 
+		["dummy1_L_legshinbfr", "dummy1_L_foottfr"],
+		["dummy1_L_legshinbfl", "dummy1_L_foottfl"],
+		["dummy1_L_legshinbrl", "dummy1_L_foottrl"],
+		["dummy1_L_legshinbrr", "dummy1_L_foottrr"],
+		
+		
+		//right foot to leg
+		{"breakGroup":"dummy1_R_footleg"},
+		
+		{"beamSpring": "$=$adummy1weight*25000","beamDamp":"$=$adummy1weight*25"},
+		{"deformLimitExpansion":1.01}, 
+		["dummy1_R_legshinfoot","dummy1_R_foottfr"],
+		["dummy1_R_legshinfoot","dummy1_R_foottfl"],
+		["dummy1_R_legshinfoot","dummy1_R_foottrl"],
+		["dummy1_R_legshinfoot","dummy1_R_foottrr"],
+		
+		["dummy1_R_legshinfoot","dummy1_R_footbfr"],
+		["dummy1_R_legshinfoot","dummy1_R_footbfl"],
+		["dummy1_R_legshinfoot","dummy1_R_footbml"],
+		["dummy1_R_legshinfoot","dummy1_R_footbmr"],
+		
+		{"beamSpring": "$=$adummy1weight*25000","beamDamp":"$=$adummy1weight*25"},
+		{"deformLimitExpansion":1.1},
+		["dummy1_R_legshinbfr", "dummy1_R_foottfr"],
+		["dummy1_R_legshinbfl", "dummy1_R_foottfl"],
+		["dummy1_R_legshinbrl", "dummy1_R_foottrl"],
+		["dummy1_R_legshinbrr", "dummy1_R_foottrr"],
+		
+
+		//left arm to thorax
+		{"breakGroup":"dummy1_L_armthorax"},		
+		{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*50"},
+		{"deformLimitExpansion":1.1}, 
+		["dummy1_L_upperarmthorax","dummy1_thoraxarml"],
+
+		["dummy1_L_upperarmthorax", "dummy1_thoraxtfl"],
+		["dummy1_L_upperarmthorax", "dummy1_thoraxtrl"],
+		["dummy1_L_upperarmthorax", "dummy1_thoraxmfl"],
+		["dummy1_L_upperarmthorax", "dummy1_thoraxmrl"],
+
+		["dummy1_L_upperarmtfl","dummy1_thoraxarml"],
+		["dummy1_L_upperarmtfr","dummy1_thoraxarml"],
+		["dummy1_L_upperarmtrl","dummy1_thoraxarml"],
+		["dummy1_L_upperarmtrr","dummy1_thoraxarml"],
+
+
+		//left arm to forearm
+		{"breakGroup":"dummy1_L_armforearm"},
+		
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*10"},
+		{"deformLimitExpansion":1.001}, 		
+		["dummy1_L_forearmtipr","dummy1_L_upperarmbfr"],
+		["dummy1_L_forearmtipl","dummy1_L_upperarmbfl"],
+		["dummy1_L_forearmtipl","dummy1_L_upperarmbfr"],
+		["dummy1_L_forearmtipr","dummy1_L_upperarmbfl"],
+
+		["dummy1_L_forearmtipr","dummy1_L_upperarmmrr"],
+		["dummy1_L_forearmtipl","dummy1_L_upperarmmrl"],
+		["dummy1_L_forearmtipl","dummy1_L_upperarmmrr"],
+		["dummy1_L_forearmtipr","dummy1_L_upperarmmrl"],
+		
+		{"beamSpring": "$=$adummy1weight*1000","beamDamp":"$=$adummy1weight*10"},
+		{"deformLimitExpansion":1.05}, 
+		["dummy1_L_forearmmrr", "dummy1_L_upperarmmrr"],
+		["dummy1_L_forearmmfr", "dummy1_L_upperarmmfr"],
+		["dummy1_L_forearmmrl", "dummy1_L_upperarmmrl"],
+		["dummy1_L_forearmmfl", "dummy1_L_upperarmmfl"],
+		
+		
+		//left hand to arm
+		{"breakGroup":"dummy1_L_handarm"},
+		{"beamSpring": "$=$adummy1weight*5000","beamDamp":"$=$adummy1weight*5"},
+		{"deformLimitExpansion":1.001}, 	
+		
+		["dummy1_L_forearmhand", "dummy1_L_handtrr"],
+		["dummy1_L_forearmhand", "dummy1_L_handtrl"],
+		["dummy1_L_forearmhand", "dummy1_L_handtfr"],
+		["dummy1_L_forearmhand", "dummy1_L_handtfl"],
+		
+		["dummy1_L_forearmhand", "dummy1_L_handbrr"],
+		["dummy1_L_forearmhand", "dummy1_L_handbrl"],
+		["dummy1_L_forearmhand", "dummy1_L_handbfr"],
+		["dummy1_L_forearmhand", "dummy1_L_handbfl"],
+		
+		{"beamSpring": "$=$adummy1weight*1000","beamDamp":"$=$adummy1weight*5"},
+		{"deformLimitExpansion":1.05}, 		
+		["dummy1_L_forearmbrr", "dummy1_L_handtrr"],
+		["dummy1_L_forearmbrl", "dummy1_L_handtrl"],
+		["dummy1_L_forearmbfr", "dummy1_L_handtfr"],
+		["dummy1_L_forearmbfl", "dummy1_L_handtfl"],
+		
+		
+		//right arm to thorax
+		{"breakGroup":"dummy1_R_armthorax"},		
+		{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*50"},
+		{"deformLimitExpansion":1.1},
+		["dummy1_R_upperarmthorax","dummy1_thoraxarmr"],
+
+		["dummy1_R_upperarmthorax", "dummy1_thoraxtfr"],
+		["dummy1_R_upperarmthorax", "dummy1_thoraxtrr"],
+		["dummy1_R_upperarmthorax", "dummy1_thoraxmfr"],
+		["dummy1_R_upperarmthorax", "dummy1_thoraxmrr"],
+
+		["dummy1_R_upperarmtfl","dummy1_thoraxarmr"],
+		["dummy1_R_upperarmtfr","dummy1_thoraxarmr"],
+		["dummy1_R_upperarmtrl","dummy1_thoraxarmr"],
+		["dummy1_R_upperarmtrr","dummy1_thoraxarmr"],
+
+
+		//right arm to forearm
+		{"breakGroup":"dummy1_R_armforearm"},
+		
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*10"},
+		{"deformLimitExpansion":1.001}, 		
+		["dummy1_R_forearmtipr","dummy1_R_upperarmbfr"],
+		["dummy1_R_forearmtipl","dummy1_R_upperarmbfl"],
+		["dummy1_R_forearmtipl","dummy1_R_upperarmbfr"],
+		["dummy1_R_forearmtipr","dummy1_R_upperarmbfl"],
+
+		["dummy1_R_forearmtipr","dummy1_R_upperarmmrr"],
+		["dummy1_R_forearmtipl","dummy1_R_upperarmmrl"],
+		["dummy1_R_forearmtipl","dummy1_R_upperarmmrr"],
+		["dummy1_R_forearmtipr","dummy1_R_upperarmmrl"],
+		
+		{"beamSpring": "$=$adummy1weight*1000","beamDamp":"$=$adummy1weight*10"},
+		{"deformLimitExpansion":1.05}, 
+		["dummy1_R_forearmmrr", "dummy1_R_upperarmmrr"],
+		["dummy1_R_forearmmfr", "dummy1_R_upperarmmfr"],
+		["dummy1_R_forearmmrl", "dummy1_R_upperarmmrl"],
+		["dummy1_R_forearmmfl", "dummy1_R_upperarmmfl"],
+		
+		
+		//right hand to arm
+		{"breakGroup":"dummy1_R_handarm"},
+		{"beamSpring": "$=$adummy1weight*5000","beamDamp":"$=$adummy1weight*5"},
+		{"deformLimitExpansion":1.001}, 	
+		
+		["dummy1_R_forearmhand", "dummy1_R_handtrr"],
+		["dummy1_R_forearmhand", "dummy1_R_handtrl"],
+		["dummy1_R_forearmhand", "dummy1_R_handtfr"],
+		["dummy1_R_forearmhand", "dummy1_R_handtfl"],
+		
+		["dummy1_R_forearmhand", "dummy1_R_handbrr"],
+		["dummy1_R_forearmhand", "dummy1_R_handbrl"],
+		["dummy1_R_forearmhand", "dummy1_R_handbfr"],
+		["dummy1_R_forearmhand", "dummy1_R_handbfl"],
+		
+		{"beamSpring": "$=$adummy1weight*1000","beamDamp":"$=$adummy1weight*5"},
+		{"deformLimitExpansion":1.05}, 		
+		["dummy1_R_forearmbrr", "dummy1_R_handtrr"],
+		["dummy1_R_forearmbrl", "dummy1_R_handtrl"],
+		["dummy1_R_forearmbfr", "dummy1_R_handtfr"],
+		["dummy1_R_forearmbfl", "dummy1_R_handtfl"],
+
+
+		//--LIMITERS--
+		{"beamPrecompression":1, "beamType":"|SUPPORT", "beamLongBound":10},
+		{"beamDeform": "FLT_MAX", "beamStrength":"FLT_MAX"},
+
+		//knees anti invert
+		{"beamPrecompression":1.00},
+		{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*10"},
+		
+		["dummy1_L_legshinbfl", "dummy1_L_thighbfl"],
+		["dummy1_L_legshinbfl", "dummy1_L_thighbfr"],
+		["dummy1_L_legshinbfr", "dummy1_L_thighbfl"],
+		["dummy1_L_legshinbfr", "dummy1_L_thighbfr"],
+
+		["dummy1_R_legshinbfl", "dummy1_R_thighbfl"],
+		["dummy1_R_legshinbfl", "dummy1_R_thighbfr"],
+		["dummy1_R_legshinbfr", "dummy1_R_thighbfl"],
+		["dummy1_R_legshinbfr", "dummy1_R_thighbfr"],
+
+		["dummy1_L_legshinbfl", "dummy1_L_thighmfl"],
+		["dummy1_L_legshinbfl", "dummy1_L_thighmfr"],
+		["dummy1_L_legshinbfr", "dummy1_L_thighmfl"],
+		["dummy1_L_legshinbfr", "dummy1_L_thighmfr"],
+
+		["dummy1_R_legshinbfl", "dummy1_R_thighmfl"],
+		["dummy1_R_legshinbfl", "dummy1_R_thighmfr"],
+		["dummy1_R_legshinbfr", "dummy1_R_thighmfl"],
+		["dummy1_R_legshinbfr", "dummy1_R_thighmfr"],
+
+
+		//hands collide with thighs
+		{"beamPrecompression":0.90},
+		{"beamSpring": "$=$adummy1weight*5000","beamDamp":"$=$adummy1weight*5"},
+		
+		["dummy1_L_handbfl", "dummy1_L_thighmfl"],
+		["dummy1_L_handbfl", "dummy1_L_thighmrl"],
+		["dummy1_L_handbfl", "dummy1_L_thightfl"],
+		["dummy1_L_handbfl", "dummy1_L_thightrl"],
+
+		["dummy1_L_handbrl", "dummy1_L_thighmfl"],
+		["dummy1_L_handbrl", "dummy1_L_thighmrl"],
+		["dummy1_L_handbrl", "dummy1_L_thightfl"],
+		["dummy1_L_handbrl", "dummy1_L_thightrl"],
+
+		["dummy1_R_handbfr", "dummy1_R_thighmfr"],
+		["dummy1_R_handbfr", "dummy1_R_thighmrr"],
+		["dummy1_R_handbfr", "dummy1_R_thightfr"],
+		["dummy1_R_handbfr", "dummy1_R_thightrr"],
+
+		["dummy1_R_handbrr", "dummy1_R_thighmfr"],
+		["dummy1_R_handbrr", "dummy1_R_thighmrr"],
+		["dummy1_R_handbrr", "dummy1_R_thightfr"],
+		["dummy1_R_handbrr", "dummy1_R_thightrr"],
+
+		{"breakGroup":""},
+    ],
+    
+},
+
+}

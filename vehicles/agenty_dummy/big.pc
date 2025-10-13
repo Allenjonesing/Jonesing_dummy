@@ -1,0 +1,12 @@
+{
+  "format":2,
+  "mainPartName":"AgentY_Dummy",
+  "model":"agenty_dummy",
+  "parts":{},
+  "vars":{
+    "$adummy1weight":1.3,
+    "$aDummystrength":50000,
+    "$adummy1scale":1.1,
+    "$adummy1stabilizers":1000
+  }
+}

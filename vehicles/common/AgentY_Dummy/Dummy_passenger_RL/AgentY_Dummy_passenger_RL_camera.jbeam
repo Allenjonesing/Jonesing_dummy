@@ -1,0 +1,35 @@
+{
+"AgentY_Dummy3_camera": {
+    "information":{
+        "name":"Realistic (Shaky) Camera",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy3_camera",
+    "camerasInternal":[
+        ["type", "x", "y", "z", "fov", "id1:", "id2:", "id3:", "id4:", "id5:", "id6:"],
+        {"nodeWeight":0.34141},
+        {"selfCollision":false},
+        {"collision":false},
+        {"beamSpring":50000,"beamDamp":50},
+        {"beamDeform":100000,"beamStrength":"FLT_MAX"},
+        ["passenger_RL_view", 0, "$=$aDummy3scale*-0.1", "$=$aDummy3scale*1.63", 60, "Dummy3_headmfl","Dummy3_headmfr","Dummy3_headmrl","Dummy3_headmrr","Dummy3_neckb","Dummy3_headtip",{"idBack:":"Dummy3_headmrl", "idUp:":"Dummy3_headtfl", "idRef:":"Dummy3_headmfl"}],
+    ],
+},
+"AgentY_Dummy3_camera3": {
+    "information":{
+        "name":"Arcade Camera",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy3_camera",
+    "camerasInternal":[
+        ["type", "x", "y", "z", "fov", "id1:", "id2:", "id3:", "id4:", "id5:", "id6:"],
+        {"nodeWeight":0.34141},
+        {"selfCollision":false},
+        {"collision":false},
+        {"beamSpring":50000,"beamDamp":50},
+        {"beamDeform":100000,"beamStrength":"FLT_MAX"},
+        ["passenger_RL_view", 0, "$=$aDummy3scale*-0.1", "$=$aDummy3scale*1.63", 60, "Dummy3_headmfl","Dummy3_headmfr","Dummy3_headmrl","Dummy3_headmrr","Dummy3_neckb","Dummy3_headtip"],
+    ],
+},
+
+}

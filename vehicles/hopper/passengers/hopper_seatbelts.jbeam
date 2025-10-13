@@ -1,0 +1,108 @@
+{
+"agenty_dummy_mod_seatbelts_hopper": {
+    "information":{
+        "authors":"AgentY",
+        "name":"2-Point Seatbelts for Ibishu Hopper",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts",
+    
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+
+	//Bottom only attached to seat
+
+	{"beamSpring": 100000,"beamDamp":10},
+     	{"beamDeform": 10000, "beamStrength":10000}, 
+	{"optional":true},
+	
+	//--DRIVER--
+	{"breakGroup":"driver_seatbelt"},
+	
+	//pelvis to sf2r and sf2rr
+
+	["sf2r", "Dummy1_pelvistfl"],
+	["sf2r", "Dummy1_pelvistfr"],
+	["sf2r", "Dummy1_pelvistrl"],
+	["sf2r", "Dummy1_pelvistrr"],
+
+	["sf2rr","Dummy1_pelvistfl"],
+	["sf2rr","Dummy1_pelvistfr"],
+	["sf2rr","Dummy1_pelvistrl"],
+	["sf2rr","Dummy1_pelvistrr"],
+
+
+	//--FRONT PASSENGER--
+	{"breakGroup":"Fpass_seatbelt"},
+
+	//pelvis to sf2r and sf2rr
+
+	["sf2l", "Dummy2_pelvistfl"],
+	["sf2l", "Dummy2_pelvistfr"],
+	["sf2l", "Dummy2_pelvistrl"],
+	["sf2l", "Dummy2_pelvistrr"],
+
+	["sf2ll","Dummy2_pelvistfl"],
+	["sf2ll","Dummy2_pelvistfr"],
+	["sf2ll","Dummy2_pelvistrl"],
+	["sf2ll","Dummy2_pelvistrr"],
+
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+"agenty_dummy_mod_seatbelts_R_hopper": {
+    "information":{
+        "authors":"AgentY",
+        "name":"2-Point Seatbelts for Ibishu Hopper",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts_R",
+    
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+	{"beamSpring": 100000,"beamDamp":10},
+     	{"beamDeform": 10000, "beamStrength":10000}, 
+	{"optional":true},
+	
+	//--L--
+	{"breakGroup":"RLpass_seatbelt"},
+	
+	//pelvis to seat
+
+	["sr2r", "Dummy3_pelvistfl"],
+	["sr2r", "Dummy3_pelvistfr"],
+	["sr2r", "Dummy3_pelvistrl"],
+	["sr2r", "Dummy3_pelvistrr"],
+
+	["sr2l","Dummy3_pelvistfl"],
+	["sr2l","Dummy3_pelvistfr"],
+	["sr2l","Dummy3_pelvistrl"],
+	["sr2l","Dummy3_pelvistrr"],
+
+
+	//--R--
+	{"breakGroup":"RRpass_seatbelt"},
+	
+	//pelvis to seat
+
+	["sr2r", "Dummy4_pelvistfl"],
+	["sr2r", "Dummy4_pelvistfr"],
+	["sr2r", "Dummy4_pelvistrl"],
+	["sr2r", "Dummy4_pelvistrr"],
+
+	["sr2l","Dummy4_pelvistfl"],
+	["sr2l","Dummy4_pelvistfr"],
+	["sr2l","Dummy4_pelvistrl"],
+	["sr2l","Dummy4_pelvistrr"],
+
+	
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+}

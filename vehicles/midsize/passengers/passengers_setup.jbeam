@@ -1,0 +1,25 @@
+{ //This file can be used to create your own automatic setup for a mod car.
+"agenty_dummy_mod_passengers_setup":{ //DO NOT CHANGE THE NAME
+    "information":{
+        "authors":"AgentY",
+        "name":"Ibishu Pessima Setup", //You can put the name of the car here
+    }
+    "slotType" : "agenty_dummy_mod_passengers_setup", //DON'T CHANGE THIS
+
+    "variables": [ //Change the FIRST number ("default") in each variable into an appropriate offset in m
+
+	["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+
+	["$cbpdriverOffsetX_setup", "range", "m", "Driver and Passengers",  0.37, -5, 5,  "Driver position X", "Move the driver left or right",{"stepDis":0.001,"subCategory":"AUTOMATIC OFFSET SETUP - USE THIS FOR VANILLA CARS"}],
+	["$cbpdriverOffsetY_setup", "range", "m", "Driver and Passengers",  0.10, -5, 5,  "Driver position Y", "Move the driver front or back",{"stepDis":0.001,"subCategory":"AUTOMATIC OFFSET SETUP - USE THIS FOR VANILLA CARS"}],
+	["$cbpdriverOffsetZ_setup", "range", "m", "Driver and Passengers", -0.27, -5, 5,  "Driver position Z", "Move the driver up or down",   {"stepDis":0.001,"subCategory":"AUTOMATIC OFFSET SETUP - USE THIS FOR VANILLA CARS"}],
+
+	["$cbpRLpassOffsetX_setup", "range", "m", "Driver and Passengers",  0.37, -5, 5,  "RL passenger position X", "Move the RL passenger left or right",{"stepDis":0.001,"subCategory":"AUTOMATIC OFFSET SETUP - USE THIS FOR VANILLA CARS"}],
+	["$cbpRLpassOffsetY_setup", "range", "m", "Driver and Passengers",  1.00, -5, 5,  "RL passenger position Y", "Move the RL passenger front or back",{"stepDis":0.001,"subCategory":"AUTOMATIC OFFSET SETUP - USE THIS FOR VANILLA CARS"}],
+	["$cbpRLpassOffsetZ_setup", "range", "m", "Driver and Passengers", -0.23, -5, 5,  "RL passenger position Z", "Move the RL passenger up or down",   {"stepDis":0.001,"subCategory":"AUTOMATIC OFFSET SETUP - USE THIS FOR VANILLA CARS"}],
+
+    ],
+
+},
+
+}

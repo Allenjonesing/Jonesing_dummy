@@ -1,0 +1,166 @@
+{
+"agenty_dummy_mod_seatbelts_midsize": {
+    "information":{
+        "authors":"AgentY",
+        "name":"3-Point Seatbelts for Ibishu Pessima",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts",
+    
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+
+	//Dual attached to the B pillar with the end in the seat
+
+	{"beamSpring": 100000,"beamDamp":10},
+     	{"beamDeform": 10000, "beamStrength":10000}, 
+	{"optional":true},
+	
+	//--DRIVER--
+	{"breakGroup":"driver_seatbelt"},
+	
+	//pelvis to sf2l and p3l
+
+	["sf2l", "Dummy1_pelvistfl"],
+	["sf2l", "Dummy1_pelvistfr"],
+	["sf2l", "Dummy1_pelvistrl"],
+	["sf2l", "Dummy1_pelvistrr"],
+
+	["p3l","Dummy1_pelvistfl"],
+	["p3l","Dummy1_pelvistfr"],
+	["p3l","Dummy1_pelvistrl"],
+	["p3l","Dummy1_pelvistrr"],
+
+
+	//thorax cross to p5l and sf2l
+
+	["sf2l", "Dummy1_thoraxtfl"],
+	["sf2l", "Dummy1_thoraxmfl"],
+	["sf2l", "Dummy1_thoraxmfr"],
+	["sf2l", "Dummy1_thoraxbfr"],
+	["sf2l", "Dummy1_thoraxbrr"],
+	
+	["p5l", "Dummy1_thoraxtrl"],
+	["p5l", "Dummy1_thoraxtfl"],
+	["p5l", "Dummy1_thoraxmfl"],
+	["p5l", "Dummy1_thoraxmfr"],
+	["p5l", "Dummy1_thoraxbfr"],
+
+
+	//--FRONT PASSENGER--
+	{"breakGroup":"Fpass_seatbelt"},
+	
+	//pelvis to sf2r and p3r
+
+	["sf2r", "Dummy2_pelvistfr"],
+	["sf2r", "Dummy2_pelvistfl"],
+	["sf2r", "Dummy2_pelvistrr"],
+	["sf2r", "Dummy2_pelvistrl"],
+
+	["p3r","Dummy2_pelvistfr"],
+	["p3r","Dummy2_pelvistfl"],
+	["p3r","Dummy2_pelvistrr"],
+	["p3r","Dummy2_pelvistrl"],
+
+
+	//thorax cross to p5r and sf2r
+
+	["sf2r", "Dummy2_thoraxtfr"],
+	["sf2r", "Dummy2_thoraxmfr"],
+	["sf2r", "Dummy2_thoraxmfl"],
+	["sf2r", "Dummy2_thoraxbfl"],
+	["sf2r", "Dummy2_thoraxbrl"],
+	
+	["p5r", "Dummy2_thoraxtrr"],
+	["p5r", "Dummy2_thoraxtfr"],
+	["p5r", "Dummy2_thoraxmfr"],
+	["p5r", "Dummy2_thoraxmfl"],
+	["p5r", "Dummy2_thoraxbfl"],
+
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+"agenty_dummy_mod_seatbelts_R_midsize": {
+    "information":{
+        "authors":"AgentY",
+        "name":"3-Point Seatbelts for Ibishu Pessima",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts_R",
+    
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+	{"beamSpring": 100000,"beamDamp":10},
+     	{"beamDeform": 10000, "beamStrength":10000}, 
+	{"optional":true},
+	
+	//--L--
+	{"breakGroup":"RLpass_seatbelt"},
+	
+	//pelvis to seat
+
+	["intcollision_Rseatmr", "Dummy3_pelvistfl"],
+	["intcollision_Rseatmr", "Dummy3_pelvistfr"],
+	["intcollision_Rseatmr", "Dummy3_pelvistrl"],
+	["intcollision_Rseatmr", "Dummy3_pelvistrr"],
+
+	["intcollision_Rseatml","Dummy3_pelvistfl"],
+	["intcollision_Rseatml","Dummy3_pelvistfr"],
+	["intcollision_Rseatml","Dummy3_pelvistrl"],
+	["intcollision_Rseatml","Dummy3_pelvistrr"],
+
+	//thorax cross to seat and C pillar
+
+	["intcollision_Rseatmr", "Dummy3_thoraxtfr"],
+	["intcollision_Rseatmr", "Dummy3_thoraxmfr"],
+	["intcollision_Rseatmr", "Dummy3_thoraxmfl"],
+	["intcollision_Rseatmr", "Dummy3_thoraxbfl"],
+	["intcollision_Rseatmr", "Dummy3_thoraxbrl"],
+	
+	["p9l", "Dummy3_thoraxtrr"],
+	["p9l", "Dummy3_thoraxtfr"],
+	["p9l", "Dummy3_thoraxmfr"],
+	["p9l", "Dummy3_thoraxmfl"],
+	["p9l", "Dummy3_thoraxbfl"],
+
+
+	//--R--
+	{"breakGroup":"RRpass_seatbelt"},
+	
+	//pelvis to seat
+
+	["intcollision_Rseatmr", "Dummy4_pelvistfl"],
+	["intcollision_Rseatmr", "Dummy4_pelvistfr"],
+	["intcollision_Rseatmr", "Dummy4_pelvistrl"],
+	["intcollision_Rseatmr", "Dummy4_pelvistrr"],
+
+	["intcollision_Rseatml","Dummy4_pelvistfl"],
+	["intcollision_Rseatml","Dummy4_pelvistfr"],
+	["intcollision_Rseatml","Dummy4_pelvistrl"],
+	["intcollision_Rseatml","Dummy4_pelvistrr"],
+
+	//thorax cross to seat and C pillar
+
+	["intcollision_Rseatml", "Dummy4_thoraxtfl"],
+	["intcollision_Rseatml", "Dummy4_thoraxmfl"],
+	["intcollision_Rseatml", "Dummy4_thoraxmfr"],
+	["intcollision_Rseatml", "Dummy4_thoraxbfr"],
+	["intcollision_Rseatml", "Dummy4_thoraxbrr"],
+	
+	["p9r", "Dummy4_thoraxtrl"],
+	["p9r", "Dummy4_thoraxtfl"],
+	["p9r", "Dummy4_thoraxmfl"],
+	["p9r", "Dummy4_thoraxmfr"],
+	["p9r", "Dummy4_thoraxbfr"],
+
+
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+}

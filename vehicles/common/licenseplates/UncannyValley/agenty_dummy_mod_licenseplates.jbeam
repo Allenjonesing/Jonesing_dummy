@@ -1,0 +1,91 @@
+{
+"license_plate_UncannyValley_2_1": {
+    "information":{
+        "authors":"Felipe Maciel",
+        "name":"Uncanny Valley Plate Design",
+    },
+    "slotType" : "licenseplate_design_vanilla_duplicate",
+    "licenseplate_path" : "vehicles/common/licenseplates/UncannyValley/licenseplate-default.json",
+},
+"uncannyvalley_license_plate_vanilla_duplicate_nz_1": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"New Zealand Plate Design",
+    },
+    "slotType" : "licenseplate_design_vanilla_duplicate",
+    "licenseplate_path" : "vehicles/common/licenseplates/automation_test_track/licensePlate-default.json",
+},
+"uncannyvalley_license_plate_vanilla_duplicate_Texas_2_1": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"Texas US Plate Design",
+    },
+    "slotType" : "licenseplate_design_vanilla_duplicate",
+    "licenseplate_path" : "vehicles/common/licenseplates/derby/licenseplate-default.json",
+},
+"uncannyvalley_license_plate_vanilla_duplicate_germany_2_1": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"Germany Plate Design",
+    },
+    "slotType" : "licenseplate_design_vanilla_duplicate",
+    "licenseplate_path" : "vehicles/common/licenseplates/driver_training/licenseplate-default.json",
+},
+"uncannyvalley_license_plate_vanilla_duplicate_eca_2_1": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"Maine US Plate Design",
+    },
+    "slotType" : "licenseplate_design_vanilla_duplicate",
+    "licenseplate_path" : "vehicles/common/licenseplates/east_coast_usa/licenseplate-default.json",
+},
+"uncannyvalley_license_plate_vanilla_duplicate_gridmap_2_1": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"Virtual Reality Plate Design",
+    },
+    "slotType" : "licenseplate_design_vanilla_duplicate",
+    "licenseplate_path" : "vehicles/common/licenseplates/gridmap/licenseplate-default.json",
+},
+"uncannyvalley_license_plate_vanilla_duplicate_italy_2_1": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"Italy Modern Plate Design",
+    },
+    "slotType" : "licenseplate_design_vanilla_duplicate",
+    "licenseplate_path" : "vehicles/common/licenseplates/italy/licenseplate-default.json",
+},
+"uncannyvalley_license_plate_vanilla_duplicate_italy_old_2_1": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"Italy Old Plate Design",
+    },
+    "slotType" : "licenseplate_design_vanilla_duplicate",
+    "licenseplate_path" : "vehicles/common/licenseplates/italy_old/licenseplate-default.json",
+},
+"uncannyvalley_license_plate_vanilla_duplicate_jungle_rock_island_2_1": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"Hawaii US Plate Design",
+    },
+    "slotType" : "licenseplate_design_vanilla_duplicate",
+    "licenseplate_path" : "vehicles/common/licenseplates/jungle_rock_island/licenseplate-default.json",
+},
+"uncannyvalley_license_plate_vanilla_duplicate_Utah_2_1": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"Utah US Plate Design",
+    },
+    "slotType" : "licenseplate_design_vanilla_duplicate",
+    "licenseplate_path" : "vehicles/common/licenseplates/utah/licenseplate-default.json",
+},
+"uncannyvalley_license_plate_vanilla_duplicate_wca_2_1": {
+    "information":{
+        "authors":"BeamNG",
+        "name":"California Plate Design",
+    },
+    "slotType" : "licenseplate_design_vanilla_duplicate",
+    "licenseplate_path" : "vehicles/common/licenseplates/west_coast_usa/licenseplate-default.json",
+},
+
+}

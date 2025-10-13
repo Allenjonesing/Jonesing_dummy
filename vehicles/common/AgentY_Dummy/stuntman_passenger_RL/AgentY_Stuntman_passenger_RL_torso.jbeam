@@ -1,0 +1,411 @@
+{
+"AgentY_Stuntman3_torso": {
+    "information":{
+        "name":"Body",
+        "authors":"B25Mitch, Felipe Maciel, AgentY",
+    },
+    "slotType":"AgentY_Stuntman3_torso",
+    "slots": [
+	["type", "default", "description"],
+	["AgentY_Stuntman3_head","AgentY_Stuntman3_head", "Head", {"coreSlot":true}],
+	["AgentY_Stuntman3_legs","AgentY_Stuntman3_legs_sit", "Legs", {"coreSlot":true}],
+	["AgentY_Stuntman3_arm_L","AgentY_Stuntman3_arm_L_sit", "Left Arm", {"coreSlot":true}],
+	["AgentY_Stuntman3_arm_R","AgentY_Stuntman3_arm_R_sit", "Right Arm", {"coreSlot":true}],
+	["AgentY_Stuntman3_body_extra","", "Body Accessory"],
+    ], 
+    "flexbodies": [
+	["mesh", "[group]:", "nonFlexMaterials"],
+	["AgentY_Driver_torso_belt",  ["agenty_Dummy3_thorax","agenty_Dummy3_pelvis"], []{"pos":{"x":0,"y":0,"z":0},"rot":{"x":0, "y":0,"z":0},"scale":{"x":"$aDummy3scale", "y":"$aDummy3scale", "z":"$aDummy3scale"}}],
+	["AgentY_Driver_torso_lower", ["agenty_Dummy3_thorax","agenty_Dummy3_pelvis"], []{"pos":{"x":0,"y":0,"z":0},"rot":{"x":0, "y":0,"z":0},"scale":{"x":"$aDummy3scale", "y":"$aDummy3scale", "z":"$aDummy3scale"}}],
+	["AgentY_Driver_torso_neck",  ["agenty_Dummy3_thorax","agenty_Dummy3_pelvis"], []{"pos":{"x":0,"y":0,"z":0},"rot":{"x":0, "y":0,"z":0},"scale":{"x":"$aDummy3scale", "y":"$aDummy3scale", "z":"$aDummy3scale"}}],
+	["AgentY_Driver_torso_upper", ["agenty_Dummy3_thorax","agenty_Dummy3_pelvis"], []{"pos":{"x":0,"y":0,"z":0},"rot":{"x":0, "y":0,"z":0},"scale":{"x":"$aDummy3scale", "y":"$aDummy3scale", "z":"$aDummy3scale"}}],
+     ],
+     "nodes": [
+        	["id", "posX", "posY", "posZ"],
+		{"nodeMaterial":"|NM_CLOTH"},
+        	{"frictionCoef":0.5},
+        	{"collision":true},
+
+
+		//--THORAX--
+        	{"group":"agenty_Dummy3_thorax"},
+		{"nodeWeight":"$=$aDummy3weight*0.8308"},
+        
+		//main shape
+		{"selfCollision":false},
+		["Dummy3_thoraxhead", 0.00, "$=$aDummy3scale*0.02", "$=$aDummy3scale*1.50"],
+		{"selfCollision":true},
+		
+		["Dummy3_thoraxtfl", "$=$aDummy3scale*0.16","$=$aDummy3scale*-0.07", "$=$aDummy3scale*1.45"],
+		["Dummy3_thoraxtfr","$=$aDummy3scale*-0.16","$=$aDummy3scale*-0.07", "$=$aDummy3scale*1.45"],
+		["Dummy3_thoraxtrl", "$=$aDummy3scale*0.16", "$=$aDummy3scale*0.12", "$=$aDummy3scale*1.42"],
+		["Dummy3_thoraxtrr","$=$aDummy3scale*-0.16", "$=$aDummy3scale*0.12", "$=$aDummy3scale*1.42"],
+		
+		["Dummy3_thoraxmfl", "$=$aDummy3scale*0.15","$=$aDummy3scale*-0.12", "$=$aDummy3scale*1.30"],
+		["Dummy3_thoraxmfr","$=$aDummy3scale*-0.15","$=$aDummy3scale*-0.12", "$=$aDummy3scale*1.30"],
+		["Dummy3_thoraxmrl", "$=$aDummy3scale*0.15", "$=$aDummy3scale*0.10", "$=$aDummy3scale*1.27"],
+		["Dummy3_thoraxmrr","$=$aDummy3scale*-0.15", "$=$aDummy3scale*0.10", "$=$aDummy3scale*1.27"],
+		
+		["Dummy3_thoraxbfl", "$=$aDummy3scale*0.13","$=$aDummy3scale*-0.10", "$=$aDummy3scale*1.20",{"selfCollision":false}],
+		["Dummy3_thoraxbfr","$=$aDummy3scale*-0.13","$=$aDummy3scale*-0.10", "$=$aDummy3scale*1.20",{"selfCollision":false}],
+		["Dummy3_thoraxbrl", "$=$aDummy3scale*0.13", "$=$aDummy3scale*0.05", "$=$aDummy3scale*1.17"],
+		["Dummy3_thoraxbrr","$=$aDummy3scale*-0.13", "$=$aDummy3scale*0.05", "$=$aDummy3scale*1.17"],
+		
+		//arms attach
+		{"collision":false},
+        	{"selfCollision":false},
+		["Dummy3_thoraxarml", "$=$aDummy3scale*0.10","$=$aDummy3scale*0.00","$=$aDummy3scale*1.38"],
+		["Dummy3_thoraxarmr","$=$aDummy3scale*-0.10","$=$aDummy3scale*0.00","$=$aDummy3scale*1.38"],
+		
+		{"collision":true},
+        	{"selfCollision":true},
+		
+		//--ABDOMEN--
+        	{"group":"agenty_Dummy3_abdomen"},
+		{"nodeWeight":"$=$aDummy3weight*1.01525"},
+		{"frictionCoef":0.8},
+		{"selfCollision":false},
+		
+		//main shape
+		["Dummy3_abdomentfl", "$=$aDummy3scale*0.07","$=$aDummy3scale*-0.09", "$=$aDummy3scale*1.27"],
+		["Dummy3_abdomentfr","$=$aDummy3scale*-0.07","$=$aDummy3scale*-0.09", "$=$aDummy3scale*1.27"],
+		["Dummy3_abdomentrl", "$=$aDummy3scale*0.07", "$=$aDummy3scale*0.04", "$=$aDummy3scale*1.25"],
+		["Dummy3_abdomentrr","$=$aDummy3scale*-0.07", "$=$aDummy3scale*0.04", "$=$aDummy3scale*1.25"],
+		
+		["Dummy3_abdomenbfl", "$=$aDummy3scale*0.07","$=$aDummy3scale*-0.12", "$=$aDummy3scale*1.00"],
+		["Dummy3_abdomenbfr","$=$aDummy3scale*-0.07","$=$aDummy3scale*-0.12", "$=$aDummy3scale*1.00"],
+		["Dummy3_abdomenbrl", "$=$aDummy3scale*0.07", "$=$aDummy3scale*0.01", "$=$aDummy3scale*1.00"],
+		["Dummy3_abdomenbrr","$=$aDummy3scale*-0.07", "$=$aDummy3scale*0.01", "$=$aDummy3scale*1.00"],
+		
+		//--PELVIS--
+        	{"group":"agenty_Dummy3_pelvis"},
+		{"nodeWeight":"$=$aDummy3weight*0.8494"},
+		{"frictionCoef":0.5},
+		{"selfCollision":true},
+		
+		//main shape
+		["Dummy3_pelvistfl", "$=$aDummy3scale*0.12","$=$aDummy3scale*-0.14", "$=$aDummy3scale*1.05"],
+		["Dummy3_pelvistfr","$=$aDummy3scale*-0.12","$=$aDummy3scale*-0.14", "$=$aDummy3scale*1.05"],
+		["Dummy3_pelvistrl", "$=$aDummy3scale*0.12", "$=$aDummy3scale*0.05", "$=$aDummy3scale*1.00"],
+		["Dummy3_pelvistrr","$=$aDummy3scale*-0.12", "$=$aDummy3scale*0.05", "$=$aDummy3scale*1.00"],
+		
+		["Dummy3_pelvismfl", "$=$aDummy3scale*0.11","$=$aDummy3scale*-0.12", "$=$aDummy3scale*0.95"],
+		["Dummy3_pelvismfr","$=$aDummy3scale*-0.11","$=$aDummy3scale*-0.12", "$=$aDummy3scale*0.95"],
+		["Dummy3_pelvismrl", "$=$aDummy3scale*0.11", "$=$aDummy3scale*0.02", "$=$aDummy3scale*0.90"],
+		["Dummy3_pelvismrr","$=$aDummy3scale*-0.11", "$=$aDummy3scale*0.02", "$=$aDummy3scale*0.90"],
+		
+		["Dummy3_pelvisbf",0,"$=$aDummy3scale*-0.15", "$=$aDummy3scale*0.92"],
+		["Dummy3_pelvisbr",0, "$=$aDummy3scale*0.00", "$=$aDummy3scale*0.86"],
+		
+		{"group":""},
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+     	{"beamDeform": 20000, "beamStrength":"FLT_MAX"},
+	{"deformLimitExpansion":1.1}, 
+        {"breakGroup":""},
+		//--THORAX--
+		{"beamSpring": "$=$aDummy3weight*100000","beamDamp":"$=$aDummy3weight*100"},
+
+		//main shape		
+		["Dummy3_thoraxbfl", "Dummy3_thoraxbfr"],
+		["Dummy3_thoraxbfr", "Dummy3_thoraxbrr"],
+		["Dummy3_thoraxbrr", "Dummy3_thoraxbrl"],
+		["Dummy3_thoraxbrl", "Dummy3_thoraxbfl"],
+		
+		["Dummy3_thoraxbfl", "Dummy3_thoraxmfl"],
+		["Dummy3_thoraxbfr", "Dummy3_thoraxmfr"],
+		["Dummy3_thoraxbrl", "Dummy3_thoraxmrl"],
+		["Dummy3_thoraxbrr", "Dummy3_thoraxmrr"],
+		
+        	["Dummy3_thoraxmfl", "Dummy3_thoraxmfr"],
+		["Dummy3_thoraxmfr", "Dummy3_thoraxmrr"],
+		["Dummy3_thoraxmrr", "Dummy3_thoraxmrl"],
+		["Dummy3_thoraxmrl", "Dummy3_thoraxmfl"],
+
+		["Dummy3_thoraxmfl", "Dummy3_thoraxtfl"],
+		["Dummy3_thoraxmfr", "Dummy3_thoraxtfr"],
+		["Dummy3_thoraxmrl", "Dummy3_thoraxtrl"],
+		["Dummy3_thoraxmrr", "Dummy3_thoraxtrr"],
+
+		["Dummy3_thoraxtfl", "Dummy3_thoraxtfr"],
+		["Dummy3_thoraxtfr", "Dummy3_thoraxtrr"],
+		["Dummy3_thoraxtrr", "Dummy3_thoraxtrl"],
+		["Dummy3_thoraxtrl", "Dummy3_thoraxtfl"],
+
+		//cross
+		["Dummy3_thoraxtfl", "Dummy3_thoraxtrr"],
+		["Dummy3_thoraxtfr", "Dummy3_thoraxtrl"],
+
+		["Dummy3_thoraxmfr", "Dummy3_thoraxtrr"],
+		["Dummy3_thoraxmrr", "Dummy3_thoraxtfr"],
+		["Dummy3_thoraxmfl", "Dummy3_thoraxtrl"],
+		["Dummy3_thoraxmrl", "Dummy3_thoraxtfl"],
+
+		["Dummy3_thoraxmrr", "Dummy3_thoraxtrl"],
+		["Dummy3_thoraxmrl", "Dummy3_thoraxtrr"],
+		["Dummy3_thoraxmfr", "Dummy3_thoraxtfl"],
+		["Dummy3_thoraxmfl", "Dummy3_thoraxtfr"],
+
+		["Dummy3_thoraxmrr", "Dummy3_thoraxtfl"],
+		["Dummy3_thoraxmrl", "Dummy3_thoraxtfr"],
+		["Dummy3_thoraxmfr", "Dummy3_thoraxtrl"],
+		["Dummy3_thoraxmfl", "Dummy3_thoraxtrr"],
+		
+		["Dummy3_thoraxbfl", "Dummy3_thoraxbrr"],
+		["Dummy3_thoraxbfr", "Dummy3_thoraxbrl"],
+		["Dummy3_thoraxmfl", "Dummy3_thoraxmrr"],
+		["Dummy3_thoraxmfr", "Dummy3_thoraxmrl"],
+
+		["Dummy3_thoraxbfr", "Dummy3_thoraxmrr"],
+		["Dummy3_thoraxbrr", "Dummy3_thoraxmfr"],
+		["Dummy3_thoraxbfl", "Dummy3_thoraxmrl"],
+		["Dummy3_thoraxbrl", "Dummy3_thoraxmfl"],
+
+		["Dummy3_thoraxbrr", "Dummy3_thoraxmrl"],
+		["Dummy3_thoraxbrl", "Dummy3_thoraxmrr"],
+		["Dummy3_thoraxbfr", "Dummy3_thoraxmfl"],
+		["Dummy3_thoraxbfl", "Dummy3_thoraxmfr"],
+
+		["Dummy3_thoraxbrr", "Dummy3_thoraxmfl"],
+		["Dummy3_thoraxbrl", "Dummy3_thoraxmfr"],
+		["Dummy3_thoraxbfr", "Dummy3_thoraxmrl"],
+		["Dummy3_thoraxbfl", "Dummy3_thoraxmrr"],
+		
+		["Dummy3_thoraxbrr", "Dummy3_thoraxtfl"],
+		["Dummy3_thoraxbrl", "Dummy3_thoraxtfr"],
+		["Dummy3_thoraxbfr", "Dummy3_thoraxtrl"],
+		["Dummy3_thoraxbfl", "Dummy3_thoraxtrr"],
+
+		//head attach
+		["Dummy3_thoraxtfl", "Dummy3_thoraxhead"],
+		["Dummy3_thoraxtfr", "Dummy3_thoraxhead"],
+		["Dummy3_thoraxtrr", "Dummy3_thoraxhead"],
+		["Dummy3_thoraxtrl", "Dummy3_thoraxhead"],
+		
+		["Dummy3_thoraxmfl", "Dummy3_thoraxhead"],
+		["Dummy3_thoraxmfr", "Dummy3_thoraxhead"],
+		["Dummy3_thoraxmrr", "Dummy3_thoraxhead"],
+		["Dummy3_thoraxmrl", "Dummy3_thoraxhead"],
+		
+		//arms attach
+		["Dummy3_thoraxtfl", "Dummy3_thoraxarml"],
+		["Dummy3_thoraxtrl", "Dummy3_thoraxarml"],
+		["Dummy3_thoraxmfl", "Dummy3_thoraxarml"],
+		["Dummy3_thoraxmrl", "Dummy3_thoraxarml"],
+		
+		["Dummy3_thoraxtfr", "Dummy3_thoraxarmr"],
+		["Dummy3_thoraxtrr", "Dummy3_thoraxarmr"],
+		["Dummy3_thoraxmfr", "Dummy3_thoraxarmr"],
+		["Dummy3_thoraxmrr", "Dummy3_thoraxarmr"],
+		
+		["Dummy3_thoraxarml", "Dummy3_thoraxarmr"],
+		
+		//--ABDOMEN--
+		{"beamSpring": "$=$aDummy3weight*30000","beamDamp":"$=$aDummy3weight*10"},
+		{"deformLimitExpansion":2.0},
+
+		//main shape
+		["Dummy3_abdomenbfl", "Dummy3_abdomenbfr"],
+		["Dummy3_abdomenbfr", "Dummy3_abdomenbrr"],
+		["Dummy3_abdomenbrr", "Dummy3_abdomenbrl"],
+		["Dummy3_abdomenbrl", "Dummy3_abdomenbfl"],
+		
+		["Dummy3_abdomenbfl", "Dummy3_abdomentfl"],
+		["Dummy3_abdomenbfr", "Dummy3_abdomentfr"],
+		["Dummy3_abdomenbrl", "Dummy3_abdomentrl"],
+		["Dummy3_abdomenbrr", "Dummy3_abdomentrr"],
+		
+        	["Dummy3_abdomentfl", "Dummy3_abdomentfr"],
+		["Dummy3_abdomentfr", "Dummy3_abdomentrr"],
+		["Dummy3_abdomentrr", "Dummy3_abdomentrl"],
+		["Dummy3_abdomentrl", "Dummy3_abdomentfl"],
+		
+		//cross
+		["Dummy3_abdomenbfl", "Dummy3_abdomenbrr"],
+		["Dummy3_abdomenbfr", "Dummy3_abdomenbrl"],
+		["Dummy3_abdomentfl", "Dummy3_abdomentrr"],
+		["Dummy3_abdomentfr", "Dummy3_abdomentrl"],
+
+		["Dummy3_abdomenbfr", "Dummy3_abdomentrr"],
+		["Dummy3_abdomenbrr", "Dummy3_abdomentfr"],
+		["Dummy3_abdomenbfl", "Dummy3_abdomentrl"],
+		["Dummy3_abdomenbrl", "Dummy3_abdomentfl"],
+
+		["Dummy3_abdomenbrr", "Dummy3_abdomentrl"],
+		["Dummy3_abdomenbrl", "Dummy3_abdomentrr"],
+		["Dummy3_abdomenbfr", "Dummy3_abdomentfl"],
+		["Dummy3_abdomenbfl", "Dummy3_abdomentfr"],
+
+		["Dummy3_abdomenbrr", "Dummy3_abdomentfl"],
+		["Dummy3_abdomenbrl", "Dummy3_abdomentfr"],
+		["Dummy3_abdomenbfr", "Dummy3_abdomentrl"],
+		["Dummy3_abdomenbfl", "Dummy3_abdomentrr"],
+		
+		
+		//--PELVIS--
+		{"beamSpring": "$=$aDummy3weight*20000","beamDamp":"$=$aDummy3weight*100"},
+		{"deformLimitExpansion":1.1},
+
+		//main shape
+		["Dummy3_pelvismfl", "Dummy3_pelvismfr"],
+		["Dummy3_pelvismfr", "Dummy3_pelvismrr"],
+		["Dummy3_pelvismrr", "Dummy3_pelvismrl"],
+		["Dummy3_pelvismrl", "Dummy3_pelvismfl"],
+		
+		["Dummy3_pelvismfl", "Dummy3_pelvistfl"],
+		["Dummy3_pelvismfr", "Dummy3_pelvistfr"],
+		["Dummy3_pelvismrl", "Dummy3_pelvistrl"],
+		["Dummy3_pelvismrr", "Dummy3_pelvistrr"],
+		
+        	["Dummy3_pelvistfl", "Dummy3_pelvistfr"],
+		["Dummy3_pelvistfr", "Dummy3_pelvistrr"],
+		["Dummy3_pelvistrr", "Dummy3_pelvistrl"],
+		["Dummy3_pelvistrl", "Dummy3_pelvistfl"],
+		
+		["Dummy3_pelvismfl", "Dummy3_pelvisbf"],
+		["Dummy3_pelvismfr", "Dummy3_pelvisbf"],
+		["Dummy3_pelvismrr", "Dummy3_pelvisbr"],
+		["Dummy3_pelvismrl", "Dummy3_pelvisbr"],
+		
+		["Dummy3_pelvisbf", "Dummy3_pelvisbr"],
+		
+		//cross
+		["Dummy3_pelvismfl", "Dummy3_pelvismrr"],
+		["Dummy3_pelvismfr", "Dummy3_pelvismrl"],
+		["Dummy3_pelvistfl", "Dummy3_pelvistrr"],
+		["Dummy3_pelvistfr", "Dummy3_pelvistrl"],
+
+		["Dummy3_pelvismfr", "Dummy3_pelvistrr"],
+		["Dummy3_pelvismrr", "Dummy3_pelvistfr"],
+		["Dummy3_pelvismfl", "Dummy3_pelvistrl"],
+		["Dummy3_pelvismrl", "Dummy3_pelvistfl"],
+
+		["Dummy3_pelvismrr", "Dummy3_pelvistrl"],
+		["Dummy3_pelvismrl", "Dummy3_pelvistrr"],
+		["Dummy3_pelvismfr", "Dummy3_pelvistfl"],
+		["Dummy3_pelvismfl", "Dummy3_pelvistfr"],
+
+		["Dummy3_pelvismrr", "Dummy3_pelvistfl"],
+		["Dummy3_pelvismrl", "Dummy3_pelvistfr"],
+		["Dummy3_pelvismfr", "Dummy3_pelvistrl"],
+		["Dummy3_pelvismfl", "Dummy3_pelvistrr"],
+		
+		["Dummy3_pelvismrl", "Dummy3_pelvisbf"],
+		["Dummy3_pelvismrr", "Dummy3_pelvisbf"],
+		["Dummy3_pelvismfr", "Dummy3_pelvisbr"],
+		["Dummy3_pelvismfl", "Dummy3_pelvisbr"],
+		
+		["Dummy3_pelvistrl", "Dummy3_pelvisbf"],
+		["Dummy3_pelvistrr", "Dummy3_pelvisbf"],
+		["Dummy3_pelvistfr", "Dummy3_pelvisbr"],
+		["Dummy3_pelvistfl", "Dummy3_pelvisbr"],
+		
+		//refnodes attach - remove when adding to vehicle
+	 
+    ],
+    "triangles": [
+        ["id1:","id2:","id3:"],
+        {"groundModel":"cloth"},
+	{"dragCoef":0},
+
+		//thorax
+        {"group":"agenty_Dummy3_thorax"},
+        ["Dummy3_thoraxmfr","Dummy3_thoraxmfl","Dummy3_thoraxtfr"],
+        ["Dummy3_thoraxtfl","Dummy3_thoraxtfr","Dummy3_thoraxmfl"],
+		["Dummy3_thoraxmrl","Dummy3_thoraxmrr","Dummy3_thoraxtrl"],
+        ["Dummy3_thoraxtrr","Dummy3_thoraxtrl","Dummy3_thoraxmrr"],
+
+		["Dummy3_thoraxmfr","Dummy3_thoraxmrl","Dummy3_thoraxmfl"],
+		["Dummy3_thoraxmrr","Dummy3_thoraxmrl","Dummy3_thoraxmfr"],
+		["Dummy3_thoraxtfl","Dummy3_thoraxtrr","Dummy3_thoraxtfr"],
+		["Dummy3_thoraxtrl","Dummy3_thoraxtrr","Dummy3_thoraxtfl"],
+		
+		["Dummy3_thoraxbfr","Dummy3_thoraxbfl","Dummy3_thoraxmfr"],
+        ["Dummy3_thoraxmfl","Dummy3_thoraxmfr","Dummy3_thoraxbfl"],
+		["Dummy3_thoraxbrl","Dummy3_thoraxbrr","Dummy3_thoraxmrl"],
+        ["Dummy3_thoraxmrr","Dummy3_thoraxmrl","Dummy3_thoraxbrr"],
+
+		["Dummy3_thoraxbrr","Dummy3_thoraxbfr","Dummy3_thoraxmrr"],
+		["Dummy3_thoraxbfr","Dummy3_thoraxmfr","Dummy3_thoraxmrr"],
+		["Dummy3_thoraxbfl","Dummy3_thoraxbrl","Dummy3_thoraxmfl"],
+		["Dummy3_thoraxbrl","Dummy3_thoraxmrl","Dummy3_thoraxmfl"],
+
+		//non-collidable tris
+		{"triangleType":"NONCOLLIDABLE"},
+		
+		//abdomen attach		
+		["Dummy3_thoraxbfr","Dummy3_thoraxbrl","Dummy3_thoraxbfl"],
+		["Dummy3_thoraxbrr","Dummy3_thoraxbrl","Dummy3_thoraxbfr"],
+
+		{"triangleType":"NORMALTYPE"},
+
+		//head attach
+		["Dummy3_thoraxtfr","Dummy3_thoraxtfl","Dummy3_thoraxhead"],
+		["Dummy3_thoraxtfl","Dummy3_thoraxtrl","Dummy3_thoraxhead"],
+		["Dummy3_thoraxtrl","Dummy3_thoraxtrr","Dummy3_thoraxhead"],
+		["Dummy3_thoraxtrr","Dummy3_thoraxtfr","Dummy3_thoraxhead"],
+
+		//arms attach
+		["Dummy3_thoraxmrr","Dummy3_thoraxmfr","Dummy3_thoraxtrr"],
+		["Dummy3_thoraxmfr","Dummy3_thoraxtfr","Dummy3_thoraxtrr"],
+		["Dummy3_thoraxmfl","Dummy3_thoraxmrl","Dummy3_thoraxtfl"],
+		["Dummy3_thoraxmrl","Dummy3_thoraxtrl","Dummy3_thoraxtfl"],
+
+		
+		
+		//abdomen
+		{"group":"agenty_Dummy3_abdomen"},
+		["Dummy3_abdomenbfr","Dummy3_abdomenbfl","Dummy3_abdomentfr"],
+        ["Dummy3_abdomentfl","Dummy3_abdomentfr","Dummy3_abdomenbfl"],
+		["Dummy3_abdomenbrl","Dummy3_abdomenbrr","Dummy3_abdomentrl"],
+        ["Dummy3_abdomentrr","Dummy3_abdomentrl","Dummy3_abdomenbrr"],
+
+		["Dummy3_abdomenbrr","Dummy3_abdomenbfr","Dummy3_abdomentrr"],
+		["Dummy3_abdomenbfr","Dummy3_abdomentfr","Dummy3_abdomentrr"],
+		["Dummy3_abdomenbfl","Dummy3_abdomenbrl","Dummy3_abdomentfl"],
+		["Dummy3_abdomenbrl","Dummy3_abdomentrl","Dummy3_abdomentfl"],
+
+		["Dummy3_abdomenbfr","Dummy3_abdomenbrl","Dummy3_abdomenbfl"],
+		["Dummy3_abdomenbrr","Dummy3_abdomenbrl","Dummy3_abdomenbfr"],
+		["Dummy3_abdomentfl","Dummy3_abdomentrr","Dummy3_abdomentfr"],
+		["Dummy3_abdomentrl","Dummy3_abdomentrr","Dummy3_abdomentfl"],
+		
+		//pelvis
+		{"group":"agenty_Dummy3_pelvis"},
+		["Dummy3_pelvismfr","Dummy3_pelvismfl","Dummy3_pelvistfr"],
+        ["Dummy3_pelvistfl","Dummy3_pelvistfr","Dummy3_pelvismfl"],
+		["Dummy3_pelvismrl","Dummy3_pelvismrr","Dummy3_pelvistrl"],
+        ["Dummy3_pelvistrr","Dummy3_pelvistrl","Dummy3_pelvismrr"],
+
+		["Dummy3_pelvismrr","Dummy3_pelvismfr","Dummy3_pelvistrr"],
+		["Dummy3_pelvismfr","Dummy3_pelvistfr","Dummy3_pelvistrr"],
+		["Dummy3_pelvismfl","Dummy3_pelvismrl","Dummy3_pelvistfl"],
+		["Dummy3_pelvismrl","Dummy3_pelvistrl","Dummy3_pelvistfl"],
+
+		["Dummy3_pelvismfl","Dummy3_pelvismrr","Dummy3_pelvismfr"],
+		["Dummy3_pelvismrl","Dummy3_pelvismrr","Dummy3_pelvismfl"],
+		
+		["Dummy3_pelvisbf" ,"Dummy3_pelvismfl","Dummy3_pelvismfr"],
+		["Dummy3_pelvisbr" ,"Dummy3_pelvismrr","Dummy3_pelvismrl"],
+		
+		//non-collidable tris
+		{"triangleType":"NONCOLLIDABLE"},
+		
+		//abdomen attach
+		["Dummy3_pelvistfl","Dummy3_pelvistrr","Dummy3_pelvistfr"],
+		["Dummy3_pelvistrl","Dummy3_pelvistrr","Dummy3_pelvistfl"],
+		
+		//legs attach
+		["Dummy3_pelvisbr" ,"Dummy3_pelvisbf" ,"Dummy3_pelvismrr"],
+		["Dummy3_pelvisbf" ,"Dummy3_pelvismfr","Dummy3_pelvismrr"],
+		["Dummy3_pelvisbf" ,"Dummy3_pelvisbr" ,"Dummy3_pelvismfl"],
+		["Dummy3_pelvisbr" ,"Dummy3_pelvismrl","Dummy3_pelvismfl"],
+
+		{"triangleType":"NORMALTYPE"},
+		{"group":""},
+    ],
+},
+
+}

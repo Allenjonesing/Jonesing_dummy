@@ -1,0 +1,10 @@
+{
+"agenty_dummy_mod_seatbelts_atv": {
+    "information":{
+        "authors":"AgentY",
+        "name":"Did you really think this thing has seatbelts :/",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts",
+},
+
+}

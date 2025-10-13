@@ -1,0 +1,57 @@
+{
+"agenty_dummy_mod_seatbelts_burnside": {
+    "information":{
+        "authors":"AgentY",
+        "name":"2-Point Seatbelts for Burnside Special",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts",
+    
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+
+	//Dual attached to the B pillar with the end in the seat
+
+	{"beamSpring": 100000,"beamDamp":10},
+     	{"beamDeform": 10000, "beamStrength":10000}, 
+	{"optional":true},
+	
+	//--DRIVER--
+	{"breakGroup":"driver_seatbelt"},
+	
+	//pelvis to sf2 and p4l
+
+	["sf2", "Dummy1_pelvistfl"],
+	["sf2", "Dummy1_pelvistfr"],
+	["sf2", "Dummy1_pelvistrl"],
+	["sf2", "Dummy1_pelvistrr"],
+
+	["p4l","Dummy1_pelvistfl"],
+	["p4l","Dummy1_pelvistfr"],
+	["p4l","Dummy1_pelvistrl"],
+	["p4l","Dummy1_pelvistrr"],
+
+	//--FRONT PASSENGER--
+	{"breakGroup":"Fpass_seatbelt"},
+	
+	//pelvis to sf2 and p4r
+
+	["sf2", "Dummy2_pelvistfr"],
+	["sf2", "Dummy2_pelvistfl"],
+	["sf2", "Dummy2_pelvistrr"],
+	["sf2", "Dummy2_pelvistrl"],
+
+	["p4r","Dummy2_pelvistfr"],
+	["p4r","Dummy2_pelvistfl"],
+	["p4r","Dummy2_pelvistrr"],
+	["p4r","Dummy2_pelvistrl"],
+
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+//Back seat passengers work good enough with universal seatbelt
+
+}

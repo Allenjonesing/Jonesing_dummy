@@ -1,0 +1,58 @@
+{
+"agenty_dummy_mod_seatbelts_barstow": {
+    "information":{
+        "authors":"AgentY",
+        "name":"2-Point Seatbelts for Gavril Barstow",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts",
+    
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+
+	//Dual attached to the B pillar with the end in the seat
+
+	{"beamSpring": 100000,"beamDamp":10},
+     	{"beamDeform": 10000, "beamStrength":10000}, 
+	{"optional":true},
+	
+	//--DRIVER--
+	{"breakGroup":"driver_seatbelt"},
+	
+	//pelvis to sf2l and q7l
+
+	["sf2l", "Dummy1_pelvistfl"],
+	["sf2l", "Dummy1_pelvistfr"],
+	["sf2l", "Dummy1_pelvistrl"],
+	["sf2l", "Dummy1_pelvistrr"],
+
+	["q7l","Dummy1_pelvistfl"],
+	["q7l","Dummy1_pelvistfr"],
+	["q7l","Dummy1_pelvistrl"],
+	["q7l","Dummy1_pelvistrr"],
+
+
+	//--FRONT PASSENGER--
+	{"breakGroup":"Fpass_seatbelt"},
+	
+	//pelvis to sf2r and q7r
+
+	["sf2r", "Dummy2_pelvistfr"],
+	["sf2r", "Dummy2_pelvistfl"],
+	["sf2r", "Dummy2_pelvistrr"],
+	["sf2r", "Dummy2_pelvistrl"],
+
+	["q7r","Dummy2_pelvistfr"],
+	["q7r","Dummy2_pelvistfl"],
+	["q7r","Dummy2_pelvistrr"],
+	["q7r","Dummy2_pelvistrl"],
+
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+//Back seat passengers don't really fit so no rear seatbelts
+
+}

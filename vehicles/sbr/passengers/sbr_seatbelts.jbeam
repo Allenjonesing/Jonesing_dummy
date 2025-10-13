@@ -1,0 +1,90 @@
+{
+"agenty_dummy_mod_seatbelts_sbr": {
+    "information":{
+        "authors":"AgentY",
+        "name":"4-Point Seatbelts for Hirochi SBR4",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts",
+    
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+
+	//4 point racing seatbelts attached to the B pillar and the seat
+
+	{"beamSpring": 100000,"beamDamp":10},
+     	{"beamDeform": 10000, "beamStrength":10000}, 
+	{"optional":true},
+	
+	//--DRIVER--
+	{"breakGroup":"driver_seatbelt"},
+	
+	//pelvis cross to sf3l and q7l
+
+	["sf3l", "Dummy1_thoraxtfr"],
+	["sf3l", "Dummy1_thoraxmfr"],
+	["sf3l", "Dummy1_thoraxmfl"],
+	["sf3l", "Dummy1_thoraxbfl"],
+	["sf3l", "Dummy1_thoraxbrl"],
+	
+	["q7l", "Dummy1_thoraxtrr"],
+	["q7l", "Dummy1_thoraxtfr"],
+	["q7l", "Dummy1_thoraxmfr"],
+	["q7l", "Dummy1_thoraxmfl"],
+	["q7l", "Dummy1_thoraxbfl"],
+
+	//thorax cross to q1l and sf2l
+
+	["sf2l", "Dummy1_thoraxtfl"],
+	["sf2l", "Dummy1_thoraxmfl"],
+	["sf2l", "Dummy1_thoraxmfr"],
+	["sf2l", "Dummy1_thoraxbfr"],
+	["sf2l", "Dummy1_thoraxbrr"],
+	
+	["q1l", "Dummy1_thoraxtrl"],
+	["q1l", "Dummy1_thoraxtfl"],
+	["q1l", "Dummy1_thoraxmfl"],
+	["q1l", "Dummy1_thoraxmfr"],
+	["q1l", "Dummy1_thoraxbfr"],
+
+	//--FRONT PASSENGER--
+	{"breakGroup":"Fpass_seatbelt"},
+	
+	//pelvis cross to sf3r and q7r
+
+	["sf3r", "Dummy2_thoraxtfl"],
+	["sf3r", "Dummy2_thoraxmfl"],
+	["sf3r", "Dummy2_thoraxmfr"],
+	["sf3r", "Dummy2_thoraxbfr"],
+	["sf3r", "Dummy2_thoraxbrr"],
+	
+	["q7r", "Dummy2_thoraxtrl"],
+	["q7r", "Dummy2_thoraxtfl"],
+	["q7r", "Dummy2_thoraxmfl"],
+	["q7r", "Dummy2_thoraxmfr"],
+	["q7r", "Dummy2_thoraxbfr"],
+
+	//thorax cross to p3r and sf2r
+
+	["sf2r", "Dummy2_thoraxtfr"],
+	["sf2r", "Dummy2_thoraxmfr"],
+	["sf2r", "Dummy2_thoraxmfl"],
+	["sf2r", "Dummy2_thoraxbfl"],
+	["sf2r", "Dummy2_thoraxbrl"],
+	
+	["q1r", "Dummy2_thoraxtrr"],
+	["q1r", "Dummy2_thoraxtfr"],
+	["q1r", "Dummy2_thoraxmfr"],
+	["q1r", "Dummy2_thoraxmfl"],
+	["q1r", "Dummy2_thoraxbfl"],
+
+
+	//Back seat passengers don't really fit so no seatbelts
+
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+}

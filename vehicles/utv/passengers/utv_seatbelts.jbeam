@@ -1,0 +1,90 @@
+{
+"agenty_dummy_mod_seatbelts_rockbouncer": {
+    "information":{
+        "authors":"AgentY",
+        "name":"4-Point Seatbelts for Hirochi Aurata",
+    },
+    "slotType" : "agenty_dummy_mod_seatbelts",
+
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+
+    //4 point racing seatbelts attached to the B pillar and the seat
+
+    {"beamSpring": 100000,"beamDamp":10},
+        {"beamDeform": 10000, "beamStrength":10000},
+    {"optional":true},
+
+    //--DRIVER--
+    {"breakGroup":"driver_seatbelt"},
+
+    //pelvis cross to f3l and f9ll
+
+    ["f3l", "Dummy1_thoraxtfr"],
+    ["f3l", "Dummy1_thoraxmfr"],
+    ["f3l", "Dummy1_thoraxmfl"],
+    ["f3l", "Dummy1_thoraxbfl"],
+    ["f3l", "Dummy1_thoraxbrl"],
+
+    ["f9ll", "Dummy1_thoraxtrr"],
+    ["f9ll", "Dummy1_thoraxtfr"],
+    ["f9ll", "Dummy1_thoraxmfr"],
+    ["f9ll", "Dummy1_thoraxmfl"],
+    ["f9ll", "Dummy1_thoraxbfl"],
+
+    //thorax cross to p4l and p3l
+
+    ["p4l", "Dummy1_thoraxtfl"],
+    ["p4l", "Dummy1_thoraxmfl"],
+    ["p4l", "Dummy1_thoraxmfr"],
+    ["p4l", "Dummy1_thoraxbfr"],
+    ["p4l", "Dummy1_thoraxbrr"],
+
+    ["p3l", "Dummy1_thoraxtrl"],
+    ["p3l", "Dummy1_thoraxtfl"],
+    ["p3l", "Dummy1_thoraxmfl"],
+    ["p3l", "Dummy1_thoraxmfr"],
+    ["p3l", "Dummy1_thoraxbfr"],
+
+    //--FRONT PASSENGER--
+    {"breakGroup":"Fpass_seatbelt"},
+
+    //pelvis cross to f3r and f9rr
+
+    ["f3r", "Dummy2_thoraxtfl"],
+    ["f3r", "Dummy2_thoraxmfl"],
+    ["f3r", "Dummy2_thoraxmfr"],
+    ["f3r", "Dummy2_thoraxbfr"],
+    ["f3r", "Dummy2_thoraxbrr"],
+
+    ["f9rr", "Dummy2_thoraxtrl"],
+    ["f9rr", "Dummy2_thoraxtfl"],
+    ["f9rr", "Dummy2_thoraxmfl"],
+    ["f9rr", "Dummy2_thoraxmfr"],
+    ["f9rr", "Dummy2_thoraxbfr"],
+
+    //thorax cross to p4r and p3r
+
+    ["p4r", "Dummy2_thoraxtfr"],
+    ["p4r", "Dummy2_thoraxmfr"],
+    ["p4r", "Dummy2_thoraxmfl"],
+    ["p4r", "Dummy2_thoraxbfl"],
+    ["p4r", "Dummy2_thoraxbrl"],
+
+    ["p3r", "Dummy2_thoraxtrr"],
+    ["p3r", "Dummy2_thoraxtfr"],
+    ["p3r", "Dummy2_thoraxmfr"],
+    ["p3r", "Dummy2_thoraxmfl"],
+    ["p3r", "Dummy2_thoraxbfl"],
+
+
+    //2-seater, no back seat passengers support
+
+    {"optional":false},
+    {"breakGroup":""},
+    {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+}

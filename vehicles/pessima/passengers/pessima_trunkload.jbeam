@@ -1,0 +1,38 @@
+{
+"agenty_dummy_mod_trunkload_pessima": {
+    "information":{
+        "authors":"AgentY",
+        "name":"2 Small Boxes",
+    },
+    "slotType" : "agenty_dummy_mod_trunkload",
+    "slots": [
+	["type", "default", "description"],
+	//loads offset
+	["agenty_cardboard_box1_small","agenty_cardboard_box1_small","Box 1", {"nodeMove":{"x": 0.20, "y": 1.90, "z":0.70}}],
+	["agenty_cardboard_box2_small","agenty_cardboard_box2_small","Box 2", {"nodeMove":{"x":-0.20, "y": 1.90, "z":0.70}}],
+    ],
+    "nodes": [
+        ["id", "posX", "posY", "posZ"],
+	//enable default collision
+        {"selfCollision":true},
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+	//custom collision
+	{"beamPrecompression":1, "beamType":"|SUPPORT", "beamLongBound":10},
+	{"beamDeform": "FLT_MAX", "beamStrength":"FLT_MAX"},
+	{"opional":true},
+
+	//small box 1
+	{"beamSpring":"$=$agenty_box1_small_weight == nil and 0 or $agenty_box1_small_weight*5000","beamDamp":"$=$agenty_box1_small_weight == nil and 0 or $agenty_box1_small_weight*10"},
+	
+	//small box 2
+	{"beamSpring":"$=$agenty_box2_small_weight == nil and 0 or $agenty_box2_small_weight*5000","beamDamp":"$=$agenty_box2_small_weight == nil and 0 or $agenty_box2_small_weight*10"},	
+	
+	{"opional":false},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},	
+    ],
+    	
+},
+
+}
