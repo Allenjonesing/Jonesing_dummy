@@ -342,12 +342,12 @@
 // Abdomen tethers (sturdier; still break)
 { "beamType":"|NORMAL","beamLongBound":1.7,"beamShortBound":0.5,
   "beamLimitSpring":28000,"beamLimitDamp":140,"beamSpring":22000,"beamDamp":28,
-  "beamDeform":16000,"beamStrength":3000,"breakGroup":"org_release" },
+  "beamDeform":16000,"beamStrength":1000,"breakGroup":"org_release" },
 ["oi1","dummy1_abdomentfl"],["oi2","dummy1_abdomentfr"],["oi3","dummy1_abdomenbrl"],["oi4","dummy1_abdomenbrr"],
 // Pelvis tethers (weak—snap first)
 { "beamType":"|NORMAL","beamLongBound":1.8,"beamShortBound":0.5,
   "beamLimitSpring":22000,"beamLimitDamp":110,"beamSpring":18000,"beamDamp":22,
-  "beamDeform":8500,"beamStrength":1600,"breakGroup":"org_release" },
+  "beamDeform":8500,"beamStrength":1000,"breakGroup":"org_release" },
 ["oi2","dummy1_pelvisbf"],["oi3","dummy1_pelvisbr"],
 
 
@@ -386,7 +386,7 @@
   "beamLongBound":1.7, "beamShortBound":0.5,
   "beamLimitSpring":28000, "beamLimitDamp":140,
   "beamSpring":22000, "beamDamp":28,
-  "beamDeform":16000, "beamStrength":3000,
+  "beamDeform":16000, "beamStrength":1000,
   "breakGroup":"org_release_rl"     // <-- unique per lung
 },
 ["orl1","dummy1_thoraxmrr"],
@@ -400,7 +400,7 @@
   "beamLongBound":1.7, "beamShortBound":0.5,
   "beamLimitSpring":28000, "beamLimitDamp":140,
   "beamSpring":22000, "beamDamp":28,
-  "beamDeform":16000, "beamStrength":3000,
+  "beamDeform":16000, "beamStrength":1000,
   "breakGroup":"org_release_ll"     // <-- different from right
 },
 ["oll1","dummy1_thoraxmrl"],
@@ -426,12 +426,12 @@
 // Abdomen tethers (slightly sturdier)
 { "beamType":"|NORMAL","beamLongBound":1.7,"beamShortBound":0.5,
   "beamLimitSpring":26000,"beamLimitDamp":130,"beamSpring":20000,"beamDamp":26,
-  "beamDeform":14000,"beamStrength":2800,"breakGroup":"org_release" },
+  "beamDeform":14000,"beamStrength":1000,"breakGroup":"org_release" },
 ["olv1","dummy1_abdomentrr"],["olv2","dummy1_abdomentfr"],["olv3","dummy1_abdomenbrl"],["olv4","dummy1_abdomenbrr"],
 // Pelvis tethers (weak—drop when legs/pelvis go)
 { "beamType":"|NORMAL","beamLongBound":1.8,"beamShortBound":0.5,
   "beamLimitSpring":22000,"beamLimitDamp":110,"beamSpring":18000,"beamDamp":22,
-  "beamDeform":8500,"beamStrength":1600,"breakGroup":"org_release" },
+  "beamDeform":8500,"beamStrength":1000,"breakGroup":"org_release" },
 ["olv2","dummy1_pelvisbf"],["olv3","dummy1_pelvisbr"],
 
 
@@ -452,7 +452,7 @@
 // Gentle thorax tethers (centered)
 { "beamType":"|NORMAL","beamLongBound":1.65,"beamShortBound":0.5,
   "beamLimitSpring":24000,"beamLimitDamp":130,"beamSpring":19000,"beamDamp":26,
-  "beamDeform":13000,"beamStrength":2600,"breakGroup":"org_release" },
+  "beamDeform":13000,"beamStrength":1000,"breakGroup":"org_release" },
 ["oht1","dummy1_thoraxmfr"],["oht2","dummy1_thoraxtfr"],["oht3","dummy1_thoraxtfl"],["oht4","dummy1_thoraxmfl"],
 
     ],
