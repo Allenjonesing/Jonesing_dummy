@@ -115,6 +115,12 @@
 ["oi2",  0.04, "$=$adummy1scale*-0.04", "$=$adummy1scale*1.02"],
 ["oi3", -0.04, "$=$adummy1scale*-0.04", "$=$adummy1scale*1.02"],
 ["oi4",  0.00, "$=$adummy1scale*0.02",  "$=$adummy1scale*1.00"],
+// INTESTINE extra control points (mid + lower)
+{"group":"intestine_g"},{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SOFT"},{"nodeWeight":0.20},{"frictionCoef":5},
+["oi5",  0.00, "$=$adummy1scale*0.02",  "$=$adummy1scale*1.14"],   // mid-back
+["oi6",  0.00, "$=$adummy1scale*0.02",  "$=$adummy1scale*0.92"],   // low-back
+{"group":""}
+
 {"group":""},
 
 // RIGHT LUNG
@@ -348,21 +354,53 @@
 ["oi1","oi2"],["oi2","oi3"],["oi3","oi1"],["oi1","oi4"],["oi2","oi4"],["oi3","oi4"],["oi1","oi3"],["oi2","oi4"],
 
 // ============================ INTESTINE TETHERS ====================================
-{ "beamType":"|NORMAL",
-  "beamLongBound":1.06, "beamShortBound":0.96,         // low stretch, low squash
-  "beamSpring":42000, "beamDamp":65,                    // stiff + well-damped
-  "beamLimitSpring":120000, "beamLimitDamp":350,
-  "beamDeform":20000, "beamStrength":12000,
-  "beamPrecompression":0.99, "beamPrecompressionRange":1.0,
-  "deformLimitExpansion":1.03, "breakGroup":"org_release"
+// ================= INTESTINE: toothpick pins to back abdomen ================
+{
+  "beamType":"|NORMAL",
+  "beamLongBound":1.015, "beamShortBound":0.985,     // almost rigid
+  "beamSpring":90000, "beamDamp":140,                 // no bounce
+  "beamLimitSpring":220000, "beamLimitDamp":600,
+  "beamDeform":12000, "beamStrength":14000,          // snap on real impacts
+  "deformLimitExpansion":1.01,
+  "beamPrecompression":0.995, "beamPrecompressionRange":1.0,
+  "breakGroup":"org_pin_int"                          // independent of lungs
 },
-["oi1","dummy1_abdomentfl"],
-["oi2","dummy1_abdomentfr"],
-["oi3","dummy1_abdomenbrl"],
-["oi4","dummy1_abdomenbrr"],
-// extra diagonals to kill drift
-["oi1","dummy1_abdomenbrr"], ["oi4","dummy1_abdomentfl"],
-["oi2","dummy1_abdomenbrl"], ["oi3","dummy1_abdomentfr"],
+// Top cluster pins (keep near upper back of abdomen)
+["oi1","dummy1_abdomentrl"],  // back-left, top
+["oi2","dummy1_abdomentrr"],  // back-right, top
+["oi1","dummy1_abdomentrr"],  // cross keeps it centered
+["oi2","dummy1_abdomentrl"],
+
+// Mid cluster pins (best if oi5 exists; else duplicate oi1/oi2)
+["oi5","dummy1_abdomenbrl"],  // back-left, mid/lower
+["oi5","dummy1_abdomentrl"],  // back-left, upper
+["oi5","dummy1_abdomentrr"],  // cross to right
+["oi5","dummy1_abdomenbrr"],  // back-right, lower
+
+// Bottom cluster pins (best if oi6 exists)
+["oi6","dummy1_abdomenbrl"],
+["oi6","dummy1_abdomenbrr"],
+["oi6","dummy1_pelvisbr"],    // slight tie into pelvis rear = stops bottom wander
+["oi6","dummy1_pelvisbf"],
+
+// Small diagonals from front pair to back to stop “poke-through roll”
+["oi3","dummy1_abdomentrl"],  // oi3/oi4 are your front/top pair
+["oi4","dummy1_abdomentrr"],
+
+// Gentle vertical guides (not bouncy; short span)
+{
+  "beamType":"|NORMAL",
+  "beamLongBound":1.02, "beamShortBound":0.98,
+  "beamSpring":70000, "beamDamp":120,
+  "beamLimitSpring":160000, "beamLimitDamp":500,
+  "beamDeform":11000, "beamStrength":12000,
+  "beamPrecompression":0.995, "beamPrecompressionRange":1.0,
+  "breakGroup":"org_pin_int"
+},
+["oi1","dummy1_thoraxmfl"],   // slight top anchor into thorax center-left
+["oi2","dummy1_thoraxmfr"],   // and center-right
+["oi6","dummy1_pelvismrr"],   // low-right
+["oi6","dummy1_pelvismrl"]    // low-left
 
 
 // ===== LUNGS: reset breakGroup, unbreakable cage, extra X-braces =====
@@ -383,21 +421,30 @@
 
 
 // ============================ RIGHT LUNG TETHERS ===================================
-{ "beamType":"|NORMAL",
-  "beamLongBound":1.05, "beamShortBound":0.97,
-  "beamSpring":45000, "beamDamp":70,
-  "beamLimitSpring":140000, "beamLimitDamp":380,
-  "beamDeform":22000, "beamStrength":12000,
-  "beamPrecompression":0.99, "beamPrecompressionRange":1.0,
-  "deformLimitExpansion":1.03, "breakGroup":"org_release_rl"
+// ================== RIGHT LUNG: toothpick pins ==================
+{
+  "beamType":"|NORMAL",
+  "beamLongBound":1.015, "beamShortBound":0.985,   // almost no stretch/squash
+  "beamSpring":90000, "beamDamp":140,              // very stiff, heavily damped
+  "beamLimitSpring":220000, "beamLimitDamp":600,   // keep spikes under control
+  "beamDeform":12000, "beamStrength":14000,        // snaps cleanly on big hits
+  "deformLimitExpansion":1.01,
+  "beamPrecompression":0.995, "beamPrecompressionRange":1.0,
+  "breakGroup":"org_pin_rl"                        // independent release from torso
 },
+// primary 4 pins (local, short, no wobble)
 ["orl1","dummy1_thoraxmrr"],
 ["orl2","dummy1_thoraxtfr"],
 ["orl3","dummy1_thoraxtrr"],
 ["orl4","dummy1_thoraxmfr"],
-// add diagonals to kill lateral wobble
-["orl1","dummy1_thoraxtfr"], ["orl2","dummy1_thoraxmrr"],
-["orl3","dummy1_thoraxmfr"], ["orl4","dummy1_thoraxtrr"],
+// anti-pop cross bracing to opposite thorax points (prevents “out the ribs”)
+["orl1","dummy1_thoraxtrr"],
+["orl2","dummy1_thoraxmrr"],
+["orl3","dummy1_thoraxmfr"],
+["orl4","dummy1_thoraxtfr"],
+// shallow diagonals (shorter span = less leverage, less wobble)
+["orl2","dummy1_thoraxmrr"],
+["orl3","dummy1_thoraxtrr"]
 
 // ============================ LEFT LUNG ====================================
 // ============================ LEFT LUNG CAGE ====================================
@@ -415,21 +462,30 @@
 ["oll1","oll3"],["oll2","oll4"],
 
 // ============================ LEFT LUNG TETHERS ====================================
-// (your thorax tethers below keep breakGroup:"org_release")
-// ---- LEFT LUNG tethers (independent release) ----
+// ================== LEFT LUNG: toothpick pins ===================
 {
   "beamType":"|NORMAL",
-  "beamLongBound":1.7, "beamShortBound":0.5,
-  "beamLimitSpring":28000, "beamLimitDamp":140,
-  "beamSpring":22000, "beamDamp":28,
-  "beamDeform":16000, "beamStrength":1000,
-  "breakGroup":"org_release_ll"     // <-- different from right
+  "beamLongBound":1.015, "beamShortBound":0.985,
+  "beamSpring":90000, "beamDamp":140,
+  "beamLimitSpring":220000, "beamLimitDamp":600,
+  "beamDeform":12000, "beamStrength":14000,
+  "deformLimitExpansion":1.01,
+  "beamPrecompression":0.995, "beamPrecompressionRange":1.0,
+  "breakGroup":"org_pin_ll"
 },
+// primary 4 pins
 ["oll1","dummy1_thoraxmrl"],
 ["oll2","dummy1_thoraxtfl"],
 ["oll3","dummy1_thoraxtrl"],
 ["oll4","dummy1_thoraxmfl"],
-
+// anti-pop cross bracing
+["oll1","dummy1_thoraxtrl"],
+["oll2","dummy1_thoraxmrl"],
+["oll3","dummy1_thoraxmfl"],
+["oll4","dummy1_thoraxtfl"],
+// shallow diagonals
+["oll2","dummy1_thoraxmrl"],
+["oll3","dummy1_thoraxtrl"]
 
 // ============================== LIVER ======================================
 // ============================== LIVER CAGE ======================================
