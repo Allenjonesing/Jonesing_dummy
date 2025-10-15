@@ -26,7 +26,7 @@ end
 
 
 local function recalculateBeamLength(b)
-
+j
 	--get coordinates of the beam nodes
 	local node1 = v.data.nodes[b.id1].cid
 	local node2 = v.data.nodes[b.id2].cid

@@ -25,14 +25,14 @@
     ],
     "nodes": [
         ["id", "posX", "posY", "posZ"],
-		{"nodeMaterial":"|NM_METAL"},
+		{"nodeMaterial":"|NM_SKIN"},
         {"frictionCoef":1.5},
         {"collision":true},
 
 
 		//--LEFT THIGH--
         {"group":"agenty_dummy1_thigh_L"},
-		{"nodeWeight":"$=$adummy1weight*0.465"},
+		{"nodeWeight":"$=$adummy1weight*0.565"},
 		
 		{"selfCollision":false},
 		["dummy1_L_thighpelvis","$=$adummy1scale*0.02","$=$adummy1scale*-0.04","$=$adummy1scale*0.92"],
@@ -57,7 +57,7 @@
 		
 		//--RIGHT THIGH--
         {"group":"agenty_dummy1_thigh_R"},
-		{"nodeWeight":"$=$adummy1weight*0.465"},
+		{"nodeWeight":"$=$adummy1weight*0.565"},
 		
 		{"selfCollision":false},
 		["dummy1_R_thighpelvis","$=$adummy1scale*-0.02","$=$adummy1scale*-0.04","$=$adummy1scale*0.92"],
@@ -82,7 +82,7 @@
 		
 		//--LEFT LEGSHIN--
         {"group":"agenty_dummy1_legshin_L"},
-		{"nodeWeight":"$=$adummy1weight*0.24542"},
+		{"nodeWeight":"$=$adummy1weight*0.44542"},
 		
 		["dummy1_L_legshintipl","$=$adummy1scale*0.20","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
 		["dummy1_L_legshintipr","$=$adummy1scale*0.08","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
@@ -105,7 +105,7 @@
 		
 		//--RIGHT LEGSHIN--
         {"group":"agenty_dummy1_legshin_R"},
-		{"nodeWeight":"$=$adummy1weight*0.24542"},
+		{"nodeWeight":"$=$adummy1weight*0.44542"},
 		
 		["dummy1_R_legshintipr","$=$adummy1scale*-0.20","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
 		["dummy1_R_legshintipl","$=$adummy1scale*-0.08","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
@@ -128,7 +128,7 @@
 		
 		//--LEFT FOOT--
         {"group":"agenty_dummy1_foot_L"},
-		{"nodeWeight":"$=$adummy1weight*0.07388"},
+		{"nodeWeight":"$=$adummy1weight*0.17388"},
 		{"frictionCoef":0.8},
 		
 		["dummy1_L_foottfr", "$=$adummy1scale*0.07","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
@@ -149,7 +149,7 @@
 		
 		//--RIGHT FOOT--
         {"group":"agenty_dummy1_foot_R"},
-		{"nodeWeight":"$=$adummy1weight*0.07388"},
+		{"nodeWeight":"$=$adummy1weight*0.17388"},
 		{"frictionCoef":0.8},
 		
 		["dummy1_R_foottfl", "$=$adummy1scale*-0.07","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
@@ -173,7 +173,7 @@
     "beams": [
         ["id1:", "id2:"],
         {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-     	{"beamDeform": 5000, "beamStrength":"FLT_MAX"}, 
+     	{"beamDeform": 1000, "beamStrength":"FLT_MAX"}, 
         {"breakGroup":""},
 		
 		//--LEFT THIGH--

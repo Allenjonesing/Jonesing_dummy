@@ -19,14 +19,14 @@
         {"selfCollision":false},
         {"collision":false},
         {"beamSpring":"$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50"},
-        {"beamDeform":5000,"beamStrength":"FLT_MAX"},
+        {"beamDeform":1000,"beamStrength":"FLT_MAX"},
 	{"idBack:":"dummy1_headmrl", "idUp:":"dummy1_headtfl", "idRef:":"dummy1_headmfl"},
         ["hood",0,"$=$adummy1scale*-0.1","$=$adummy1scale*1.63", 75, "dummy1_headmfl","dummy1_headmfr","dummy1_headmrl","dummy1_headmrr","dummy1_neckb","dummy1_headtip"],
     ],
      "nodes": [
         ["id", "posX", "posY", "posZ"],
-		{"nodeWeight":"$=$adummy1weight*0.36314"},
-		{"nodeMaterial":"|NM_METAL"},
+		{"nodeWeight":"$=$adummy1weight*0.33314"},
+		{"nodeMaterial":"|NM_SKIN"},
         {"frictionCoef":1.5},
         {"collision":true},
 

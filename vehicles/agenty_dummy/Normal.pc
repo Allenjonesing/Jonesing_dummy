@@ -5,7 +5,7 @@
   "vars":{
     "$adummy1weight":1.30967742,
     "$adummy1scale":1,
-    "$adummy1stabilizers":1000,
+    "$adummy1stabilizers":1100,
     "$adummy1strength":5000
   }
 }

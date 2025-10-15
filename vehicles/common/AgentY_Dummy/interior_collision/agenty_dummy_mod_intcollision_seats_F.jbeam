@@ -13,7 +13,7 @@
          {"collision":true},
          {"selfCollision":false},
          {"frictionCoef":0.5},
-         {"nodeMaterial":"|NM_METAL"},
+         {"nodeMaterial":"|NM_SKIN"},
 
          //--ADD MISSING SEATS COLLISION--
          {"collision":true},

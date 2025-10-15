@@ -23,22 +23,33 @@
   ["AgentY_Dummy_pelvis",  ["agenty_dummy1_pelvis"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
 
 // Organs: visual-only, deforms with their node groups (same scaling as body)
-["AgentY_Dummy_Intestine",   ["intestine_g"]   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Right_Lung",  ["right_lung_g"]  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Left_Lung",   ["left_lung_g"]   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Liver",       ["liver_g"]       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Heart",       ["heart_g"]       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Right_Lung",  ["right_lung_g"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Left_Lung",   ["left_lung_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Liver",       ["liver_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Heart",       ["heart_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine",      ["intestine_g"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine.001",  ["intestine_g1"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine.002",  ["intestine_g2"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine.003",  ["intestine_g3"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine.004",  ["intestine_g4"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine.005",  ["intestine_g5"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine.006",  ["intestine_g6"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine.007",  ["intestine_g7"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine.008",  ["intestine_g8"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine.009",  ["intestine_g9"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}]
+
+
 ],
 
     "nodes": [
         ["id", "posX", "posY", "posZ"],
-        {"nodeMaterial":"|NM_METAL"},
+        {"nodeMaterial":"|NM_SKIN"},
         {"frictionCoef":0.5},
         {"collision":true},
 
         //--THORAX--
         {"group":"agenty_dummy1_thorax"},
-        {"nodeWeight":"$=$adummy1weight*0.8308"},
+        {"nodeWeight":"$=$adummy1weight*0.4008"},
 
         //main shape
         {"selfCollision":false},
@@ -107,21 +118,103 @@
 
         {"group":""}
 
+//// ORGANS ////
 // --INTESTINE (inside abdomen)----------------------------------------------
+// -- INTESTINE (BASE) -------------------------------------------------------
 {"group":"intestine_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SOFT"},{"nodeWeight":0.20},
-{"frictionCoef":5}
-["oi1",  0.00, "$=$adummy1scale*-0.03", "$=$adummy1scale*1.07"],
-["oi2",  0.04, "$=$adummy1scale*-0.04", "$=$adummy1scale*1.02"],
-["oi3", -0.04, "$=$adummy1scale*-0.04", "$=$adummy1scale*1.02"],
-["oi4",  0.00, "$=$adummy1scale*0.02",  "$=$adummy1scale*1.00"],
+{"collision":true}, {"selfCollision":true},
+{"nodeMaterial":"|NM_SKIN"},
+{"nodeWeight":0.20},        // was 0.20 — lighter so it sags less
+{"frictionCoef":2}        // was 0.25 — more grip against the torso
 
+["oi1",  0.00, -0.030, 1.070],
+["oi2",  0.04, -0.040, 1.020],
+["oi3", -0.04, -0.040, 1.020],
+["oi4",  0.00,  0.020, 1],
 {"group":""},
 
-// RIGHT LUNG
+// -------- INTESTINE SEGMENTS: 1..9 (collision true, NO selfCollision) -----
+{"collision":true}, {"selfCollision":false},
+{"nodeMaterial":"|NM_SKIN"},
+{"nodeWeight":0.20},        // was 0.20 — lighter so it sags less
+{"frictionCoef":2}        // was 0.25 — more grip against the torso
+
+// seg 1 (ΔY=-0.004, ΔZ=-0.003)
+{"group":"intestine_g1"},
+["oi1_1",  0.000, -0.034, 1.067],
+["oi2_1",  0.040, -0.044, 1.017],
+["oi3_1", -0.040, -0.044, 1.017],
+["oi4_1",  0.000,  0.016, 0.997],
+{"group":""},
+
+// seg 2 (ΔY=-0.008, ΔZ=-0.006)
+{"group":"intestine_g2"},
+["oi1_2",  0.000, -0.038, 1.064],
+["oi2_2",  0.040, -0.048, 1.014],
+["oi3_2", -0.040, -0.048, 1.014],
+["oi4_2",  0.000,  0.012, 0.994],
+{"group":""},
+
+// seg 3 (ΔY=-0.012, ΔZ=-0.009)
+{"group":"intestine_g3"},
+["oi1_3",  0.000, -0.042, 1.061],
+["oi2_3",  0.040, -0.052, 1.011],
+["oi3_3", -0.040, -0.052, 1.011],
+["oi4_3",  0.000,  0.008, 0.991],
+{"group":""},
+
+// seg 4 (ΔY=-0.016, ΔZ=-0.012)
+{"group":"intestine_g4"},
+["oi1_4",  0.000, -0.046, 1.058],
+["oi2_4",  0.040, -0.056, 1.008],
+["oi3_4", -0.040, -0.056, 1.008],
+["oi4_4",  0.000,  0.004, 0.988],
+{"group":""},
+
+// seg 5 (ΔY=-0.020, ΔZ=-0.015)
+{"group":"intestine_g5"},
+["oi1_5",  0.000, -0.050, 1.055],
+["oi2_5",  0.040, -0.060, 1.005],
+["oi3_5", -0.040, -0.060, 1.005],
+["oi4_5",  0.000,  0.000, 0.985],
+{"group":""},
+
+// seg 6 (ΔY=-0.024, ΔZ=-0.018)
+{"group":"intestine_g6"},
+["oi1_6",  0.000, -0.054, 1.052],
+["oi2_6",  0.040, -0.064, 1.002],
+["oi3_6", -0.040, -0.064, 1.002],
+["oi4_6",  0.000, -0.004, 0.982],
+{"group":""},
+
+// seg 7 (ΔY=-0.028, ΔZ=-0.021)
+{"group":"intestine_g7"},
+["oi1_7",  0.000, -0.058, 1.049],
+["oi2_7",  0.040, -0.068, 0.999],
+["oi3_7", -0.040, -0.068, 0.999],
+["oi4_7",  0.000, -0.008, 0.979],
+{"group":""},
+
+// seg 8 (ΔY=-0.032, ΔZ=-0.024)
+{"group":"intestine_g8"},
+["oi1_8",  0.000, -0.062, 1.046],
+["oi2_8",  0.040, -0.072, 0.996],
+["oi3_8", -0.040, -0.072, 0.996],
+["oi4_8",  0.000, -0.012, 0.976],
+{"group":""},
+
+// seg 9 (ΔY=-0.036, ΔZ=-0.027)
+{"group":"intestine_g9"},
+["oi1_9",  0.000, -0.066, 1.043],
+["oi2_9",  0.040, -0.076, 0.993],
+["oi3_9", -0.040, -0.076, 0.993],
+["oi4_9",  0.000, -0.016, 0.973],
+{"group":""}
+
+// RIGHT LUNG ////////////////////////
 {"group":"right_lung_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SOFT"},{"nodeWeight":0.20},   // was 0.14
-{"frictionCoef":5}
+{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.20},   // was 0.14
+{"frictionCoef":2}
 ["orl1","$=$adummy1scale*-0.10","$=$adummy1scale*-0.02","$=$adummy1scale*1.36"],
 ["orl2","$=$adummy1scale*-0.05","$=$adummy1scale*-0.05","$=$adummy1scale*1.33"],
 ["orl3","$=$adummy1scale*-0.08","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.33"],
@@ -130,8 +223,8 @@
 
 // LEFT LUNG
 {"group":"left_lung_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SOFT"},{"nodeWeight":0.20},   // was 0.14
-{"frictionCoef":5}
+{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.20},   // was 0.14
+{"frictionCoef":2}
 ["oll1","$=$adummy1scale*0.10","$=$adummy1scale*-0.02","$=$adummy1scale*1.36"],
 ["oll2","$=$adummy1scale*0.05","$=$adummy1scale*-0.05","$=$adummy1scale*1.33"],
 ["oll3","$=$adummy1scale*0.08","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.33"],
@@ -140,8 +233,8 @@
 
 // LIVER
 {"group":"liver_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SOFT"},{"nodeWeight":0.22},   // was 0.16
-{"frictionCoef":5}
+{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.22},   // was 0.16
+{"frictionCoef":2}
 ["olv1","$=$adummy1scale*-0.06","$=$adummy1scale*-0.02","$=$adummy1scale*1.08"],
 ["olv2","$=$adummy1scale*-0.02","$=$adummy1scale*-0.04","$=$adummy1scale*1.05"],
 ["olv3","$=$adummy1scale*-0.05","$=$adummy1scale*0.03" ,"$=$adummy1scale*1.03"],
@@ -150,8 +243,8 @@
 
 // HEART
 {"group":"heart_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SOFT"},{"nodeWeight":0.18},   // was 0.12
-{"frictionCoef":5}
+{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.18},   // was 0.12
+{"frictionCoef":2}
 ["oht1","$=$adummy1scale*0.00","$=$adummy1scale*-0.02","$=$adummy1scale*1.32"],
 ["oht2","$=$adummy1scale*0.03","$=$adummy1scale*-0.04","$=$adummy1scale*1.29"],
 ["oht3","$=$adummy1scale*-0.03","$=$adummy1scale*-0.04","$=$adummy1scale*1.29"],
@@ -162,8 +255,14 @@
 
     "beams": [
         ["id1:", "id2:"],
-{"beamType":"|NORMAL","beamLongBound":1.05,"beamShortBound":0.95}
-        {"beamDeform": 5000, "beamStrength":"FLT_MAX"},
+{"beamType":"|NORMAL","beamSpring":2500,
+  "beamDamp":12,
+  "beamLimitSpring":5000,
+  "beamLimitDamp":50,
+  "beamLongBound":1.1,   // can stretch 10%
+  "beamShortBound":0.6,  // can squish down to 60%
+  }
+        {"beamDeform": 1000, "beamStrength":"FLT_MAX"},
         {"deformLimitExpansion":1.1},
         {"breakGroup":""},
 
@@ -341,42 +440,139 @@
 
 //// ========================== --- ORGANS --- ======================================
 // ============================ INTESTINE ====================================
-// ============================ INTESTINE CAGE ====================================
-// INTESTINE CAGE (safer)
+// ============================ INTESTINE (FINAL) ============================
+
+// ---- CAGES: base + segs (single block) ----
+{"breakGroup":""},
 {
   "beamType":"|NORMAL",
   "beamLongBound":1.20, "beamShortBound":0.80,
-  "beamSpring":16000, "beamDamp":22,
-  "beamLimitSpring":30000, "beamLimitDamp":150,
+  "beamSpring":14000, "beamDamp":30,
+  "beamLimitSpring":30000, "beamLimitDamp":180,
   "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
 },
-// Local tetra
-["oi1","oi2"],["oi2","oi3"],["oi3","oi1"],["oi1","oi4"],["oi2","oi4"],["oi3","oi4"],["oi1","oi3"],["oi2","oi4"],
+// base tetra (only once!)
+["oi1","oi2"],["oi2","oi3"],["oi3","oi1"],
+["oi1","oi4"],["oi2","oi4"],["oi3","oi4"],
+["oi1","oi3"],["oi2","oi4"],
 
-// ============================ INTESTINE TETHERS ====================================
-// ================= INTESTINE: toothpick pins to back abdomen ================
+// seg1..9 local tetras
+["oi1_1","oi2_1"],["oi2_1","oi3_1"],["oi3_1","oi1_1"],["oi1_1","oi4_1"],["oi2_1","oi4_1"],["oi3_1","oi4_1"],["oi1_1","oi3_1"],["oi2_1","oi4_1"],
+["oi1_2","oi2_2"],["oi2_2","oi3_2"],["oi3_2","oi1_2"],["oi1_2","oi4_2"],["oi2_2","oi4_2"],["oi3_2","oi4_2"],["oi1_2","oi3_2"],["oi2_2","oi4_2"],
+["oi1_3","oi2_3"],["oi2_3","oi3_3"],["oi3_3","oi1_3"],["oi1_3","oi4_3"],["oi2_3","oi4_3"],["oi3_3","oi4_3"],["oi1_3","oi3_3"],["oi2_3","oi4_3"],
+["oi1_4","oi2_4"],["oi2_4","oi3_4"],["oi3_4","oi1_4"],["oi1_4","oi4_4"],["oi2_4","oi4_4"],["oi3_4","oi4_4"],["oi1_4","oi3_4"],["oi2_4","oi4_4"],
+["oi1_5","oi2_5"],["oi2_5","oi3_5"],["oi3_5","oi1_5"],["oi1_5","oi4_5"],["oi2_5","oi4_5"],["oi3_5","oi4_5"],["oi1_5","oi3_5"],["oi2_5","oi4_5"],
+["oi1_6","oi2_6"],["oi2_6","oi3_6"],["oi3_6","oi1_6"],["oi1_6","oi4_6"],["oi2_6","oi4_6"],["oi3_6","oi4_6"],["oi1_6","oi3_6"],["oi2_6","oi4_6"],
+["oi1_7","oi2_7"],["oi2_7","oi3_7"],["oi3_7","oi1_7"],["oi1_7","oi4_7"],["oi2_7","oi4_7"],["oi3_7","oi4_7"],["oi1_7","oi3_7"],["oi2_7","oi4_7"],
+["oi1_8","oi2_8"],["oi2_8","oi3_8"],["oi3_8","oi1_8"],["oi1_8","oi4_8"],["oi2_8","oi4_8"],["oi3_8","oi4_8"],["oi1_8","oi3_8"],["oi2_8","oi4_8"],
+["oi1_9","oi2_9"],["oi2_9","oi3_9"],["oi3_9","oi1_9"],["oi1_9","oi4_9"],["oi2_9","oi4_9"],["oi3_9","oi4_9"],["oi1_9","oi3_9"],["oi2_9","oi4_9"],
+
+// ---- TETHERS: base → torso (use ONE relaxed set) ----
 {
   "beamType":"|NORMAL",
-  "beamLongBound":1.012, "beamShortBound":0.988,  // toothpick: almost rigid
-  "beamSpring":65000, "beamDamp":140,             // high damping, no bounce
-  "beamLimitSpring":180000, "beamLimitDamp":600,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX", // cannot break from stress
-  "beamPrecompression":1.0, "beamPrecompressionRange":1.0,
-  "deformLimitExpansion":1.01,
+  "beamLongBound":1.015, "beamShortBound":0.985,
+  "beamSpring":5000, "beamDamp":60,
+  "beamLimitSpring":160000, "beamLimitDamp":600,
+  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX",
+  "beamPrecompression":0.99, "beamPrecompressionRange":0.05,
+  "deformLimitExpansion":1.02,
   "breakGroup":"dummy1_thoraxabdomen"
 },
-// Top cluster pins (keep near upper back of abdomen)
-["oi1","dummy1_abdomentrl"],  // back-left, top
-["oi2","dummy1_abdomentrr"],  // back-right, top
-["oi1","dummy1_abdomentrr"],  // cross keeps it centered
-["oi2","dummy1_abdomentrl"],
+["oi1","dummy1_abdomentrl"],["oi2","dummy1_abdomentrr"],
+["oi1","dummy1_abdomentrr"],["oi2","dummy1_abdomentrl"],
+["oi3","dummy1_abdomentrl"],["oi4","dummy1_abdomentrr"],
+["oi1","dummy1_thoraxmfl"],["oi2","dummy1_thoraxmfr"],
 
-// Small diagonals from front pair to back to stop “poke-through roll”
-["oi3","dummy1_abdomentrl"],  // oi3/oi4 are your front/top pair
-["oi4","dummy1_abdomentrr"],
+// Segment 1
+["oi1_1","dummy1_abdomentrl"], ["oi2_1","dummy1_abdomentrr"], ["oi3_1","dummy1_abdomentrl"],
+["oi4_1","dummy1_abdomenbrl"], ["oi4_1","dummy1_abdomenbrr"],
 
-["oi1","dummy1_thoraxmfl"],
-["oi2","dummy1_thoraxmfr"],
+// Segment 2
+["oi1_2","dummy1_abdomentrl"], ["oi2_2","dummy1_abdomentrr"], ["oi3_2","dummy1_abdomentrl"],
+["oi4_2","dummy1_abdomenbrl"], ["oi4_2","dummy1_abdomenbrr"],
+
+// Segment 3
+["oi1_3","dummy1_abdomentrl"], ["oi2_3","dummy1_abdomentrr"], ["oi3_3","dummy1_abdomentrl"],
+["oi4_3","dummy1_abdomenbrl"], ["oi4_3","dummy1_abdomenbrr"],
+
+// Segment 4
+["oi1_4","dummy1_abdomentrl"], ["oi2_4","dummy1_abdomentrr"], ["oi3_4","dummy1_abdomentrl"],
+["oi4_4","dummy1_abdomenbrl"], ["oi4_4","dummy1_abdomenbrr"],
+
+// Segment 5
+["oi1_5","dummy1_abdomentrl"], ["oi2_5","dummy1_abdomentrr"], ["oi3_5","dummy1_abdomentrl"],
+["oi4_5","dummy1_abdomenbrl"], ["oi4_5","dummy1_abdomenbrr"],
+
+// Segment 6
+["oi1_6","dummy1_abdomentrl"], ["oi2_6","dummy1_abdomentrr"], ["oi3_6","dummy1_abdomentrl"],
+["oi4_6","dummy1_abdomenbrl"], ["oi4_6","dummy1_abdomenbrr"],
+
+// Segment 7
+["oi1_7","dummy1_abdomentrl"], ["oi2_7","dummy1_abdomentrr"], ["oi3_7","dummy1_abdomentrl"],
+["oi4_7","dummy1_abdomenbrl"], ["oi4_7","dummy1_abdomenbrr"],
+
+// Segment 8
+["oi1_8","dummy1_abdomentrl"], ["oi2_8","dummy1_abdomentrr"], ["oi3_8","dummy1_abdomentrl"],
+["oi4_8","dummy1_abdomenbrl"], ["oi4_8","dummy1_abdomenbrr"],
+
+// Segment 9
+["oi1_9","dummy1_abdomentrl"], ["oi2_9","dummy1_abdomentrr"], ["oi3_9","dummy1_abdomentrl"],
+["oi4_9","dummy1_abdomenbrl"], ["oi4_9","dummy1_abdomenbrr"]
+
+// ---- TETHERS: top → thorax (toothpicks; no precompression) ----
+{
+  "beamType":"|NORMAL",
+  "beamLongBound":1.02, "beamShortBound":0.98,
+  "beamSpring":2500, "beamDamp":90,
+  "beamLimitSpring":45000, "beamLimitDamp":400,
+  "beamDeform":4500, "beamStrength":6500,          // snaps before yanking torso apart
+  "deformLimitExpansion":1.00,                      // do NOT allow lengthening beyond rest
+  "breakGroup":"dummy1_thoraxabdomen"
+},
+
+// Base: pin one upper node to thorax center/upper mid (pick a stable anchor)
+["oi3","dummy1_thoraxmfl"],
+
+// Segment 1..9: one top node per segment → same thorax anchor (or L/R alternate)
+["oi3_1","dummy1_thoraxmfl"],
+["oi3_2","dummy1_thoraxmfl"],
+["oi3_3","dummy1_thoraxmfl"],
+["oi3_4","dummy1_thoraxmfl"],
+["oi3_5","dummy1_thoraxmfl"],
+["oi3_6","dummy1_thoraxmfl"],
+["oi3_7","dummy1_thoraxmfl"],
+["oi3_8","dummy1_thoraxmfl"],
+["oi3_9","dummy1_thoraxmfl"]
+
+
+// ---- CHAIN LINKS: ROPE (stays after seam) — super-loose, no rubber-band ----
+{"breakGroup":""},
+{
+  "beamType":"|NORMAL",
+  "beamLongBound":1.001,           // generous stretch before limits kick in
+  "beamShortBound":0.999,          // generous slack on compression
+  "beamSpring":1200,              // very low stiffness (feels limp)
+  "beamDamp":30,                  // enough to stop jitter without adding tension
+  "beamLimitSpring":800,          // soft limit so bounds don't yank hard
+  "beamLimitDamp":50,             // light damping at the bounds
+  "beamDeform":"FLT_MAX",
+  "beamStrength":"FLT_MAX",
+  "beamPrecompression":1.00,      // 5% extra rest length = built-in slack
+  "beamPrecompressionRange":0.00  // don't auto-fit lengths at spawn
+},
+// strictly one link per segment: bottom(n) -> top(n+1)
+// (In your coords, oi4_* is lower Z than oi1_* so oi4_* = bottom, oi1_* = top)
+["oi4","oi1_1"],
+["oi4_1","oi1_2"],
+["oi4_2","oi1_3"],
+["oi4_3","oi1_4"],
+["oi4_4","oi1_5"],
+["oi4_5","oi1_6"],
+["oi4_6","oi1_7"],
+["oi4_7","oi1_8"],
+["oi4_8","oi1_9"]
+
+// END INTESTINES ////////////////////////////////////////
 
 
 // ===== LUNGS: reset breakGroup, unbreakable cage, extra X-braces =====
