@@ -101,7 +101,7 @@
 
 		//head to thorax
 		{"breakGroup":"dummy1_headthorax"},
-		{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*50"},
+		{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*50", "beamStrength":"10000"},
 		{"deformLimitExpansion":1.1}, 
 		["dummy1_thoraxhead", "dummy1_neckb"],
 		

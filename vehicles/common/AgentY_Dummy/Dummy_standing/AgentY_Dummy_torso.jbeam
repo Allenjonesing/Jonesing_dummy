@@ -213,8 +213,8 @@
 
 // RIGHT LUNG ////////////////////////
 {"group":"right_lung_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.20},   // was 0.14
-{"frictionCoef":2}
+{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.18},   // was 0.14
+{"frictionCoef":3}
 ["orl1","$=$adummy1scale*-0.10","$=$adummy1scale*-0.02","$=$adummy1scale*1.36"],
 ["orl2","$=$adummy1scale*-0.05","$=$adummy1scale*-0.05","$=$adummy1scale*1.33"],
 ["orl3","$=$adummy1scale*-0.08","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.33"],
@@ -223,8 +223,8 @@
 
 // LEFT LUNG
 {"group":"left_lung_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.20},   // was 0.14
-{"frictionCoef":2}
+{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.18},   // was 0.14
+{"frictionCoef":3}
 ["oll1","$=$adummy1scale*0.10","$=$adummy1scale*-0.02","$=$adummy1scale*1.36"],
 ["oll2","$=$adummy1scale*0.05","$=$adummy1scale*-0.05","$=$adummy1scale*1.33"],
 ["oll3","$=$adummy1scale*0.08","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.33"],
@@ -233,8 +233,8 @@
 
 // LIVER
 {"group":"liver_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.22},   // was 0.16
-{"frictionCoef":2}
+{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.20},   // was 0.16
+{"frictionCoef":3}
 ["olv1","$=$adummy1scale*-0.06","$=$adummy1scale*-0.02","$=$adummy1scale*1.08"],
 ["olv2","$=$adummy1scale*-0.02","$=$adummy1scale*-0.04","$=$adummy1scale*1.05"],
 ["olv3","$=$adummy1scale*-0.05","$=$adummy1scale*0.03" ,"$=$adummy1scale*1.03"],
@@ -243,8 +243,8 @@
 
 // HEART
 {"group":"heart_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.18},   // was 0.12
-{"frictionCoef":2}
+{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.17},   // was 0.12
+{"frictionCoef":3}
 ["oht1","$=$adummy1scale*0.00","$=$adummy1scale*-0.02","$=$adummy1scale*1.32"],
 ["oht2","$=$adummy1scale*0.03","$=$adummy1scale*-0.04","$=$adummy1scale*1.29"],
 ["oht3","$=$adummy1scale*-0.03","$=$adummy1scale*-0.04","$=$adummy1scale*1.29"],
