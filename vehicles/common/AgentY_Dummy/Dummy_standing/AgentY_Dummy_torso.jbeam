@@ -25,8 +25,10 @@
 // Organs: visual-only, deforms with their node groups (same scaling as body)
 ["AgentY_Dummy_Right_Lung",  ["right_lung_g"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
 ["AgentY_Dummy_Left_Lung",   ["left_lung_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Liver",       ["liver_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Bladder",       ["bladder_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
 ["AgentY_Dummy_Heart",       ["heart_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Liver",    ["liver_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Stomach",  ["stomach_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
 ["AgentY_Dummy_Intestine",      ["intestine_g"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
 ["AgentY_Dummy_Intestine.001",  ["intestine_g1"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
 ["AgentY_Dummy_Intestine.002",  ["intestine_g2"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
@@ -49,7 +51,7 @@
 
         //--THORAX--
         {"group":"agenty_dummy1_thorax"},
-        {"nodeWeight":"$=$adummy1weight*0.4008"},
+        {"nodeWeight":"$=$adummy1weight*0.5008"},
 
         //main shape
         {"selfCollision":false},
@@ -122,7 +124,7 @@
 // --INTESTINE (inside abdomen)----------------------------------------------
 // -- INTESTINE (BASE) -------------------------------------------------------
 {"group":"intestine_g"},
-{"collision":true}, {"selfCollision":true},
+{"collision":true}, {"selfCollision":false},
 {"nodeMaterial":"|NM_SKIN"},
 {"nodeWeight":0.20},        // was 0.20 — lighter so it sags less
 {"frictionCoef":2}        // was 0.25 — more grip against the torso
@@ -213,8 +215,8 @@
 
 // RIGHT LUNG ////////////////////////
 {"group":"right_lung_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.18},   // was 0.14
-{"frictionCoef":3}
+{"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.18},   // was 0.14
+{"frictionCoef":2}
 ["orl1","$=$adummy1scale*-0.10","$=$adummy1scale*-0.02","$=$adummy1scale*1.36"],
 ["orl2","$=$adummy1scale*-0.05","$=$adummy1scale*-0.05","$=$adummy1scale*1.33"],
 ["orl3","$=$adummy1scale*-0.08","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.33"],
@@ -223,8 +225,8 @@
 
 // LEFT LUNG
 {"group":"left_lung_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.18},   // was 0.14
-{"frictionCoef":3}
+{"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.18},   // was 0.14
+{"frictionCoef":2}
 ["oll1","$=$adummy1scale*0.10","$=$adummy1scale*-0.02","$=$adummy1scale*1.36"],
 ["oll2","$=$adummy1scale*0.05","$=$adummy1scale*-0.05","$=$adummy1scale*1.33"],
 ["oll3","$=$adummy1scale*0.08","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.33"],
@@ -233,8 +235,8 @@
 
 // LIVER
 {"group":"liver_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.20},   // was 0.16
-{"frictionCoef":3}
+{"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.20},   // was 0.16
+{"frictionCoef":2}
 ["olv1","$=$adummy1scale*-0.06","$=$adummy1scale*-0.02","$=$adummy1scale*1.08"],
 ["olv2","$=$adummy1scale*-0.02","$=$adummy1scale*-0.04","$=$adummy1scale*1.05"],
 ["olv3","$=$adummy1scale*-0.05","$=$adummy1scale*0.03" ,"$=$adummy1scale*1.03"],
@@ -243,12 +245,32 @@
 
 // HEART
 {"group":"heart_g"},
-{"collision":true},{"selfCollision":true},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.17},   // was 0.12
-{"frictionCoef":3}
+{"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.17},   // was 0.12
+{"frictionCoef":2}
 ["oht1","$=$adummy1scale*0.00","$=$adummy1scale*-0.02","$=$adummy1scale*1.32"],
 ["oht2","$=$adummy1scale*0.03","$=$adummy1scale*-0.04","$=$adummy1scale*1.29"],
 ["oht3","$=$adummy1scale*-0.03","$=$adummy1scale*-0.04","$=$adummy1scale*1.29"],
 ["oht4","$=$adummy1scale*0.00","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.31"],
+{"group":""},
+
+// STOMACH
+{"group":"stomach_g"},
+{"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},
+{"nodeWeight":0.18}, {"frictionCoef":2},
+["ost1","$=$adummy1scale*0.06","$=$adummy1scale*-0.03","$=$adummy1scale*1.14"],
+["ost2","$=$adummy1scale*0.09","$=$adummy1scale*-0.05","$=$adummy1scale*1.12"],
+["ost3","$=$adummy1scale*0.05","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.10"],
+["ost4","$=$adummy1scale*0.02","$=$adummy1scale*-0.01","$=$adummy1scale*1.16"],
+{"group":""},
+
+// BLADDER
+{"group":"bladder_g"},
+{"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},
+{"nodeWeight":0.16},{"frictionCoef":2},
+["obd1","$=$adummy1scale*0.02","$=$adummy1scale*-0.05","$=$adummy1scale*0.98"],
+["obd2","$=$adummy1scale*-0.02","$=$adummy1scale*-0.05","$=$adummy1scale*0.98"],
+["obd3","$=$adummy1scale*0.02","$=$adummy1scale*0.00","$=$adummy1scale*0.94"],
+["obd4","$=$adummy1scale*-0.02","$=$adummy1scale*0.00","$=$adummy1scale*0.94"],
 {"group":""},
 
     ],
@@ -262,7 +284,7 @@
   "beamLongBound":1.1,   // can stretch 10%
   "beamShortBound":0.6,  // can squish down to 60%
   }
-        {"beamDeform": 1000, "beamStrength":"FLT_MAX"},
+        {"beamDeform": 900, "beamStrength":"FLT_MAX"},
         {"deformLimitExpansion":1.1},
         {"breakGroup":""},
 
@@ -438,25 +460,49 @@
         ["dummy1_pelvistfr", "dummy1_pelvisbr"],
         ["dummy1_pelvistfl", "dummy1_pelvisbr"]
 
-//// ========================== --- ORGANS --- ======================================
-// ============================ INTESTINE ====================================
-// ============================ INTESTINE (FINAL) ============================
+//// ========================== --- ORGANS (CONSOLIDATED) --- =======================
 
-// ---- CAGES: base + segs (single block) ----
+// ---------- SHARED DEFAULTS ----------
 {"breakGroup":""},
-{
+// 1) Local rigid “cage” for each organ (from LUNGS)
+{"CAGE_DEFAULT":{
   "beamType":"|NORMAL",
   "beamLongBound":1.20, "beamShortBound":0.80,
-  "beamSpring":14000, "beamDamp":30,
-  "beamLimitSpring":30000, "beamLimitDamp":180,
+  "beamSpring":16000, "beamDamp":22,
+  "beamLimitSpring":30000, "beamLimitDamp":150,
   "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
-},
-// base tetra (only once!)
+}},
+// 2) Toothpick tethers (from LUNGS) — near-rigid pins, no bounce
+{"TETHER_TOOTHPICK_DEFAULT":{
+  "beamType":"|NORMAL",
+  "beamLongBound":1.012, "beamShortBound":0.988,
+  "beamSpring":65000, "beamDamp":140,
+  "beamLimitSpring":180000, "beamLimitDamp":600,
+  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX",
+  "beamPrecompression":1.0, "beamPrecompressionRange":1.0,
+  "deformLimitExpansion":1.01
+}},
+// 3) Intestine rope links stay special (loose, slacky chain)
+{"ROPE_LINK_DEFAULT":{
+  "beamType":"|NORMAL",
+  "beamLongBound":1.001, "beamShortBound":0.999,
+  "beamSpring":1200, "beamDamp":30,
+  "beamLimitSpring":800, "beamLimitDamp":50,
+  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX",
+  "beamPrecompression":1.00, "beamPrecompressionRange":0.00
+}},
+
+// ===============================================================================
+// INTESTINE
+// ===============================================================================
+
+// ---- CAGE (uses lungs' CAGE_DEFAULT) ----
+{"breakGroup":""},
+{"$ref":"CAGE_DEFAULT"},
 ["oi1","oi2"],["oi2","oi3"],["oi3","oi1"],
 ["oi1","oi4"],["oi2","oi4"],["oi3","oi4"],
 ["oi1","oi3"],["oi2","oi4"],
 
-// seg1..9 local tetras
 ["oi1_1","oi2_1"],["oi2_1","oi3_1"],["oi3_1","oi1_1"],["oi1_1","oi4_1"],["oi2_1","oi4_1"],["oi3_1","oi4_1"],["oi1_1","oi3_1"],["oi2_1","oi4_1"],
 ["oi1_2","oi2_2"],["oi2_2","oi3_2"],["oi3_2","oi1_2"],["oi1_2","oi4_2"],["oi2_2","oi4_2"],["oi3_2","oi4_2"],["oi1_2","oi3_2"],["oi2_2","oi4_2"],
 ["oi1_3","oi2_3"],["oi2_3","oi3_3"],["oi3_3","oi1_3"],["oi1_3","oi4_3"],["oi2_3","oi4_3"],["oi3_3","oi4_3"],["oi1_3","oi3_3"],["oi2_3","oi4_3"],
@@ -467,73 +513,43 @@
 ["oi1_8","oi2_8"],["oi2_8","oi3_8"],["oi3_8","oi1_8"],["oi1_8","oi4_8"],["oi2_8","oi4_8"],["oi3_8","oi4_8"],["oi1_8","oi3_8"],["oi2_8","oi4_8"],
 ["oi1_9","oi2_9"],["oi2_9","oi3_9"],["oi3_9","oi1_9"],["oi1_9","oi4_9"],["oi2_9","oi4_9"],["oi3_9","oi4_9"],["oi1_9","oi3_9"],["oi2_9","oi4_9"],
 
-// ---- TETHERS: base → torso (use ONE relaxed set) ----
-{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.015, "beamShortBound":0.985,
-  "beamSpring":5000, "beamDamp":60,
-  "beamLimitSpring":160000, "beamLimitDamp":600,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX",
-  "beamPrecompression":0.99, "beamPrecompressionRange":0.05,
-  "deformLimitExpansion":1.02,
-  "breakGroup":"dummy1_thoraxabdomen"
-},
+// ---- TOOTHPICK TETHERS (pelvis/abdomen seam) ----
+{"$ref":"TETHER_TOOTHPICK_DEFAULT","breakGroup":"dummy1_pelvisabdomen"},
 ["oi1","dummy1_abdomentrl"],["oi2","dummy1_abdomentrr"],
 ["oi1","dummy1_abdomentrr"],["oi2","dummy1_abdomentrl"],
 ["oi3","dummy1_abdomentrl"],["oi4","dummy1_abdomentrr"],
 ["oi1","dummy1_thoraxmfl"],["oi2","dummy1_thoraxmfr"],
 
-// Segment 1
 ["oi1_1","dummy1_abdomentrl"], ["oi2_1","dummy1_abdomentrr"], ["oi3_1","dummy1_abdomentrl"],
 ["oi4_1","dummy1_abdomenbrl"], ["oi4_1","dummy1_abdomenbrr"],
 
-// Segment 2
 ["oi1_2","dummy1_abdomentrl"], ["oi2_2","dummy1_abdomentrr"], ["oi3_2","dummy1_abdomentrl"],
 ["oi4_2","dummy1_abdomenbrl"], ["oi4_2","dummy1_abdomenbrr"],
 
-// Segment 3
 ["oi1_3","dummy1_abdomentrl"], ["oi2_3","dummy1_abdomentrr"], ["oi3_3","dummy1_abdomentrl"],
 ["oi4_3","dummy1_abdomenbrl"], ["oi4_3","dummy1_abdomenbrr"],
 
-// Segment 4
 ["oi1_4","dummy1_abdomentrl"], ["oi2_4","dummy1_abdomentrr"], ["oi3_4","dummy1_abdomentrl"],
 ["oi4_4","dummy1_abdomenbrl"], ["oi4_4","dummy1_abdomenbrr"],
 
-// Segment 5
 ["oi1_5","dummy1_abdomentrl"], ["oi2_5","dummy1_abdomentrr"], ["oi3_5","dummy1_abdomentrl"],
 ["oi4_5","dummy1_abdomenbrl"], ["oi4_5","dummy1_abdomenbrr"],
 
-// Segment 6
 ["oi1_6","dummy1_abdomentrl"], ["oi2_6","dummy1_abdomentrr"], ["oi3_6","dummy1_abdomentrl"],
 ["oi4_6","dummy1_abdomenbrl"], ["oi4_6","dummy1_abdomenbrr"],
 
-// Segment 7
 ["oi1_7","dummy1_abdomentrl"], ["oi2_7","dummy1_abdomentrr"], ["oi3_7","dummy1_abdomentrl"],
 ["oi4_7","dummy1_abdomenbrl"], ["oi4_7","dummy1_abdomenbrr"],
 
-// Segment 8
 ["oi1_8","dummy1_abdomentrl"], ["oi2_8","dummy1_abdomentrr"], ["oi3_8","dummy1_abdomentrl"],
 ["oi4_8","dummy1_abdomenbrl"], ["oi4_8","dummy1_abdomenbrr"],
 
-// Segment 9
 ["oi1_9","dummy1_abdomentrl"], ["oi2_9","dummy1_abdomentrr"], ["oi3_9","dummy1_abdomentrl"],
-["oi4_9","dummy1_abdomenbrl"], ["oi4_9","dummy1_abdomenbrr"]
+["oi4_9","dummy1_abdomenbrl"], ["oi4_9","dummy1_abdomenbrr"],
 
-// ---- TETHERS: top → thorax (toothpicks; no precompression) ----
-{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.02, "beamShortBound":0.98,
-  "beamSpring":2500, "beamDamp":90,
-  "beamLimitSpring":45000, "beamLimitDamp":400,
-  "beamDeform":4500, "beamStrength":6500,          // snaps before yanking torso apart
-  "deformLimitExpansion":1.00,                      // do NOT allow lengthening beyond rest
-  "breakGroup":"dummy1_thoraxabdomen"
-},
-
-// Base: pin one upper node to thorax center/upper mid (pick a stable anchor)
+// ---- TOP “TOOTHPICK” PINS to THORAX ----
+{"$ref":"TETHER_TOOTHPICK_DEFAULT","breakGroup":"dummy1_thoraxabdomen"},
 ["oi3","dummy1_thoraxmfl"],
-
-// Segment 1..9: one top node per segment → same thorax anchor (or L/R alternate)
 ["oi3_1","dummy1_thoraxmfl"],
 ["oi3_2","dummy1_thoraxmfl"],
 ["oi3_3","dummy1_thoraxmfl"],
@@ -542,26 +558,11 @@
 ["oi3_6","dummy1_thoraxmfl"],
 ["oi3_7","dummy1_thoraxmfl"],
 ["oi3_8","dummy1_thoraxmfl"],
-["oi3_9","dummy1_thoraxmfl"]
+["oi3_9","dummy1_thoraxmfl"],
 
-
-// ---- CHAIN LINKS: ROPE (stays after seam) — super-loose, no rubber-band ----
+// ---- ROPE LINKS (unchanged philosophy; special loose chain) ----
 {"breakGroup":""},
-{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.001,           // generous stretch before limits kick in
-  "beamShortBound":0.999,          // generous slack on compression
-  "beamSpring":1200,              // very low stiffness (feels limp)
-  "beamDamp":30,                  // enough to stop jitter without adding tension
-  "beamLimitSpring":800,          // soft limit so bounds don't yank hard
-  "beamLimitDamp":50,             // light damping at the bounds
-  "beamDeform":"FLT_MAX",
-  "beamStrength":"FLT_MAX",
-  "beamPrecompression":1.00,      // 5% extra rest length = built-in slack
-  "beamPrecompressionRange":0.00  // don't auto-fit lengths at spawn
-},
-// strictly one link per segment: bottom(n) -> top(n+1)
-// (In your coords, oi4_* is lower Z than oi1_* so oi4_* = bottom, oi1_* = top)
+{"$ref":"ROPE_LINK_DEFAULT"},
 ["oi4","oi1_1"],
 ["oi4_1","oi1_2"],
 ["oi4_2","oi1_3"],
@@ -570,163 +571,138 @@
 ["oi4_5","oi1_6"],
 ["oi4_6","oi1_7"],
 ["oi4_7","oi1_8"],
-["oi4_8","oi1_9"]
-
-// END INTESTINES ////////////////////////////////////////
+["oi4_8","oi1_9"],
 
 
-// ===== LUNGS: reset breakGroup, unbreakable cage, extra X-braces =====
-// ============================ RIGHT LUNG ====================================
-// ============================ RIGHT LUNG CAGE ====================================
-// RIGHT LUNG local cage (indestructible)
+// ===============================================================================
+// LUNGS (unchanged settings—now coming from defaults)
+// ===============================================================================
+
+// RIGHT LUNG CAGE
 {"breakGroup":""},
-{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.20, "beamShortBound":0.80,
-  "beamSpring":16000, "beamDamp":22,
-  "beamLimitSpring":30000, "beamLimitDamp":150,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
-},
+{"$ref":"CAGE_DEFAULT"},
 ["orl1","orl2"],["orl2","orl3"],["orl3","orl1"],
 ["orl1","orl4"],["orl2","orl4"],["orl3","orl4"],
 ["orl1","orl3"],["orl2","orl4"],
 
-
-// ============================ RIGHT LUNG TETHERS ===================================
-// ================== RIGHT LUNG: toothpick pins ==================
-{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.012, "beamShortBound":0.988,  // toothpick: almost rigid
-  "beamSpring":65000, "beamDamp":140,             // high damping, no bounce
-  "beamLimitSpring":180000, "beamLimitDamp":600,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX", // cannot break from stress
-  "beamPrecompression":1.0, "beamPrecompressionRange":1.0,
-  "deformLimitExpansion":1.01,
-  "breakGroup":"dummy1_thoraxabdomen"               // only breaks when seam does
-},
-// primary 4 pins (local, short, no wobble)
+// RIGHT LUNG TOOTHPICKS (thorax seam)
+{"$ref":"TETHER_TOOTHPICK_DEFAULT","breakGroup":"dummy1_thoraxabdomen"},
 ["orl1","dummy1_thoraxmrr"],
 ["orl2","dummy1_thoraxtfr"],
 ["orl3","dummy1_thoraxtrr"],
 ["orl4","dummy1_thoraxmfr"],
-// anti-pop cross bracing to opposite thorax points (prevents “out the ribs”)
 ["orl1","dummy1_thoraxtrr"],
 ["orl2","dummy1_thoraxmrr"],
 ["orl3","dummy1_thoraxmfr"],
 ["orl4","dummy1_thoraxtfr"],
-// shallow diagonals (shorter span = less leverage, less wobble)
 ["orl2","dummy1_thoraxmrr"],
-["orl3","dummy1_thoraxtrr"]
+["orl3","dummy1_thoraxtrr"],
 
-// ============================ LEFT LUNG ====================================
-// ============================ LEFT LUNG CAGE ====================================
-// LEFT LUNG local cage (indestructible)
+// LEFT LUNG CAGE
 {"breakGroup":""},
-{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.20, "beamShortBound":0.80,
-  "beamSpring":16000, "beamDamp":22,
-  "beamLimitSpring":30000, "beamLimitDamp":150,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
-},
+{"$ref":"CAGE_DEFAULT"},
 ["oll1","oll2"],["oll2","oll3"],["oll3","oll1"],
 ["oll1","oll4"],["oll2","oll4"],["oll3","oll4"],
 ["oll1","oll3"],["oll2","oll4"],
 
-// ============================ LEFT LUNG TETHERS ====================================
-// ================== LEFT LUNG: toothpick pins ===================
-{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.012, "beamShortBound":0.988,  // toothpick: almost rigid
-  "beamSpring":65000, "beamDamp":140,             // high damping, no bounce
-  "beamLimitSpring":180000, "beamLimitDamp":600,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX", // cannot break from stress
-  "beamPrecompression":1.0, "beamPrecompressionRange":1.0,
-  "deformLimitExpansion":1.01,
-  "breakGroup":"dummy1_thoraxabdomen"               // only breaks when seam does
-},
-// primary 4 pins
+// LEFT LUNG TOOTHPICKS (thorax seam)
+{"$ref":"TETHER_TOOTHPICK_DEFAULT","breakGroup":"dummy1_thoraxabdomen"},
 ["oll1","dummy1_thoraxmrl"],
 ["oll2","dummy1_thoraxtfl"],
 ["oll3","dummy1_thoraxtrl"],
 ["oll4","dummy1_thoraxmfl"],
-// anti-pop cross bracing
 ["oll1","dummy1_thoraxtrl"],
 ["oll2","dummy1_thoraxmrl"],
 ["oll3","dummy1_thoraxmfl"],
 ["oll4","dummy1_thoraxtfl"],
-// shallow diagonals
 ["oll2","dummy1_thoraxmrl"],
-["oll3","dummy1_thoraxtrl"]
+["oll3","dummy1_thoraxtrl"],
 
-// ============================== LIVER ======================================
-// ============================== LIVER CAGE ======================================
-// ===== LIVER: reset breakGroup, unbreakable cage, extra X-braces =====
-{"breakGroup":""},                                   // <-- CRITICAL RESET
-{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.20, "beamShortBound":0.80,
-  "beamSpring":16000, "beamDamp":22,
-  "beamLimitSpring":30000, "beamLimitDamp":150,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
-},
-["olv1","olv2"],["olv2","olv3"],["olv3","olv1"],["olv1","olv4"],["olv2","olv4"],["olv3","olv4"],
-["olv1","olv3"],["olv2","olv4"]
 
-// (your abdomen/pelvis tethers below keep breakGroup:"org_release")
+// ===============================================================================
+// LIVER
+// ===============================================================================
 
-// ============================== LIVER TETHERS ======================================
-{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.012, "beamShortBound":0.988,
-  "beamSpring":60000, "beamDamp":130,
-  "beamLimitSpring":170000, "beamLimitDamp":560,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX",
-  "beamPrecompression":1.0, "beamPrecompressionRange":1.0,
-  "deformLimitExpansion":1.01,
-  "breakGroup":"dummy1_pelvisabdomen"
-}
+// LIVER CAGE
+{"breakGroup":""},
+{"$ref":"CAGE_DEFAULT"},
+["olv1","olv2"],["olv2","olv3"],["olv3","olv1"],
+["olv1","olv4"],["olv2","olv4"],["olv3","olv4"],
+["olv1","olv3"],["olv2","olv4"],
+
+// LIVER TOOTHPICKS (pelvis/abdomen seam)
+{"$ref":"TETHER_TOOTHPICK_DEFAULT","breakGroup":"dummy1_pelvisabdomen"},
 ["olv1","dummy1_abdomentrr"],
 ["olv2","dummy1_abdomentfr"],
 ["olv3","dummy1_abdomenbrl"],
 ["olv4","dummy1_abdomenbrr"],
-// diagonals to stop roll
 ["olv1","dummy1_abdomenbrr"], ["olv4","dummy1_abdomentrr"],
 ["olv2","dummy1_abdomenbrl"], ["olv3","dummy1_abdomentfr"],
 
-// ============================== HEART ======================================
-// ============================== HEART CAGE ======================================
-// ===== HEART: reset breakGroup, unbreakable cage, extra X-braces =====
-{"breakGroup":""},                                   // <-- CRITICAL RESET
-{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.20, "beamShortBound":0.80,
-  "beamSpring":16000, "beamDamp":22,
-  "beamLimitSpring":30000, "beamLimitDamp":150,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
-},
-["oht1","oht2"],["oht2","oht3"],["oht3","oht1"],["oht1","oht4"],["oht2","oht4"],["oht3","oht4"],
-["oht1","oht3"],["oht2","oht4"]
 
-// ============================== HEART TETHERS ======================================
-{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.012, "beamShortBound":0.988,  // toothpick: almost rigid
-  "beamSpring":65000, "beamDamp":140,             // high damping, no bounce
-  "beamLimitSpring":180000, "beamLimitDamp":600,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX", // cannot break from stress
-  "beamPrecompression":1.0, "beamPrecompressionRange":1.0,
-  "deformLimitExpansion":1.01,
-  "breakGroup":"dummy1_thoraxabdomen"               // only breaks when seam does
-},
+// ===============================================================================
+// HEART
+// ===============================================================================
+
+// HEART CAGE
+{"breakGroup":""},
+{"$ref":"CAGE_DEFAULT"},
+["oht1","oht2"],["oht2","oht3"],["oht3","oht1"],
+["oht1","oht4"],["oht2","oht4"],["oht3","oht4"],
+["oht1","oht3"],["oht2","oht4"],
+
+// HEART TOOTHPICKS (thorax seam)
+{"$ref":"TETHER_TOOTHPICK_DEFAULT","breakGroup":"dummy1_thoraxabdomen"},
 ["oht1","dummy1_thoraxmfr"],
 ["oht2","dummy1_thoraxtfr"],
 ["oht3","dummy1_thoraxtfl"],
 ["oht4","dummy1_thoraxmfl"],
-// diagonals to lock center
 ["oht1","dummy1_thoraxmfl"], ["oht4","dummy1_thoraxmfr"],
-["oht2","dummy1_thoraxtrl"], ["oht3","dummy1_thoraxtrr"]
-//// ========================== --- END ORGANS --- ==================================
+["oht2","dummy1_thoraxtrl"], ["oht3","dummy1_thoraxtrr"],
+
+
+// ===============================================================================
+// STOMACH
+// ===============================================================================
+
+// STOMACH CAGE
+{"breakGroup":""},
+{"$ref":"CAGE_DEFAULT"},
+["ost1","ost2"],["ost2","ost3"],["ost3","ost1"],
+["ost1","ost4"],["ost2","ost4"],["ost3","ost4"],
+["ost1","ost3"],["ost2","ost4"],
+
+// STOMACH TOOTHPICKS (pelvis/abdomen seam)
+{"$ref":"TETHER_TOOTHPICK_DEFAULT","breakGroup":"dummy1_pelvisabdomen"},
+["ost1","dummy1_abdomentfl"],
+["ost2","dummy1_abdomentfr"],
+["ost3","dummy1_abdomenbrl"],
+["ost4","dummy1_abdomentrl"],
+["ost2","dummy1_abdomenbrl"], ["ost3","dummy1_abdomentfl"],
+["ost1","dummy1_abdomentrl"], ["ost4","dummy1_abdomentfr"],
+
+
+// ===============================================================================
+// BLADDER
+// ===============================================================================
+
+// BLADDER CAGE
+{"breakGroup":""},
+{"$ref":"CAGE_DEFAULT"},
+["obd1","obd2"],["obd2","obd3"],["obd3","obd1"],
+["obd1","obd4"],["obd2","obd4"],["obd3","obd4"],
+["obd1","obd3"],["obd2","obd4"],
+
+// BLADDER TOOTHPICKS (pelvis/abdomen seam)
+{"$ref":"TETHER_TOOTHPICK_DEFAULT","breakGroup":"dummy1_pelvisabdomen"},
+["obd1","dummy1_abdomenbfr"],
+["obd2","dummy1_abdomenbfl"],
+["obd3","dummy1_pelvisbf"],
+["obd4","dummy1_pelvisbf"],
+["obd1","dummy1_pelvisbr"], ["obd3","dummy1_abdomenbfl"],
+["obd2","dummy1_pelvisbr"], ["obd4","dummy1_abdomenbfr"]
+
+//// ========================== --- END ORGANS --- ==============================
 
     ],
 

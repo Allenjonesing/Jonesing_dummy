@@ -173,7 +173,7 @@
     "beams": [
         ["id1:", "id2:"],
         {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-     	{"beamDeform": 1000, "beamStrength":"FLT_MAX"}, 
+     	{"beamDeform": 900, "beamStrength":"FLT_MAX"}, 
         {"breakGroup":""},
 		
 		//--LEFT THIGH--
