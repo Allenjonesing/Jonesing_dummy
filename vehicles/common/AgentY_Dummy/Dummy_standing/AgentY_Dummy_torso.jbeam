@@ -130,11 +130,11 @@
 {"nodeWeight":0.30},
 {"frictionCoef":5},
 
-["oi1",  0.00, -0.030, 1.070],
-["oi2",  0.04, -0.040, 1.020],
-["oi3", -0.04, -0.040, 1.020],
 // INTESTINE (BASE)
-["oi4",  0.00, -0.005, 0.995]
+["oi1",  0.00, -0.030, 1.28],
+["oi2",  0.04, -0.040, 1.14],
+["oi3", -0.04, -0.040, 1.14],
+["oi4",  0.00, -0.005, 1.00]
 {"group":""},
 
 // -------- INTESTINE SEGMENTS: 1..9 (collision true, NO selfCollision) -----
@@ -145,74 +145,74 @@
 
 // seg 1
 {"group":"intestine_g1"},
-["oi1_1",  0.000, -0.034, 1.067],
-["oi2_1",  0.040, -0.044, 1.017],
-["oi3_1", -0.040, -0.044, 1.017],
-["oi4_1",  0.000, -0.034, 0.997],
+["oi1_1",  0.000, -0.034, 1.28],
+["oi2_1",  0.040, -0.044, 1.14],
+["oi3_1", -0.040, -0.044, 1.14],
+["oi4_1",  0.000, -0.034, 1.00],
 {"group":""},
 
 // seg 2 (x shift = +0.02)
 {"group":"intestine_g2"},
-["oi1_2",  0.020, -0.038, 1.064],
-["oi2_2",  0.060, -0.048, 1.014],
-["oi3_2", -0.020, -0.048, 1.014],
-["oi4_2",  0.020, -0.048, 0.994],
+["oi1_2",  0.020, -0.038, 1.28],
+["oi2_2",  0.060, -0.048, 1.14],
+["oi3_2", -0.020, -0.048, 1.14],
+["oi4_2",  0.020, -0.048, 1.00],
 {"group":""},
 
 // seg 3 (x shift = -0.02)
 {"group":"intestine_g3"},
-["oi1_3", -0.020, -0.042, 1.061],
-["oi2_3",  0.020, -0.052, 1.011],
-["oi3_3", -0.060, -0.052, 1.011],
-["oi4_3", -0.020, -0.052, 0.991],
+["oi1_3", -0.020, -0.042, 1.28],
+["oi2_3",  0.020, -0.052, 1.14],
+["oi3_3", -0.060, -0.052, 1.14],
+["oi4_3", -0.020, -0.052, 1.00],
 {"group":""},
 
 // seg 4 (x shift = +0.04)
 {"group":"intestine_g4"},
-["oi1_4",  0.040, -0.046, 1.058],
-["oi2_4",  0.080, -0.056, 1.008],
-["oi3_4",  0.000, -0.056, 1.008],
-["oi4_4",  0.040, -0.056, 0.988],
+["oi1_4",  0.040, -0.046, 1.28],
+["oi2_4",  0.080, -0.056, 1.14],
+["oi3_4",  0.000, -0.056, 1.14],
+["oi4_4",  0.040, -0.056, 1.00],
 {"group":""},
 
 // seg 5 (x shift = -0.04)
 {"group":"intestine_g5"},
-["oi1_5", -0.040, -0.050, 1.055],
-["oi2_5",  0.000, -0.060, 1.005],
-["oi3_5", -0.080, -0.060, 1.005],
-["oi4_5", -0.040, -0.060, 0.985],
+["oi1_5", -0.040, -0.050, 1.28],
+["oi2_5",  0.000, -0.060, 1.14],
+["oi3_5", -0.080, -0.060, 1.14],
+["oi4_5", -0.040, -0.060, 1.00],
 {"group":""},
 
 // seg 6 (x shift = +0.06)
 {"group":"intestine_g6"},
-["oi1_6",  0.060, -0.054, 1.052],
-["oi2_6",  0.100, -0.064, 1.002],
-["oi3_6",  0.020, -0.064, 1.002],
-["oi4_6",  0.060, -0.064, 0.982],
+["oi1_6",  0.060, -0.054, 1.28],
+["oi2_6",  0.100, -0.064, 1.14],
+["oi3_6",  0.020, -0.064, 1.14],
+["oi4_6",  0.060, -0.064, 1.00],
 {"group":""},
 
 // seg 7 (x shift = -0.06)
 {"group":"intestine_g7"},
-["oi1_7", -0.060, -0.058, 1.049],
-["oi2_7", -0.020, -0.068, 0.999],
-["oi3_7", -0.100, -0.068, 0.999],
-["oi4_7", -0.060, -0.058, 0.979],
+["oi1_7", -0.060, -0.058, 1.28],
+["oi2_7", -0.020, -0.068, 1.14],
+["oi3_7", -0.100, -0.068, 1.14],
+["oi4_7", -0.060, -0.058, 1.00],
 {"group":""},
 
 // seg 8 (x shift = +0.08)
 {"group":"intestine_g8"},
-["oi1_8",  0.080, -0.062, 1.046],
-["oi2_8",  0.120, -0.072, 0.996],
-["oi3_8",  0.040, -0.072, 0.996],
-["oi4_8",  0.080, -0.062, 0.976],
+["oi1_8",  0.080, -0.062, 1.28],
+["oi2_8",  0.120, -0.072, 1.14],
+["oi3_8",  0.040, -0.072, 1.14],
+["oi4_8",  0.080, -0.062, 1.00],
 {"group":""},
 
 // seg 9 (x shift = -0.08)
 {"group":"intestine_g9"},
-["oi1_9", -0.080, -0.066, 1.043],
-["oi2_9", -0.040, -0.076, 0.993],
-["oi3_9", -0.120, -0.076, 0.993],
-["oi4_9", -0.080, -0.066, 0.973],
+["oi1_9", -0.080, -0.066, 1.28],
+["oi2_9", -0.040, -0.076, 1.14],
+["oi3_9", -0.120, -0.076, 1.14],
+["oi4_9", -0.080, -0.066, 1.00],
 {"group":""},
 
 // RIGHT LUNG ////////////////////////
@@ -595,6 +595,33 @@
   "deformLimitExpansion":1.005
 }},
 
+{ "ROPE_LINK_TAPE_WEAK": {
+  "beamType":"|ANISOTROPIC",
+
+  // Make it start a touch shorter than rest (built-in slack)
+  "beamPrecompression":0.95,                // was 0.97
+
+  // Allow a wide dead-zone where NOTHING fights you
+  "beamShortBound":0.65,                    // can shorten to 65% before any push
+  "beamLongBound":1.08,                     // can stretch to 108% before any pull
+
+  // No axial stiffness in the neutral zone
+  "beamSpring":0,
+  "beamDamp":12,                            // low damping so it doesn't feel stiff
+
+  // When it finally goes taut, use gentle expansion forces
+  "springExpansion":6000,                   // was 25000 (too tight)
+  "dampExpansion":30,                       // was 50
+  "transitionZone":0.10,                    // smoother ramp into tension
+
+  // It can tear, but not paper-thin
+  "beamDeform":"FLT_MAX",
+  "beamStrength":1600,                      // 1400–2000 is a nice range
+
+  "deformLimitExpansion":1.05,              // keep limit expansion conservative
+  "breakGroup":"dummy1_abdomen_web"
+}}
+
 // ===============================================================================
 // INTESTINE
 // ===============================================================================
@@ -650,26 +677,22 @@
 ["oi1_9","dummy1_abdomentrl"], ["oi2_9","dummy1_abdomentrr"], ["oi3_9","dummy1_abdomentrl"],
 ["oi4_9","dummy1_abdomenbrl"], ["oi4_9","dummy1_abdomenbrr"],
 
-// ---- TOP “TOOTHPICK” PINS to THORAX (SOLID, dual anchors per segment) ----
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF","breakGroup":"dummy1_thoraxabdomen"},
-
-// Base/top of root
-["oi3","dummy1_thoraxmfl"], ["oi1","dummy1_thoraxmfr"],
-
-// Segments 1..9: two ceiling pins per segment (alternate L/R to reduce twist)
-["oi3_1","dummy1_thoraxmfl"], ["oi1_1","dummy1_thoraxmfr"],
-["oi3_2","dummy1_thoraxmfr"], ["oi1_2","dummy1_thoraxmfl"],
-["oi3_3","dummy1_thoraxmfl"], ["oi1_3","dummy1_thoraxmfr"],
-["oi3_4","dummy1_thoraxmfr"], ["oi1_4","dummy1_thoraxmfl"],
-["oi3_5","dummy1_thoraxmfl"], ["oi1_5","dummy1_thoraxmfr"],
-["oi3_6","dummy1_thoraxmfr"], ["oi1_6","dummy1_thoraxmfl"],
-["oi3_7","dummy1_thoraxmfl"], ["oi1_7","dummy1_thoraxmfr"],
-["oi3_8","dummy1_thoraxmfr"], ["oi1_8","dummy1_thoraxmfl"],
-["oi3_9","dummy1_thoraxmfl"], ["oi1_9","dummy1_thoraxmfr"],
+// ---- TOP “TOOTHPICK” PINS to THORAX ----
+{"$ref":"TETHER_TOOTHPICK_DEFAULT","breakGroup":"dummy1_thoraxabdomen"},
+["oi3","dummy1_thoraxmfl"],
+["oi3_1","dummy1_thoraxmfl"],
+["oi3_2","dummy1_thoraxmfl"],
+["oi3_3","dummy1_thoraxmfl"],
+["oi3_4","dummy1_thoraxmfl"],
+["oi3_5","dummy1_thoraxmfl"],
+["oi3_6","dummy1_thoraxmfl"],
+["oi3_7","dummy1_thoraxmfl"],
+["oi3_8","dummy1_thoraxmfl"],
+["oi3_9","dummy1_thoraxmfl"],
 
 // ---- ROPE LINKS (unchanged philosophy; special loose chain) ----
 {"breakGroup":""},
-{"$ref":"ROPE_LINK_TAPE"},
+{"$ref":"ROPE_LINK_TAPE_WEAK"},
 ["oi4","oi1_1"],
 ["oi4_1","oi1_2"],
 ["oi4_2","oi1_3"],
