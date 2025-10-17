@@ -30,7 +30,7 @@
     ],
     "beams": [
         ["id1:", "id2:"],
-     	{"beamDeform": 10000, "beamStrength":"7000"}, 
+     	{"beamDeform": 15000, "beamStrength":"9000"}, 
     ],
 },
 
@@ -48,7 +48,7 @@
         {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
         
 		//thorax to abdomen
-		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50"},
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"11000"},
 		{"deformLimitExpansion":1.1}, 
 		{"breakGroup":"dummy1_thoraxabdomen"},
 		
@@ -101,7 +101,7 @@
 
 		//head to thorax
 		{"breakGroup":"dummy1_headthorax"},
-		{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*50", "beamStrength":"10000"},
+		{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*50", "beamStrength":"13000"},
 		{"deformLimitExpansion":1.1}, 
 		["dummy1_thoraxhead", "dummy1_neckb"],
 		
