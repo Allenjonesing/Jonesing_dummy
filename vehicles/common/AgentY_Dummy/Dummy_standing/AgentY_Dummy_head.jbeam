@@ -27,7 +27,7 @@
         ["id", "posX", "posY", "posZ"],
 		{"nodeWeight":"$=$adummy1weight*0.33314"},
 		{"nodeMaterial":"|NM_SKIN"},
-        {"frictionCoef":1.5},
+        {"frictionCoef":1},
         {"collision":true},
 
         {"group":"agenty_dummy1_head"},
@@ -60,7 +60,7 @@
         ["id1:", "id2:"],
         {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
         {"beamSpring": "$=$adummy1weight*60000","beamDamp":"$=$adummy1weight*50"},
-     	{"beamDeform": 900, "beamStrength":"FLT_MAX"}, 
+     	{"beamDeform": 1000, "beamStrength":"FLT_MAX"}, 
 	{"deformLimitExpansion":1.1}, 
         {"breakGroup":""},
 		
