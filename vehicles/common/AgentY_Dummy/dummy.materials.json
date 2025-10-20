@@ -262,7 +262,7 @@
       {},
       {}
     ],
-    "mapTo": "organs_heart",
+    "mapTo": "Heart_Tex-material",
     "twoSided": true,
     "materialTag0": "beamng",
     "materialTag1": "object",
@@ -270,16 +270,12 @@
     "version": 1.5
   },
   "organs_lung": {
-    "name": "organs_lung",
+    "name": "Heart_Tex-material",
     "class": "Material",
     "Stages": [
       {
-        "diffuseColor": [
-          0.90,
-          0.75,
-          0.80,
-          1
-        ],
+        "baseColorMap": "vehicles/common/AgentY_Dummy/Heart_Tex-material.png",
+        "normalMap": "vehicles/common/AgentY_Dummy/Heart_Tex-material.png",
         "metallicFactor": 0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.5,
