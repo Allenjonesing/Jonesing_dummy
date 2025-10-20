@@ -131,95 +131,90 @@
 
 // -------------------------------- N O D E S -----------------------------------
 {"group":"intestine_g"},
-{"collision":true}, {"selfCollision":true},
+{"collision":true}, {"selfCollision":false},
 {"nodeMaterial":"|NM_SKIN"},
 {"nodeWeight":0.30},
 {"frictionCoef":5},
 
-// INTESTINE (BASE)
+// INTESTINE (BASE) — reference positions
 ["oi1",  0.00, -0.030, 1.21],
 ["oi2",  0.04, -0.040, 1.14],
 ["oi3", -0.04, -0.040, 1.14],
 ["oi4",  0.00, -0.005, 1.07],
 {"group":""},
 
-// -------- INTESTINE SEGMENTS: 1..9 (collision true, NO selfCollision) -----
-{"collision":true}, {"selfCollision":false},
-{"nodeMaterial":"|NM_SKIN"},
-{"nodeWeight":0.30},
-{"frictionCoef":5},
-
 // seg 1
 {"group":"intestine_g1"},
-["oi1_1",  0.000, -0.034, 1.21],
-["oi2_1",  0.040, -0.044, 1.14],
-["oi3_1", -0.040, -0.044, 1.14],
-["oi4_1",  0.000, -0.034, 1.07],
+["oi1_1",  0.00, -0.030, 1.21],
+["oi2_1",  0.04, -0.040, 1.14],
+["oi3_1", -0.04, -0.040, 1.14],
+["oi4_1",  0.00, -0.005, 1.07],
 {"group":""},
 
-// seg 2 (x shift = +0.02)
+// seg 2
 {"group":"intestine_g2"},
-["oi1_2",  0.020, -0.038, 1.21],
-["oi2_2",  0.060, -0.048, 1.14],
-["oi3_2", -0.020, -0.048, 1.14],
-["oi4_2",  0.020, -0.048, 1.07],
+["oi1_2",  0.00, -0.030, 1.21],
+["oi2_2",  0.04, -0.040, 1.14],
+["oi3_2", -0.04, -0.040, 1.14],
+["oi4_2",  0.00, -0.005, 1.07],
 {"group":""},
 
-// seg 3 (x shift = -0.02)
+// seg 3
 {"group":"intestine_g3"},
-["oi1_3", -0.020, -0.042, 1.21],
-["oi2_3",  0.020, -0.052, 1.14],
-["oi3_3", -0.060, -0.052, 1.14],
-["oi4_3", -0.020, -0.052, 1.07],
+["oi1_3",  0.00, -0.030, 1.21],
+["oi2_3",  0.04, -0.040, 1.14],
+["oi3_3", -0.04, -0.040, 1.14],
+["oi4_3",  0.00, -0.005, 1.07],
 {"group":""},
 
-// seg 4 (x shift = +0.04)
+// seg 4
 {"group":"intestine_g4"},
-["oi1_4",  0.040, -0.046, 1.21],
-["oi2_4",  0.080, -0.056, 1.14],
-["oi3_4",  0.000, -0.056, 1.14],
-["oi4_4",  0.040, -0.056, 1.07],
+["oi1_4",  0.00, -0.030, 1.21],
+["oi2_4",  0.04, -0.040, 1.14],
+["oi3_4", -0.04, -0.040, 1.14],
+["oi4_4",  0.00, -0.005, 1.07],
 {"group":""},
 
-// seg 5 (x shift = -0.04)
+// seg 5
 {"group":"intestine_g5"},
-["oi1_5", -0.040, -0.050, 1.21],
-["oi2_5",  0.000, -0.060, 1.14],
-["oi3_5", -0.080, -0.060, 1.14],
-["oi4_5", -0.040, -0.060, 1.07],
+["oi1_5",  0.00, -0.030, 1.21],
+["oi2_5",  0.04, -0.040, 1.14],
+["oi3_5", -0.04, -0.040, 1.14],
+["oi4_5",  0.00, -0.005, 1.07],
 {"group":""},
 
-// seg 6 (x shift = +0.06)
+// seg 6
 {"group":"intestine_g6"},
-["oi1_6",  0.060, -0.054, 1.21],
-["oi2_6",  0.100, -0.064, 1.14],
-["oi3_6",  0.020, -0.064, 1.14],
-["oi4_6",  0.060, -0.064, 1.07],
+["oi1_6",  0.00, -0.030, 1.21],
+["oi2_6",  0.04, -0.040, 1.14],
+["oi3_6", -0.04, -0.040, 1.14],
+["oi4_6",  0.00, -0.005, 1.07],
 {"group":""},
 
-// seg 7 (x shift = -0.06)
+// seg 7
 {"group":"intestine_g7"},
-["oi1_7", -0.060, -0.058, 1.21],
-["oi2_7", -0.020, -0.068, 1.14],
-["oi3_7", -0.100, -0.068, 1.14],
-["oi4_7", -0.060, -0.058, 1.07],
+["oi1_7",  0.00, -0.030, 1.21],
+["oi2_7",  0.04, -0.040, 1.14],
+["oi3_7", -0.04, -0.040, 1.14],
+["oi4_7",  0.00, -0.005, 1.07],
 {"group":""},
 
-// seg 8 (x shift = +0.08)
+// seg 8
 {"group":"intestine_g8"},
-["oi1_8",  0.080, -0.062, 1.21],
-["oi2_8",  0.120, -0.072, 1.14],
-["oi3_8",  0.040, -0.072, 1.14],
-["oi4_8",  0.080, -0.062, 1.07],
+["oi1_8",  0.00, -0.030, 1.21],
+["oi2_8",  0.04, -0.040, 1.14],
+["oi3_8", -0.04, -0.040, 1.14],
+["oi4_8",  0.00, -0.005, 1.07],
 {"group":""},
 
-// seg 9 (x shift = -0.08)
+// seg 9
 {"group":"intestine_g9"},
-["oi1_9", -0.080, -0.066, 1.21],
-["oi2_9", -0.040, -0.076, 1.14],
-["oi3_9", -0.120, -0.076, 1.14],
-["oi4_9", -0.080, -0.066, 1.07],
+["oi1_9",  0.00, -0.030, 1.21],
+["oi2_9",  0.04, -0.040, 1.14],
+["oi3_9", -0.04, -0.040, 1.14],
+["oi4_9",  0.00, -0.005, 1.07],
 {"group":""},
+
 // RIGHT LUNG ////////////////////////
 {"group":"right_lung_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.28},   // was 0.14
@@ -291,7 +286,7 @@
   "beamLongBound":1.1,   // can stretch 10%
   "beamShortBound":0.8,  // can squish down to 60%
   }
-        {"beamDeform": 3000, "beamStrength":"FLT_MAX"},
+        {"beamDeform": 10000, "beamStrength":"FLT_MAX"},
         {"deformLimitExpansion":1.1},
         {"breakGroup":""},
 
@@ -410,7 +405,7 @@
 
 
         //--PELVIS--
-        {"beamSpring": "$=$adummy1weight*20000","beamStrength":5000,"beamDamp":"$=$adummy1weight*100"},
+        {"beamSpring": "$=$adummy1weight*20000","beamDamp":"$=$adummy1weight*100"},
         {"deformLimitExpansion":1.1},
 
         //main shape
@@ -526,6 +521,44 @@
   "deformLimitExpansion":1.2
   }},
 
+// Near-rigid “toothpick” pins — tuned from connectors scale
+{ "TETHER_TOOTHPICK_SOLID_AF2":{
+  "beamType":"|SUPPORT",
+  "beamPrecompression":1,
+  "beamLongBound":1,
+  "beamShortBound":1.0,
+  "beamSpring":50210940,
+  "beamDamp":5,
+  "beamDeform":"FLT_MAX",
+  "beamStrength":"FLT_MAX",
+  "deformLimitExpansion":1.0
+  }},
+
+// Near-rigid “toothpick” pins — tuned from connectors scale
+{ "TETHER_TOOTHPICK_SOLID_AF2_BREAKABLE":{
+  "beamType":"|SUPPORT",
+  "beamPrecompression":1,
+  "beamLongBound":1,
+  "beamShortBound":1.0,
+  "beamSpring":50210940,
+  "beamDamp":5,
+  "beamDeform":"FLT_MAX",
+  "deformLimitExpansion":1.0
+  }},
+
+// Near-rigid “toothpick” pins — tuned from connectors scale
+{ "INTESTINAL_TETHER":{
+  "beamType":"|SUPPORT",
+  "beamPrecompression":1,
+  "beamLongBound":1,
+  "beamShortBound":1.0,
+  "beamSpring":50210940,
+  "beamDamp":5,
+  "beamDeform":"FLT_MAX",
+  "beamStrength":"FLT_MAX",
+  "deformLimitExpansion":1.0
+  }},
+
 // Intestine rope links: loose but not rubbery
 { "ROPE_LINK_DEFAULT":{
   "beamType":"|NORMAL",
@@ -550,8 +583,7 @@
   // can tear, not indestructible
   "beamDeform":"FLT_MAX", "beamStrength":1400,
 
-  "deformLimitExpansion":1.2,
-  "breakGroup":"dummy1_abdomen_web"
+  "deformLimitExpansion":1.2
 }}
 
 { "ROPE_LINK_DEFAULT_LIMP":{
@@ -623,8 +655,7 @@
   "beamDeform":"FLT_MAX",
   "beamStrength":1600,                      // 1400–2000 is a nice range
 
-  "deformLimitExpansion":1.05,              // keep limit expansion conservative
-  "breakGroup":"dummy1_abdomen_web"
+  "deformLimitExpansion":1.05              // keep limit expansion conservative
 }}
 
 { "ROPE_LINK_CHAIN": {
@@ -635,6 +666,22 @@
   "deformLimitExpansion":1.02,
   "beamDeform":500000, "beamStrength":"FLT_MAX"
             }}
+
+{ "ROPE_LINK_CHAIN2": {
+"beamType":"|NORMAL",
+        "beamPrecompression":1, "beamLongBound":1, "beamShortBound":1,
+  "beamSpring":10001000, "beamDamp":1000,      // stout but not crazy-stiff
+  "beamDeform":500000, "beamStrength":"FLT_MAX"
+            }}
+
+{ "ROPE_LINK_CHAIN_TIGHT": {
+  "beamType":"|NORMAL",
+  "beamPrecompression":1.00,          // no slack; bump to 1.02 for slight pre-tension
+  "beamLongBound":1.0, "beamShortBound":1.0, // no lengthening/shortening
+  "beamSpring":10000000, "beamDamp":1200,    // stout & well-damped
+  "beamLimitSpring":50000000, "beamLimitDamp":2500, // hard limits to kill bounce
+  "beamDeform":500000, "beamStrength":"FLT_MAX"
+}}
 
 // ===============================================================================
 // INTESTINE
@@ -657,53 +704,48 @@
 ["oi1_8","oi2_8"],["oi2_8","oi3_8"],["oi3_8","oi1_8"],["oi1_8","oi4_8"],["oi2_8","oi4_8"],["oi3_8","oi4_8"],["oi1_8","oi3_8"],["oi2_8","oi4_8"],
 ["oi1_9","oi2_9"],["oi2_9","oi3_9"],["oi3_9","oi1_9"],["oi1_9","oi4_9"],["oi2_9","oi4_9"],["oi3_9","oi4_9"],["oi1_9","oi3_9"],["oi2_9","oi4_9"],
 
-// ---- TOOTHPICK TETHERS (pelvis/abdomen seam) ----
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF","breakGroup":"dummy1_pelvisabdomen"},
-["oi1","dummy1_abdomentrl"]
-["oi1_1","dummy1_abdomentrl"],
-["oi1_2","dummy1_abdomentrl"],
-["oi1_3","dummy1_abdomentrl"],
-["oi1_4","dummy1_abdomentrl"],
-["oi1_5","dummy1_abdomentrl"],
-["oi1_6","dummy1_abdomentrl"],
-["oi1_7","dummy1_abdomentrl"],
-["oi1_8","dummy1_abdomentrl"],
-["oi1_9","dummy1_abdomentrl"],
+// ---- BOTTOM TOOTHPICK TETHERS (pelvis/abdomen seam) ----
 
-// ---- TOP “TOOTHPICK” PINS to THORAX ----
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF","breakGroup":"dummy1_thoraxabdomen"},
-["oi4","dummy1_thoraxmfl"],
-["oi4_1","dummy1_thoraxbfl"],
-["oi4_2","dummy1_thoraxbfl"],
-["oi4_3","dummy1_thoraxbfl"],
-["oi4_4","dummy1_thoraxbfl"],
-["oi4_5","dummy1_thoraxbfl"],
-["oi4_6","dummy1_thoraxbfl"],
-["oi4_7","dummy1_thoraxbfl"],
-["oi4_8","dummy1_thoraxbfl"],
+// Bottom most segment - Attached on it's own - Breaks with Thorax: should be able to drag Chest
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2_BREAKABLE", "beamStrength":"15000", "breakGroup":"dummy1_thoraxabdomen_intestine_bottom"},
+["oi1","dummy1_pelvistrl"]
+["oi1","dummy1_pelvistrr"]
+["oi1","dummy1_pelvistfl"]
+["oi1","dummy1_pelvistfr"]
+
+// Top most segment, attached by top - Breaks on it's own: should be able to drag pelvis.
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2_BREAKABLE", "beamStrength":"15000", "breakGroup":"dummy1_pelvisabdomen_intestine_top"},
+["oi4_9","dummy1_thoraxbrr"],
+["oi4_9","dummy1_thoraxbrl"],
+["oi4_9","dummy1_thoraxbfr"],
 ["oi4_9","dummy1_thoraxbfl"],
 
-// ---- ADDITIONAL CROSS-PINS (hold bundle until EITHER breakGroup snaps) ----
-{
-  "$ref":"TETHER_TOOTHPICK_SOLID_AF",
-  "breakGroup":"dummy1_pelvisabdomen dummy1_thoraxabdomen"   // multiple groups allowed
-},
+// All Segments - Attached by bottom - Breaks with either group for unroll.
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2","breakGroup":["dummy1_pelvisabdomen_intestines", "dummy1_thoraxabdomen_intestines"]},
+["oi1_1","dummy1_abdomenbrl"],
+["oi1_2","dummy1_abdomenbrl"],
+["oi1_3","dummy1_abdomenbrl"],
+["oi1_4","dummy1_abdomenbrl"],
+["oi1_5","dummy1_abdomenbrl"],
+["oi1_6","dummy1_abdomenbrl"],
+["oi1_7","dummy1_abdomenbrl"],
+["oi1_8","dummy1_abdomenbrl"],
+["oi1_9","dummy1_abdomenbrl"],
 
+// ---- TOP “TOOTHPICK” PINS to THORAX ----
+// All Segments - Attached by at - Breaks with either group for unroll.
+["oi4","dummy1_abdomentrr"],
+["oi4_1","dummy1_abdomentrr"],
+["oi4_2","dummy1_abdomentrr"],
+["oi4_3","dummy1_abdomentrr"],
+["oi4_4","dummy1_abdomentrr"],
+["oi4_5","dummy1_abdomentrr"],
+["oi4_6","dummy1_abdomentrr"],
+["oi4_7","dummy1_abdomentrr"],
+["oi4_8","dummy1_abdomentrr"],
 
-// ---- ROPE LINKS (unchanged philosophy; special loose chain) ----
-{"breakGroup":""},
-{"$ref":"ROPE_LINK_CHAIN"},
-["oi1",  "oi4_1"],
-["oi1_1","oi4_2"],
-["oi1_2","oi4_3"],
-["oi1_3","oi4_4"],
-["oi1_4","oi4_5"],
-["oi1_5","oi4_6"],
-["oi1_6","oi4_7"],
-["oi1_7","oi4_8"],
-["oi1_8","oi4_9"],
-
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF","breakGroup":"dummy1_thoraxabdomen dummy1_pelvisabdomen"},
+// Segments joined together
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2","breakGroup":["dummy1_pelvisabdomen_intestines", "dummy1_thoraxabdomen_intestines"]},
 ["oi1",  "oi1_1"],
 ["oi1_1","oi1_2"],
 ["oi1_2","oi1_3"],
@@ -724,6 +766,21 @@
 ["oi4_7","oi4_8"],
 ["oi4_8","oi4_9"],
 
+
+// ---- ROPE LINKS (tight chain, no gaps) ----
+{"breakGroup":""},
+{"$ref":"ROPE_LINK_CHAIN_TIGHT"},
+
+["oi1",  "oi4_1"],
+["oi1_1","oi4_2"],
+["oi1_2","oi4_3"],
+["oi1_3","oi4_4"],
+["oi1_4","oi4_5"],
+["oi1_5","oi4_6"],
+["oi1_6","oi4_7"],
+["oi1_7","oi4_8"],
+["oi1_8","oi4_9"],
+
 {"breakGroup":""},
 
 
@@ -739,7 +796,7 @@
 ["orl1","orl3"],["orl2","orl4"],
 
 // RIGHT LUNG TOOTHPICKS (thorax seam)
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF","breakGroup":"dummy1_thoraxabdomen"},
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2","breakGroup":"dummy1_thoraxabdomen"},
 ["orl1","dummy1_thoraxmrr"],
 ["orl2","dummy1_thoraxtfr"],
 ["orl3","dummy1_thoraxtrr"],
@@ -759,7 +816,7 @@
 ["oll1","oll3"],["oll2","oll4"],
 
 // LEFT LUNG TOOTHPICKS (thorax seam)
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF","breakGroup":"dummy1_thoraxabdomen"},
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2","breakGroup":"dummy1_thoraxabdomen"},
 ["oll1","dummy1_thoraxmrl"],
 ["oll2","dummy1_thoraxtfl"],
 ["oll3","dummy1_thoraxtrl"],
@@ -784,7 +841,7 @@
 ["olv1","olv3"],["olv2","olv4"],
 
 // LIVER TOOTHPICKS (pelvis/abdomen seam)
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF","breakGroup":"dummy1_pelvisabdomen"},
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2","breakGroup":"dummy1_pelvisabdomen"},
 ["olv1","dummy1_abdomentrr"],
 ["olv2","dummy1_abdomentfr"],
 ["olv3","dummy1_abdomenbrl"],
@@ -805,7 +862,7 @@
 ["oht1","oht3"],["oht2","oht4"],
 
 // HEART TOOTHPICKS (thorax seam)
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF","breakGroup":"dummy1_thoraxabdomen"},
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2","breakGroup":"dummy1_thoraxabdomen"},
 ["oht1","dummy1_thoraxmfr"],
 ["oht2","dummy1_thoraxtfr"],
 ["oht3","dummy1_thoraxtfl"],
@@ -826,7 +883,7 @@
 ["ost1","ost3"],["ost2","ost4"],
 
 // STOMACH TOOTHPICKS (pelvis/abdomen seam)
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF","breakGroup":"dummy1_pelvisabdomen"},
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2","breakGroup":"dummy1_pelvisabdomen"},
 ["ost1","dummy1_abdomentfl"],
 ["ost2","dummy1_abdomentfr"],
 ["ost3","dummy1_abdomenbrl"],
@@ -847,7 +904,7 @@
 ["obd1","obd3"],["obd2","obd4"],
 
 // BLADDER TOOTHPICKS (pelvis/abdomen seam)
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF","breakGroup":"dummy1_pelvisabdomen"},
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2","breakGroup":"dummy1_pelvisabdomen"},
 ["obd1","dummy1_abdomenbfr"],
 ["obd2","dummy1_abdomenbfl"],
 ["obd3","dummy1_pelvisbf"],
