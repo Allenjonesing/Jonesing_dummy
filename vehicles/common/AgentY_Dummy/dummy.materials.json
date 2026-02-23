@@ -51,7 +51,12 @@
     "persistentId": "44fbe02b-0d89-4a83-9ed6-653a85ef1c7b",
     "Stages": [
       {
-        "diffuseColor": [0.78, 0.30, 0.28, 1],
+        "diffuseColor": [
+          0.78,
+          0.3,
+          0.28,
+          1
+        ],
         "metallicFactor": 0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.4,
@@ -223,7 +228,7 @@
         "diffuseColor": [
           0.05,
           0.03,
-          0.10,
+          0.1,
           1
         ],
         "metallicFactor": 0.6,
@@ -250,7 +255,7 @@
         "diffuseColor": [
           0.75,
           0.15,
-          0.20,
+          0.2,
           1
         ],
         "metallicFactor": 0,
@@ -262,7 +267,7 @@
       {},
       {}
     ],
-    "mapTo": "Heart_Tex-material",
+    "mapTo": "Heart_Tex",
     "twoSided": true,
     "materialTag0": "beamng",
     "materialTag1": "object",
@@ -274,7 +279,12 @@
     "class": "Material",
     "Stages": [
       {
-        "diffuseColor": [0.78, 0.32, 0.32, 1],
+        "diffuseColor": [
+          0.78,
+          0.32,
+          0.32,
+          1
+        ],
         "metallicFactor": 0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.5,
@@ -297,13 +307,13 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.40,
-          0.10,
-          0.10,
+          0.4,
+          0.1,
+          0.1,
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.70,
+        "roughnessFactor": 0.7,
         "clearCoatFactor": 0.3,
         "clearCoatRoughnessFactor": 1
       },
@@ -348,13 +358,18 @@
   "thairoid01_lungh_part02_002-material": {
     "name": "thairoid01_lungh_part02_002-material",
     "class": "Material",
-    "mapTo": "thairoid01_lungh_part02_002-material",
+    "mapTo": "thairoid01_lungh_part02_002",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.78, 0.32, 0.32, 1],
+        "diffuseColor": [
+          0.78,
+          0.32,
+          0.32,
+          1
+        ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.60
+        "roughnessFactor": 0.6
       },
       {},
       {},
@@ -367,13 +382,18 @@
   "Liver_Material-material": {
     "name": "Liver_Material-material",
     "class": "Material",
-    "mapTo": "Liver_Material-material",
+    "mapTo": "Liver_Material",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.42, 0.11, 0.10, 1],
+        "diffuseColor": [
+          0.42,
+          0.11,
+          0.1,
+          1
+        ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.70
+        "roughnessFactor": 0.7
       },
       {},
       {},
@@ -385,13 +405,18 @@
   "thairoid01_lungh_part02-material": {
     "name": "thairoid01_lungh_part02-material",
     "class": "Material",
-    "mapTo": "thairoid01_lungh_part02-material",
+    "mapTo": "thairoid01_lungh_part02",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.78, 0.32, 0.32, 1],
+        "diffuseColor": [
+          0.78,
+          0.32,
+          0.32,
+          1
+        ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.60
+        "roughnessFactor": 0.6
       },
       {},
       {},
@@ -404,13 +429,18 @@
   "Bladder-material": {
     "name": "Bladder-material",
     "class": "Material",
-    "mapTo": "Bladder-material",
+    "mapTo": "Bladder",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.85, 0.78, 0.50, 1],
+        "diffuseColor": [
+          0.85,
+          0.78,
+          0.5,
+          1
+        ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.50,
+        "roughnessFactor": 0.5,
         "clearCoatFactor": 0.5,
         "clearCoatRoughnessFactor": 0.8
       },
@@ -425,11 +455,16 @@
   "stomach-material": {
     "name": "stomach-material",
     "class": "Material",
-    "mapTo": "stomach-material",
+    "mapTo": "stomach",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.72, 0.40, 0.38, 1],
+        "diffuseColor": [
+          0.72,
+          0.4,
+          0.38,
+          1
+        ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.65
       },
@@ -444,11 +479,16 @@
   "Intestines_001-material": {
     "name": "Intestines_001-material",
     "class": "Material",
-    "mapTo": "Intestines_001-material",
+    "mapTo": "Intestines_001",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.80, 0.40, 0.35, 1],
+        "diffuseColor": [
+          0.8,
+          0.4,
+          0.35,
+          1
+        ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.4,
@@ -465,11 +505,16 @@
   "Intestines_002-material": {
     "name": "Intestines_002-material",
     "class": "Material",
-    "mapTo": "Intestines_002-material",
+    "mapTo": "Intestines_002",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.80, 0.40, 0.35, 1],
+        "diffuseColor": [
+          0.8,
+          0.4,
+          0.35,
+          1
+        ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.4,
@@ -486,11 +531,16 @@
   "Intestines_003-material": {
     "name": "Intestines_003-material",
     "class": "Material",
-    "mapTo": "Intestines_003-material",
+    "mapTo": "Intestines_003",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.80, 0.40, 0.35, 1],
+        "diffuseColor": [
+          0.8,
+          0.4,
+          0.35,
+          1
+        ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.4,
@@ -507,11 +557,16 @@
   "Intestines_004-material": {
     "name": "Intestines_004-material",
     "class": "Material",
-    "mapTo": "Intestines_004-material",
+    "mapTo": "Intestines_004",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.80, 0.40, 0.35, 1],
+        "diffuseColor": [
+          0.8,
+          0.4,
+          0.35,
+          1
+        ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.4,
@@ -528,11 +583,16 @@
   "Intestines_005-material": {
     "name": "Intestines_005-material",
     "class": "Material",
-    "mapTo": "Intestines_005-material",
+    "mapTo": "Intestines_005",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.80, 0.40, 0.35, 1],
+        "diffuseColor": [
+          0.8,
+          0.4,
+          0.35,
+          1
+        ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.4,
@@ -549,11 +609,16 @@
   "Intestines_006-material": {
     "name": "Intestines_006-material",
     "class": "Material",
-    "mapTo": "Intestines_006-material",
+    "mapTo": "Intestines_006",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.80, 0.40, 0.35, 1],
+        "diffuseColor": [
+          0.8,
+          0.4,
+          0.35,
+          1
+        ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.4,
@@ -570,11 +635,16 @@
   "Intestines_007-material": {
     "name": "Intestines_007-material",
     "class": "Material",
-    "mapTo": "Intestines_007-material",
+    "mapTo": "Intestines_007",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.80, 0.40, 0.35, 1],
+        "diffuseColor": [
+          0.8,
+          0.4,
+          0.35,
+          1
+        ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.4,
@@ -591,11 +661,16 @@
   "Intestines_008-material": {
     "name": "Intestines_008-material",
     "class": "Material",
-    "mapTo": "Intestines_008-material",
+    "mapTo": "Intestines_008",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.80, 0.40, 0.35, 1],
+        "diffuseColor": [
+          0.8,
+          0.4,
+          0.35,
+          1
+        ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.4,
@@ -612,11 +687,16 @@
   "Intestines_009-material": {
     "name": "Intestines_009-material",
     "class": "Material",
-    "mapTo": "Intestines_009-material",
+    "mapTo": "Intestines_009",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.80, 0.40, 0.35, 1],
+        "diffuseColor": [
+          0.8,
+          0.4,
+          0.35,
+          1
+        ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.4,
@@ -633,11 +713,16 @@
   "Intestines_010-material": {
     "name": "Intestines_010-material",
     "class": "Material",
-    "mapTo": "Intestines_010-material",
+    "mapTo": "Intestines_010",
     "version": 1.5,
     "Stages": [
       {
-        "diffuseColor": [0.80, 0.40, 0.35, 1],
+        "diffuseColor": [
+          0.8,
+          0.4,
+          0.35,
+          1
+        ],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.55,
         "clearCoatFactor": 0.4,
@@ -650,4 +735,5 @@
     "doubleSided": true,
     "materialTag0": "beamng",
     "materialTag1": "object"
-  }}
+  }
+}

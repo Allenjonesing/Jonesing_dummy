@@ -136,83 +136,85 @@
 {"nodeWeight":0.30},
 {"frictionCoef":5},
 
-// INTESTINE seg 0 (base/bottom — tethered to pelvis) z-center≈1.040
-["oi1",  0.000, -0.025, 1.060],
-["oi2",  0.035, -0.035, 1.040],
-["oi3", -0.035, -0.035, 1.040],
+// INTESTINE seg 0 (base — tethered to pelvis at z≈1.050)
+// Pure vertical stack; oi1=top of cage, oi4=bottom; z-step=0.020 per segment
+// oi4_9 reaches z=1.200 matching thorax bottom; oi1_0 at z=1.050 matching pelvis top
+["oi1",  0.000, -0.020, 1.050],
+["oi2",  0.030, -0.030, 1.038],
+["oi3", -0.030, -0.030, 1.038],
 ["oi4",  0.000,  0.000, 1.020],
 {"group":""},
 
-// seg 1 — shifted left, z-center≈1.060
+// seg 1
 {"group":"intestine_g1"},
-["oi1_1", -0.030, -0.025, 1.080],
-["oi2_1",  0.005, -0.035, 1.060],
-["oi3_1", -0.065, -0.035, 1.060],
-["oi4_1", -0.030,  0.000, 1.040],
+["oi1_1",  0.000, -0.020, 1.070],
+["oi2_1",  0.030, -0.030, 1.058],
+["oi3_1", -0.030, -0.030, 1.058],
+["oi4_1",  0.000,  0.000, 1.040],
 {"group":""},
 
-// seg 2 — shifted right, z-center≈1.080
+// seg 2
 {"group":"intestine_g2"},
-["oi1_2",  0.030, -0.025, 1.100],
-["oi2_2",  0.065, -0.035, 1.080],
-["oi3_2", -0.005, -0.035, 1.080],
-["oi4_2",  0.030,  0.000, 1.060],
+["oi1_2",  0.000, -0.020, 1.090],
+["oi2_2",  0.030, -0.030, 1.078],
+["oi3_2", -0.030, -0.030, 1.078],
+["oi4_2",  0.000,  0.000, 1.060],
 {"group":""},
 
-// seg 3 — shifted left, z-center≈1.100
+// seg 3
 {"group":"intestine_g3"},
-["oi1_3", -0.030, -0.025, 1.120],
-["oi2_3",  0.005, -0.035, 1.100],
-["oi3_3", -0.065, -0.035, 1.100],
-["oi4_3", -0.030,  0.000, 1.080],
+["oi1_3",  0.000, -0.020, 1.110],
+["oi2_3",  0.030, -0.030, 1.098],
+["oi3_3", -0.030, -0.030, 1.098],
+["oi4_3",  0.000,  0.000, 1.080],
 {"group":""},
 
-// seg 4 — shifted right, z-center≈1.120
+// seg 4
 {"group":"intestine_g4"},
-["oi1_4",  0.030, -0.025, 1.140],
-["oi2_4",  0.065, -0.035, 1.120],
-["oi3_4", -0.005, -0.035, 1.120],
-["oi4_4",  0.030,  0.000, 1.100],
+["oi1_4",  0.000, -0.020, 1.130],
+["oi2_4",  0.030, -0.030, 1.118],
+["oi3_4", -0.030, -0.030, 1.118],
+["oi4_4",  0.000,  0.000, 1.100],
 {"group":""},
 
-// seg 5 — shifted left, z-center≈1.140
+// seg 5
 {"group":"intestine_g5"},
-["oi1_5", -0.030, -0.025, 1.160],
-["oi2_5",  0.005, -0.035, 1.140],
-["oi3_5", -0.065, -0.035, 1.140],
-["oi4_5", -0.030,  0.000, 1.120],
+["oi1_5",  0.000, -0.020, 1.150],
+["oi2_5",  0.030, -0.030, 1.138],
+["oi3_5", -0.030, -0.030, 1.138],
+["oi4_5",  0.000,  0.000, 1.120],
 {"group":""},
 
-// seg 6 — shifted right, z-center≈1.160
+// seg 6
 {"group":"intestine_g6"},
-["oi1_6",  0.030, -0.025, 1.180],
-["oi2_6",  0.065, -0.035, 1.160],
-["oi3_6", -0.005, -0.035, 1.160],
-["oi4_6",  0.030,  0.000, 1.140],
+["oi1_6",  0.000, -0.020, 1.170],
+["oi2_6",  0.030, -0.030, 1.158],
+["oi3_6", -0.030, -0.030, 1.158],
+["oi4_6",  0.000,  0.000, 1.140],
 {"group":""},
 
-// seg 7 — shifted left, z-center≈1.180
+// seg 7
 {"group":"intestine_g7"},
-["oi1_7", -0.030, -0.025, 1.200],
-["oi2_7",  0.005, -0.035, 1.180],
-["oi3_7", -0.065, -0.035, 1.180],
-["oi4_7", -0.030,  0.000, 1.160],
+["oi1_7",  0.000, -0.020, 1.190],
+["oi2_7",  0.030, -0.030, 1.178],
+["oi3_7", -0.030, -0.030, 1.178],
+["oi4_7",  0.000,  0.000, 1.160],
 {"group":""},
 
-// seg 8 — shifted right, z-center≈1.200
+// seg 8
 {"group":"intestine_g8"},
-["oi1_8",  0.030, -0.025, 1.220],
-["oi2_8",  0.065, -0.035, 1.200],
-["oi3_8", -0.005, -0.035, 1.200],
-["oi4_8",  0.030,  0.000, 1.180],
+["oi1_8",  0.000, -0.020, 1.210],
+["oi2_8",  0.030, -0.030, 1.198],
+["oi3_8", -0.030, -0.030, 1.198],
+["oi4_8",  0.000,  0.000, 1.180],
 {"group":""},
 
-// seg 9 (top — tethered to thorax) z-center≈1.220
+// seg 9 (top — tethered to thorax at z≈1.200)
 {"group":"intestine_g9"},
-["oi1_9", -0.030, -0.025, 1.240],
-["oi2_9",  0.005, -0.035, 1.220],
-["oi3_9", -0.065, -0.035, 1.220],
-["oi4_9", -0.030,  0.000, 1.200],
+["oi1_9",  0.000, -0.020, 1.230],
+["oi2_9",  0.030, -0.030, 1.218],
+["oi3_9", -0.030, -0.030, 1.218],
+["oi4_9",  0.000,  0.000, 1.200],
 {"group":""},
 
 // RIGHT LUNG ////////////////////////
@@ -911,6 +913,55 @@
 ["obd4","dummy1_pelvisbf"],
 ["obd1","dummy1_pelvisbr"], ["obd3","dummy1_abdomenbfl"],
 ["obd2","dummy1_pelvisbr"], ["obd4","dummy1_abdomenbfr"]
+
+// ===============================================================================
+// ORGAN CONTAINMENT — soft SUPPORT beams keep organs inside body cavity
+// These are one-way springs: they only push back when organs move >15% beyond
+// their initial distance from a wall node, preventing clipping out of the body.
+// ===============================================================================
+{"breakGroup":""},
+{ "ORGAN_CONTAIN":{
+  "beamType":"|SUPPORT",
+  "beamPrecompression":1.0,
+  "beamLongBound":0.15,
+  "beamShortBound":0,
+  "beamSpring":40000, "beamDamp":120,
+  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
+}},
+{"$ref":"ORGAN_CONTAIN"},
+
+// THORAX-CAGE organs (lungs, heart) — anchored to thorax corners
+["orl1","dummy1_thoraxmfr"],["orl2","dummy1_thoraxmrr"],["orl3","dummy1_thoraxmrl"],["orl4","dummy1_thoraxmfl"],
+["orl1","dummy1_thoraxbfr"],["orl2","dummy1_thoraxbrr"],["orl3","dummy1_thoraxbrl"],["orl4","dummy1_thoraxbfl"],
+["oll1","dummy1_thoraxmfl"],["oll2","dummy1_thoraxmrl"],["oll3","dummy1_thoraxmrr"],["oll4","dummy1_thoraxmfr"],
+["oll1","dummy1_thoraxbfl"],["oll2","dummy1_thoraxbrl"],["oll3","dummy1_thoraxbrr"],["oll4","dummy1_thoraxbfr"],
+["oht1","dummy1_thoraxmfl"],["oht2","dummy1_thoraxmfr"],["oht3","dummy1_thoraxmrl"],["oht4","dummy1_thoraxmrr"],
+["oht1","dummy1_thoraxbfl"],["oht2","dummy1_thoraxbfr"],["oht3","dummy1_thoraxbrl"],["oht4","dummy1_thoraxbrr"],
+
+// ABDOMEN-CAGE organs (liver, stomach, bladder) — anchored to abdomen corners
+["olv1","dummy1_abdomentfl"],["olv2","dummy1_abdomentfr"],["olv3","dummy1_abdomentrl"],["olv4","dummy1_abdomentrr"],
+["olv1","dummy1_abdomenbfl"],["olv2","dummy1_abdomenbfr"],["olv3","dummy1_abdomenbrl"],["olv4","dummy1_abdomenbrr"],
+["ost1","dummy1_abdomentfl"],["ost2","dummy1_abdomentfr"],["ost3","dummy1_abdomentrl"],["ost4","dummy1_abdomentrr"],
+["ost1","dummy1_abdomenbfl"],["ost2","dummy1_abdomenbfr"],["ost3","dummy1_abdomenbrl"],["ost4","dummy1_abdomenbrr"],
+["obd1","dummy1_abdomenbfl"],["obd2","dummy1_abdomenbfr"],["obd3","dummy1_abdomenbrl"],["obd4","dummy1_abdomenbrr"],
+["obd1","dummy1_pelvistfl"],["obd2","dummy1_pelvistfr"],["obd3","dummy1_pelvistrl"],["obd4","dummy1_pelvistrr"],
+
+// INTESTINE containment — segments anchored to abdomen/thorax walls
+["oi1","dummy1_abdomentfl"],["oi1","dummy1_abdomentfr"],["oi1","dummy1_abdomentrl"],["oi1","dummy1_abdomentrr"],
+["oi1","dummy1_abdomenbfl"],["oi1","dummy1_abdomenbfr"],["oi1","dummy1_abdomenbrl"],["oi1","dummy1_abdomenbrr"],
+["oi1_1","dummy1_abdomentfl"],["oi1_1","dummy1_abdomentfr"],["oi1_1","dummy1_abdomentrl"],["oi1_1","dummy1_abdomentrr"],
+["oi1_1","dummy1_abdomenbfl"],["oi1_1","dummy1_abdomenbfr"],["oi1_1","dummy1_abdomenbrl"],["oi1_1","dummy1_abdomenbrr"],
+["oi1_2","dummy1_abdomentfl"],["oi1_2","dummy1_abdomentfr"],["oi1_2","dummy1_abdomentrl"],["oi1_2","dummy1_abdomentrr"],
+["oi1_2","dummy1_abdomenbfl"],["oi1_2","dummy1_abdomenbfr"],["oi1_2","dummy1_abdomenbrl"],["oi1_2","dummy1_abdomenbrr"],
+["oi1_3","dummy1_abdomentfl"],["oi1_3","dummy1_abdomentfr"],["oi1_3","dummy1_abdomentrl"],["oi1_3","dummy1_abdomentrr"],
+["oi1_3","dummy1_abdomenbfl"],["oi1_3","dummy1_abdomenbfr"],["oi1_3","dummy1_abdomenbrl"],["oi1_3","dummy1_abdomenbrr"],
+["oi1_4","dummy1_abdomentfl"],["oi1_4","dummy1_abdomentfr"],["oi1_4","dummy1_abdomentrl"],["oi1_4","dummy1_abdomentrr"],
+["oi1_5","dummy1_abdomentfl"],["oi1_5","dummy1_abdomentfr"],["oi1_5","dummy1_abdomentrl"],["oi1_5","dummy1_abdomentrr"],
+["oi1_6","dummy1_abdomentfl"],["oi1_6","dummy1_abdomentfr"],["oi1_6","dummy1_abdomentrl"],["oi1_6","dummy1_abdomentrr"],
+["oi1_7","dummy1_abdomentfl"],["oi1_7","dummy1_abdomentfr"],["oi1_7","dummy1_abdomentrl"],["oi1_7","dummy1_abdomentrr"],
+["oi1_8","dummy1_thoraxbfl"],["oi1_8","dummy1_thoraxbfr"],["oi1_8","dummy1_thoraxbrl"],["oi1_8","dummy1_thoraxbrr"],
+["oi1_9","dummy1_thoraxbfl"],["oi1_9","dummy1_thoraxbfr"],["oi1_9","dummy1_thoraxbrl"],["oi1_9","dummy1_thoraxbrr"],
+{"breakGroup":""},
 
 //// ========================== --- END ORGANS --- ==============================
 

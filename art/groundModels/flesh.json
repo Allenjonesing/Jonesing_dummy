@@ -1,0 +1,11 @@
+{
+  "staticFriction": 0.90,
+  "slidingFriction": 0.75,
+  "softnessCoef": 0.6,
+  "spring": 180000,
+  "damper": 1800,
+  "collisionType": "physical",
+  "defaultBaseSoundName": "groundModel_mud",
+  "defaultNodeSoundName": "groundModel_mud_scrape",
+  "skidmarkColorDecal": "blood_skid"
+}
