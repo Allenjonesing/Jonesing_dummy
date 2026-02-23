@@ -707,14 +707,14 @@
 // ---- BOTTOM TOOTHPICK TETHERS (pelvis/abdomen seam) ----
 
 // Bottom most segment - Attached on it's own - Breaks with Thorax: should be able to drag Chest
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF2_BREAKABLE", "beamStrength":"15000", "breakGroup":"dummy1_thoraxabdomen_intestine_bottom"},
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2_BREAKABLE", "beamStrength":"10000", "breakGroup":"dummy1_thoraxabdomen_intestine_bottom"},
 ["oi1","dummy1_pelvistrl"]
 ["oi1","dummy1_pelvistrr"]
 ["oi1","dummy1_pelvistfl"]
 ["oi1","dummy1_pelvistfr"]
 
 // Top most segment, attached by top - Breaks on it's own: should be able to drag pelvis.
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF2_BREAKABLE", "beamStrength":"15000", "breakGroup":"dummy1_pelvisabdomen_intestine_top"},
+{"$ref":"TETHER_TOOTHPICK_SOLID_AF2_BREAKABLE", "beamStrength":"10000", "breakGroup":"dummy1_pelvisabdomen_intestine_top"},
 ["oi4_9","dummy1_thoraxbrr"],
 ["oi4_9","dummy1_thoraxbrl"],
 ["oi4_9","dummy1_thoraxbfr"],

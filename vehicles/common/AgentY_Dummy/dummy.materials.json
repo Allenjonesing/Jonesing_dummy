@@ -345,5 +345,44 @@
     "materialTag1": "object",
     "order_simset": 0,
     "version": 1.5
+  },
+  "thairoid01_lungh_part02_002-material": {
+    "name": "thairoid01_lungh_part02_002-material",
+    "class": "Material",
+    "mapTo": "thairoid01_lungh_part02_002-material",
+    "version": 1.5,
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/common/AgentY_Dummy/Materials/Liver_Material_diffuse.png",
+        "normalMap": "vehicles/common/AgentY_Dummy/Materials/Liver_Material_normal.png",
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.65
+      },
+      {},
+      {},
+      {}
+    ],
+    "doubleSided": true,
+    "materialTag0": "beamng",
+    "materialTag1": "object"
+  },
+  "Liver_Material-material": {
+    "name": "Liver_Material-material",
+    "class": "Material",
+    "mapTo": "Liver_Material-material",
+    "version": 1.5,
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/common/AgentY_Dummy/Materials/Liver_Material_diffuse.png",
+        "normalMap": "vehicles/common/AgentY_Dummy/Materials/Liver_Material_normal.png",
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.6
+      },
+      {},
+      {},
+      {}
+    ],
+    "materialTag0": "beamng",
+    "materialTag1": "object"
   }
 }
