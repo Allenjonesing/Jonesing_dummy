@@ -15,9 +15,10 @@
 --                physics run freely.
 --
 -- Controller params (set in the jbeam controller entry):
---   impactThreshold (default 0.25 m) — displacement that triggers ragdoll
---   walkSpeed       (default 0.6 m/s)— forward drift speed in ghost mode
---   walkChangePeriod(default 4.0 s)  — seconds between random direction changes
+--   impactThreshold  (default 0.25 m) — node displacement (metres) that triggers ragdoll
+--   walkSpeed        (default 0.6 m/s)— forward drift speed in ghost mode
+--   walkChangePeriod (default 4.0 s)  — seconds between random direction changes
+-- Note: ghost height is maintained automatically at spawn Z (constant anti-gravity).
 
 local M = {}
 
@@ -106,13 +107,13 @@ local function updateGFX(dt)
 
     -- ── 3. Check each node for external impact BEFORE moving ─────────────────
     --  If any node has drifted far from its ghost trajectory, switch to ragdoll.
-    local threshold2 = impactThreshold * impactThreshold   -- squared for speed
+    local impactThresholdSquared = impactThreshold * impactThreshold
     for _, rec in ipairs(allNodes) do
         local p = vec3(obj:getNodePosition(rec.cid))
         local dx = p.x - (rec.spawnX + walkOffsetX)
         local dy = p.y - (rec.spawnY + walkOffsetY)
         local dz = p.z - rec.spawnZ
-        if (dx*dx + dy*dy + dz*dz) > threshold2 then
+        if (dx*dx + dy*dy + dz*dz) > impactThresholdSquared then
             state = "ragdoll"
             return
         end
