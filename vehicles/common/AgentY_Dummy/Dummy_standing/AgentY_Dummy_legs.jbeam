@@ -25,7 +25,7 @@
     ],
     "nodes": [
         ["id", "posX", "posY", "posZ"],
-		{"nodeMaterial":"|NM_FLESH"},
+		{"nodeMaterial":"|NM_SKIN"},
         {"frictionCoef":0.8},
         {"collision":true},
 

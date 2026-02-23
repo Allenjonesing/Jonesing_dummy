@@ -45,7 +45,7 @@
 
     "nodes": [
         ["id", "posX", "posY", "posZ"],
-        {"nodeMaterial":"|NM_FLESH"},
+        {"nodeMaterial":"|NM_SKIN"},
         {"frictionCoef":0.8},
         {"collision":true},
 
@@ -285,7 +285,7 @@
   "beamLongBound":1.1,   // can stretch 10%
   "beamShortBound":0.8,  // can squish down to 60%
   }
-        {"beamDeform": 10000, "beamStrength":"FLT_MAX"},
+        {"beamDeform": 1500, "beamStrength":"FLT_MAX"},
         {"deformLimitExpansion":1.1},
         {"breakGroup":""},
 
