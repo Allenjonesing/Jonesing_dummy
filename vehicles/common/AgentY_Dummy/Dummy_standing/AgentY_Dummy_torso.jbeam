@@ -45,7 +45,7 @@
 
     "nodes": [
         ["id", "posX", "posY", "posZ"],
-        {"nodeMaterial":"|NM_SKIN"},
+        {"nodeMaterial":"|NM_FLESH"},
         {"frictionCoef":0.8},
         {"collision":true},
 
@@ -288,12 +288,12 @@
   "beamLongBound":1.1,   // can stretch 10%
   "beamShortBound":0.8,  // can squish down to 60%
   }
-        {"beamDeform": 10000, "beamStrength":"FLT_MAX"},
+        {"beamDeform": 3000, "beamStrength":"FLT_MAX"},
         {"deformLimitExpansion":1.1},
         {"breakGroup":""},
 
         //--THORAX--
-        {"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*100"},
+        {"beamSpring": "$=$adummy1weight*30000","beamDamp":"$=$adummy1weight*40"},
 
         //main shape
         ["dummy1_thoraxbfl", "dummy1_thoraxbfr"],
@@ -365,7 +365,7 @@
         ["dummy1_thoraxarml", "dummy1_thoraxarmr"],
 
         //--ABDOMEN--
-        {"beamSpring": "$=$adummy1weight*30000","beamDamp":"$=$adummy1weight*10"},
+        {"beamSpring": "$=$adummy1weight*18000","beamDamp":"$=$adummy1weight*12"},
         {"deformLimitExpansion":2.0},
 
         //main shape
@@ -722,29 +722,8 @@
 ["oi4_9","dummy1_thoraxbfr"],
 ["oi4_9","dummy1_thoraxbfl"],
 
-// All Segments - Attached by bottom - Breaks with either group for unroll.
-{"$ref":"TETHER_TOOTHPICK_SOLID_AF2","breakGroup":["dummy1_pelvisabdomen_intestines", "dummy1_thoraxabdomen_intestines"]},
-["oi1_1","dummy1_abdomenbrl"],
-["oi1_2","dummy1_abdomenbrl"],
-["oi1_3","dummy1_abdomenbrl"],
-["oi1_4","dummy1_abdomenbrl"],
-["oi1_5","dummy1_abdomenbrl"],
-["oi1_6","dummy1_abdomenbrl"],
-["oi1_7","dummy1_abdomenbrl"],
-["oi1_8","dummy1_abdomenbrl"],
-["oi1_9","dummy1_abdomenbrl"],
-
-// ---- TOP “TOOTHPICK” PINS to THORAX ----
-// All Segments - Attached by at - Breaks with either group for unroll.
-["oi4","dummy1_abdomentrr"],
-["oi4_1","dummy1_abdomentrr"],
-["oi4_2","dummy1_abdomentrr"],
-["oi4_3","dummy1_abdomentrr"],
-["oi4_4","dummy1_abdomentrr"],
-["oi4_5","dummy1_abdomentrr"],
-["oi4_6","dummy1_abdomentrr"],
-["oi4_7","dummy1_abdomentrr"],
-["oi4_8","dummy1_abdomentrr"],
+// NOTE: Intermediate segment single-corner tethers removed.
+// Containment is now handled by the soft ORGAN_LEASH beams below (all 8 abdomen corners).
 
 // Segments joined together
 {"$ref":"TETHER_TOOTHPICK_SOLID_AF2","breakGroup":["dummy1_pelvisabdomen_intestines", "dummy1_thoraxabdomen_intestines"]},
@@ -920,15 +899,15 @@
 // their initial distance from a wall node, preventing clipping out of the body.
 // ===============================================================================
 {"breakGroup":""},
-{ "ORGAN_CONTAIN":{
-  "beamType":"|SUPPORT",
+{ "ORGAN_LEASH":{
+  "beamType":"|NORMAL",
   "beamPrecompression":1.0,
   "beamLongBound":0.15,
-  "beamShortBound":0,
-  "beamSpring":40000, "beamDamp":120,
+  "beamShortBound":9999,
+  "beamSpring":20000, "beamDamp":200,
   "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
 }},
-{"$ref":"ORGAN_CONTAIN"},
+{"$ref":"ORGAN_LEASH"},
 
 // THORAX-CAGE organs (lungs, heart) — anchored to thorax corners
 ["orl1","dummy1_thoraxmfr"],["orl2","dummy1_thoraxmrr"],["orl3","dummy1_thoraxmrl"],["orl4","dummy1_thoraxmfl"],
@@ -969,7 +948,7 @@
 
     "triangles": [
         ["id1:","id2:","id3:"],
-        {"groundModel":"plastic"},
+        {"groundModel":"flesh"},
         {"dragCoef":4},
 
         //thorax
