@@ -35,11 +35,16 @@
 },
 
 // ── GTA NPC Behavior slots ────────────────────────────────────────────────────
-// Enables the jonesingGtaNpc Lua controller: ghost mode (anti-gravity walk)
-// until contact with any obstacle/vehicle or until the player comes within 1/4 spawn distance, then full ragdoll.
+// Enables the jonesingGtaNpc Lua controller.
+// GHOST phase: walks slowly parallel to road (sidewalk-offset from centreline),
+//   phases through everything.
+// Transitions to STANDING when player approaches within 1/4 spawn distance
+//   OR a 3 cm node displacement is detected (contact while ghost).
+// STANDING phase: stabiliser beams hold dummy upright as a solid physics object.
+//   A vehicle hit overwhelms the stabilisers and the dummy tumbles naturally.
 "jonesing_gta_npc_on": {
     "information":{
-        "name":"GTA NPC Mode (ghost walk → ragdoll on impact)",
+        "name":"GTA NPC Mode (sidewalk ghost walk → standing → tumble on hit)",
         "authors":"Jonesing",
     },
     "slotType":"AgentY_Dummy_npc_behavior",
@@ -48,7 +53,8 @@
         ["jonesingGtaNpc", {
             "walkSpeed":       0.03,
             "walkChangePeriod":5.0,
-            "proximityRadius": 20.0
+            "proximityRadius": 20.0,
+            "sidewalkOffset":  2.5
         }],
     ],
 },
