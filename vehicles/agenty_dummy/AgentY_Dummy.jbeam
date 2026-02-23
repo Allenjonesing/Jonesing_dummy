@@ -36,20 +36,19 @@
 
 // ── GTA NPC Behavior slots ────────────────────────────────────────────────────
 // Enables the jonesingGtaNpc Lua controller: ghost mode (anti-gravity walk)
-// until hit, then full ragdoll.
+// until the player approaches (within 1/4 of spawn distance), then upright physics.
 "jonesing_gta_npc_on": {
     "information":{
-        "name":"GTA NPC Mode (ghost walk → ragdoll on impact)",
+        "name":"GTA NPC Mode (ghost walk → physics on approach)",
         "authors":"Jonesing",
     },
     "slotType":"AgentY_Dummy_npc_behavior",
     "controller": [
         ["fileName"],
         ["jonesingGtaNpc", {
-            "triggerRadius":   6.0,
-            "impactThreshold": 3.0,
-            "walkSpeed":       0.8,
-            "ghostHeight":     0.05
+            "walkSpeed":       0.3,
+            "walkChangePeriod":5.0,
+            "proximityRadius": 20.0
         }],
     ],
 },

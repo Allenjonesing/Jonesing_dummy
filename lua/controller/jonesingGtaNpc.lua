@@ -5,44 +5,74 @@
 -- jonesingGtaNpc.lua
 -- GTA-style NPC controller for the Jonesing dummy.
 --
--- GHOST phase  — The dummy floats at spawn height and drifts forward in a
---                random walk, like a GTA pedestrian.  Implemented via
---                obj:setNodePosition so it works on any BeamNG version.
---
--- RAGDOLL phase — When an external force displaces any node more than
---                impactThreshold metres from its expected ghost position,
---                the controller stops overriding positions and lets BeamNG
---                physics run freely.
+-- Three states:
+--   GHOST   — The dummy floats at spawn height and drifts slowly forward,
+--             phasing through everything.  Implemented via obj:setNodePosition.
+--             Active while the player vehicle is farther than effectiveProxRadius.
+--   PHYSICS — Player has come within effectiveProxRadius (= spawnDist * 0.25).
+--             Position overrides stop.  The existing stabiliser beams keep the
+--             dummy standing upright while full collision physics are active:
+--             the dummy can be hit by cars, poles, and other vehicles normally.
+--   (no separate ragdoll — once in PHYSICS the physics engine handles it)
 --
 -- Controller params (set in the jbeam controller entry):
---   impactThreshold  (default 0.25 m) — node displacement (metres) that triggers ragdoll
---   walkSpeed        (default 0.6 m/s)— forward drift speed in ghost mode
---   walkChangePeriod (default 4.0 s)  — seconds between random direction changes
--- Note: ghost height is maintained automatically at spawn Z (constant anti-gravity).
+--   walkSpeed        (default 0.3 m/s)— slow pedestrian pace in ghost mode
+--   walkChangePeriod (default 5.0 s)  — seconds between gentle direction tweaks
+--   proximityRadius  (default 20 m)   — fallback radius if spawn distance can't
+--                                       be measured; actual radius = spawnDist*0.25
 
 local M = {}
 
 -- ── internal state ────────────────────────────────────────────────────────────
-local state            = "ghost"
-local allNodes         = {}        -- {n, spawnX, spawnY, spawnZ}
-local walkOffsetX      = 0.0
-local walkOffsetY      = 0.0
-local walkDir          = 0.0
-local walkTimer        = 0.0
+local state              = "ghost"
+local allNodes           = {}        -- {cid, spawnX, spawnY, spawnZ}
+local walkOffsetX        = 0.0
+local walkOffsetY        = 0.0
+local walkDir            = 0.0
+local walkTimer          = 0.0
+local effectiveProxRadius = 20.0    -- computed at init from spawnDist * 0.25
 
 -- configurable params
-local impactThreshold  = 0.25   -- metres
-local walkSpeed        = 0.6    -- m/s
-local walkChangePeriod = 4.0    -- seconds
+local walkSpeed          = 0.3      -- m/s  (slow GTA pedestrian pace)
+local walkChangePeriod   = 5.0      -- s    (how often direction gently drifts)
+local proximityRadius    = 20.0     -- m    (fallback if spawn dist unavailable)
+
+-- Direction change magnitude — small so each dummy walks in a consistent line
+-- and doesn't zigzag across the road.
+local DIRECTION_CHANGE_MAX   = math.pi / 18   -- ±10°
+-- Minimum effective proximity radius regardless of spawn distance
+local MIN_PROXIMITY_RADIUS   = 6.0           -- metres
+
+
+-- ── helpers ───────────────────────────────────────────────────────────────────
+
+-- Safely get the player vehicle's world position (returns vec3 or nil).
+local function getPlayerPos()
+    local ok, result = pcall(function()
+        local pv = be:getPlayerVehicle(0)
+        if not pv then return nil end
+        local p = pv:getPosition()
+        return vec3(p.x, p.y, p.z)
+    end)
+    return (ok and result) or nil
+end
+
+-- World position of the dummy's walk origin (spawn centre + accumulated offset).
+local function getDummyWorldPos()
+    if #allNodes == 0 then return nil end
+    local r = allNodes[1]
+    return vec3(r.spawnX + walkOffsetX, r.spawnY + walkOffsetY, r.spawnZ)
+end
 
 
 -- ── jbeam lifecycle callbacks ─────────────────────────────────────────────────
+
 local function init(jbeamData)
-    impactThreshold  = jbeamData.impactThreshold  or impactThreshold
     walkSpeed        = jbeamData.walkSpeed        or walkSpeed
     walkChangePeriod = jbeamData.walkChangePeriod or walkChangePeriod
+    proximityRadius  = jbeamData.proximityRadius  or proximityRadius
 
-    -- Record spawn positions for every node
+    -- Record spawn position for every node
     allNodes = {}
     for _, n in pairs(v.data.nodes) do
         local p = vec3(obj:getNodePosition(n.cid))
@@ -54,22 +84,38 @@ local function init(jbeamData)
         })
     end
 
-    -- Per-instance random seed so multiple dummies walk differently
-    -- Seed using sum of first node cid (unique per vehicle instance)
+    -- Per-instance random seed (unique per vehicle object)
     local seed = 0
     if allNodes[1] then seed = allNodes[1].cid end
     math.randomseed(os.time() + seed)
+
+    -- Walk direction: fully random start, but small perturbations keep it
+    -- consistent so the dummy doesn't zigzag sideways across the road.
     walkDir = math.random() * 2 * math.pi
 
     walkOffsetX = 0
     walkOffsetY = 0
     walkTimer   = 0
-    state       = "ghost"
+
+    -- Compute effective proximity radius = 1/4 of the distance to the player
+    -- at spawn time.  Fall back to jbeam proximityRadius if player is unavailable.
+    local pp = getPlayerPos()
+    if pp and #allNodes > 0 then
+        local r = allNodes[1]
+        local dx = pp.x - r.spawnX
+        local dy = pp.y - r.spawnY
+        local dz = pp.z - r.spawnZ
+        local spawnDist = math.sqrt(dx*dx + dy*dy + dz*dz)
+        effectiveProxRadius = math.max(spawnDist * 0.25, MIN_PROXIMITY_RADIUS)
+    else
+        effectiveProxRadius = proximityRadius
+    end
+
+    state = "ghost"
 end
 
 
 local function reset()
-    -- Re-read spawn positions after physics reset
     for _, rec in ipairs(allNodes) do
         local p = vec3(obj:getNodePosition(rec.cid))
         rec.spawnX = p.x
@@ -83,50 +129,66 @@ local function reset()
     if allNodes[1] then seed = allNodes[1].cid end
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
-    state   = "ghost"
+
+    -- Recalculate effective proximity radius from new spawn positions
+    local pp = getPlayerPos()
+    if pp and allNodes[1] then
+        local r = allNodes[1]
+        local dx = pp.x - r.spawnX
+        local dy = pp.y - r.spawnY
+        local dz = pp.z - r.spawnZ
+        local spawnDist = math.sqrt(dx*dx + dy*dy + dz*dz)
+        effectiveProxRadius = math.max(spawnDist * 0.25, MIN_PROXIMITY_RADIUS)
+    end
+
+    state = "ghost"
 end
 
 
 local function updateGFX(dt)
     if dt <= 0 then return end
-    if state == "ragdoll" then return end
 
-    -- ── 1. Periodically nudge the walk direction ──────────────────────────────
+    -- PHYSICS state: position overrides are OFF; stabilisers hold dummy upright;
+    -- full collision physics active.  Nothing to do here.
+    if state == "physics" then return end
+
+    -- ── 1. Check player proximity ─────────────────────────────────────────────
+    local myPos = getDummyWorldPos()
+    if myPos then
+        local pp = getPlayerPos()
+        if pp then
+            local dx = pp.x - myPos.x
+            local dy = pp.y - myPos.y
+            local dz = pp.z - myPos.z
+            if (dx*dx + dy*dy + dz*dz) < (effectiveProxRadius * effectiveProxRadius) then
+                -- Player is close — hand off to physics + stabilisers
+                state = "physics"
+                return
+            end
+        end
+    end
+
+    -- ── 2. Periodically tweak walk direction (gentle, ±10°) ──────────────────
     walkTimer = walkTimer + dt
     if walkTimer >= walkChangePeriod then
         walkTimer = 0
-        -- ±45° random perturbation
-        walkDir = walkDir + (math.random() - 0.5) * math.pi * 0.5
+        walkDir = walkDir + (math.random() - 0.5) * 2 * DIRECTION_CHANGE_MAX
     end
 
-    -- ── 2. Accumulate horizontal walk displacement ────────────────────────────
+    -- ── 3. Accumulate horizontal walk displacement ────────────────────────────
     local stepX = math.sin(walkDir) * walkSpeed * dt
     local stepY = math.cos(walkDir) * walkSpeed * dt
     walkOffsetX = walkOffsetX + stepX
     walkOffsetY = walkOffsetY + stepY
 
-    -- ── 3. Check each node for external impact BEFORE moving ─────────────────
-    --  If any node has drifted far from its ghost trajectory, switch to ragdoll.
-    local impactThresholdSquared = impactThreshold * impactThreshold
-    for _, rec in ipairs(allNodes) do
-        local p = vec3(obj:getNodePosition(rec.cid))
-        local dx = p.x - (rec.spawnX + walkOffsetX)
-        local dy = p.y - (rec.spawnY + walkOffsetY)
-        local dz = p.z - rec.spawnZ
-        if (dx*dx + dy*dy + dz*dz) > impactThresholdSquared then
-            state = "ragdoll"
-            return
-        end
-    end
-
-    -- ── 4. Ghost: teleport every node to its desired position ─────────────────
-    --  Moving ALL nodes by the same offset keeps relative distances (beam
-    --  lengths) constant → no spurious internal forces.
+    -- ── 4. Teleport every node to its desired ghost position ─────────────────
+    --  Moving ALL nodes by the same XY offset keeps every beam length constant
+    --  → no spurious internal forces or vibration.  Z is fixed (anti-gravity).
     for _, rec in ipairs(allNodes) do
         obj:setNodePosition(rec.cid, vec3(
             rec.spawnX + walkOffsetX,
             rec.spawnY + walkOffsetY,
-            rec.spawnZ   -- constant Z = anti-gravity
+            rec.spawnZ
         ))
     end
 end
