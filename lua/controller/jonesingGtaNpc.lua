@@ -16,7 +16,8 @@
 --   (no separate ragdoll — once in PHYSICS the physics engine handles it)
 --
 -- Controller params (set in the jbeam controller entry):
---   walkSpeed        (default 0.3 m/s)— slow pedestrian pace in ghost mode
+--   walkSpeed        (default 0.03 m/s) — slow pedestrian pace in ghost mode
+--   maxWalkSpeed     (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
 --   walkChangePeriod (default 5.0 s)  — seconds between gentle direction tweaks
 --   proximityRadius  (default 20 m)   — fallback radius if spawn distance can't
 --                                       be measured; actual radius = spawnDist*0.25
@@ -33,7 +34,11 @@ local walkTimer          = 0.0
 local effectiveProxRadius = 20.0    -- computed at init from spawnDist * 0.25
 
 -- configurable params
-local walkSpeed          = 0.3      -- m/s  (slow GTA pedestrian pace)
+local walkSpeed          = 0.03     -- m/s  (slow GTA pedestrian pace)
+-- Hard speed cap: teleport delta per frame is clamped so physics velocity
+-- never accumulates beyond this regardless of frame rate or walk speed setting.
+-- 5 mph = 2.235 m/s
+local maxWalkSpeed        = 2.235    -- m/s  (~5 mph)
 local walkChangePeriod   = 5.0      -- s    (how often direction gently drifts)
 local proximityRadius    = 20.0     -- m    (fallback if spawn dist unavailable)
 
@@ -69,6 +74,7 @@ end
 
 local function init(jbeamData)
     walkSpeed        = jbeamData.walkSpeed        or walkSpeed
+    maxWalkSpeed     = jbeamData.maxWalkSpeed      or maxWalkSpeed
     walkChangePeriod = jbeamData.walkChangePeriod or walkChangePeriod
     proximityRadius  = jbeamData.proximityRadius  or proximityRadius
 
@@ -176,8 +182,9 @@ local function updateGFX(dt)
     end
 
     -- ── 3. Accumulate horizontal walk displacement ────────────────────────────
-    local stepX = math.sin(walkDir) * walkSpeed * dt
-    local stepY = math.cos(walkDir) * walkSpeed * dt
+    local effectiveSpeed = math.min(walkSpeed, maxWalkSpeed)
+    local stepX = math.sin(walkDir) * effectiveSpeed * dt
+    local stepY = math.cos(walkDir) * effectiveSpeed * dt
     walkOffsetX = walkOffsetX + stepX
     walkOffsetY = walkOffsetY + stepY
 

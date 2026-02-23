@@ -46,7 +46,7 @@
     "controller": [
         ["fileName"],
         ["jonesingGtaNpc", {
-            "walkSpeed":       0.3,
+            "walkSpeed":       0.03,
             "walkChangePeriod":5.0,
             "proximityRadius": 20.0
         }],
