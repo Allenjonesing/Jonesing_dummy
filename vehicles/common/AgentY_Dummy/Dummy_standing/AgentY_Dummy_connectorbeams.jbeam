@@ -11,7 +11,7 @@
     ],
     "beams": [
         ["id1:", "id2:"],
-     	{"beamDeform": 500000, "beamStrength":"FLT_MAX"}, 
+     	{"beamDeform": 3000, "beamStrength":"FLT_MAX"}, 
     ],
 },
 "Breakable_yes": {
