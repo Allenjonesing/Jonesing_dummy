@@ -267,7 +267,7 @@
       {},
       {}
     ],
-    "mapTo": "Heart_Tex",
+    "mapTo": "organs_heart",
     "twoSided": true,
     "materialTag0": "beamng",
     "materialTag1": "object",
@@ -358,7 +358,7 @@
   "thairoid01_lungh_part02_002-material": {
     "name": "thairoid01_lungh_part02_002-material",
     "class": "Material",
-    "mapTo": "thairoid01_lungh_part02_002",
+    "mapTo": "thairoid01:lungh_part02.001",
     "version": 1.5,
     "Stages": [
       {
@@ -405,7 +405,7 @@
   "thairoid01_lungh_part02-material": {
     "name": "thairoid01_lungh_part02-material",
     "class": "Material",
-    "mapTo": "thairoid01_lungh_part02",
+    "mapTo": "thairoid01:lungh_part02",
     "version": 1.5,
     "Stages": [
       {

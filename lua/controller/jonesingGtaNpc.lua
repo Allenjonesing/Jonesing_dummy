@@ -7,12 +7,12 @@
 --
 -- Two states (GHOST and STANDING):
 --
---   GHOST    — After a 2-second physics-settling grace period, the dummy is
+--   GHOST    — After a 3.5-second physics-settling grace period, the dummy is
 --              locked to a fixed world position and walks slowly along the road
 --              by teleporting all nodes simultaneously (constant beam lengths,
 --              no internal forces).  The dummy phases through everything.
 --              Walk direction is aligned to the road (perpendicular of the
---              player→dummy spawn vector).
+--              player→dummy spawn vector, computed after physics settles).
 --              Spawn position is shifted sidewalkOffset metres RIGHT of the lane
 --              direction (toward the kerb) so the dummy walks on the sidewalk.
 --
@@ -22,9 +22,11 @@
 --
 -- GHOST → STANDING transition:
 --   • After STARTUP_GRACE seconds the node baseline is snapshotted from the
---     fully-settled physics positions.  From that point, if the reference node
---     is displaced ≥ 3 cm in XY (horizontal) from the expected ghost position,
---     a vehicle has physically contacted the dummy → switch to STANDING.
+--     fully-settled physics positions.  Walk direction + sidewalk offset are
+--     computed from real world coords at that moment (player vs. dummy position).
+--     From that point, if the reference node is displaced ≥ 3 cm in XY
+--     (horizontal) from the expected ghost position, a vehicle has physically
+--     contacted the dummy → switch to STANDING.
 --
 -- IMPORTANT — why we wait before teleporting:
 --   Traffic scripts call init() BEFORE placing the vehicle at its spawn world
@@ -39,8 +41,6 @@
 --   maxWalkSpeed     (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
 --   walkChangePeriod (default 5.0 s)  — seconds between gentle road-parallel tweaks
 --   sidewalkOffset   (default 5.0 m)  — lateral shift RIGHT of lane direction at spawn
---                                        (half-road-width offset; ~5 m puts dummy on kerb
---                                         for a typical 2×10 m lane layout)
 
 local M = {}
 
@@ -75,10 +75,9 @@ local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
 -- Normal ghost-walking XY residual drift ≈ 1 mm (30× safety margin).
 local IMPACT_THRESHOLD_SQ  = 0.03 * 0.03   -- metres²  (3 cm in XY only)
 -- Grace period after spawn before the impact check is enabled.
--- Traffic-script spawning runs physics-settling for ~1 s after init();
--- during this time nodes can move > 3 cm in XY purely from spring/damper
--- settling, which would otherwise false-trigger the STANDING transition.
-local STARTUP_GRACE        = 2.0             -- seconds
+-- Traffic-script spawning runs physics-settling for ~2 s after init();
+-- 3.5 s provides comfortable margin for all map/PC speeds.
+local STARTUP_GRACE        = 3.5             -- seconds
 
 
 -- ── helpers ───────────────────────────────────────────────────────────────────
@@ -118,46 +117,13 @@ local function init(jbeamData)
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
 
-    -- Reset accumulators and startup grace timer
+    -- Reset accumulators and startup grace timer.
+    -- walkDir, walkOffsetX, walkOffsetY are computed at grace END (world coords).
     walkOffsetX  = 0
     walkOffsetY  = 0
+    walkDir      = 0
     walkTimer    = 0
     startupTimer = 0
-
-    -- Compute walk direction from player→dummy heuristic.
-    -- We still use getNodePosition here to get a rough spawn position for the
-    -- road-direction heuristic; the inaccuracy at init() only affects walk
-    -- direction (not the baseline Z used for teleportation, which is snapshotted
-    -- after physics settles).
-    local pp = getPlayerPos()
-    if pp and rawNodeIds[1] then
-        local p0 = vec3(obj:getNodePosition(rawNodeIds[1]))
-        local dx = pp.x - p0.x
-        local dy = pp.y - p0.y
-        local perpDist = math.sqrt(dx*dx + dy*dy)
-
-        if perpDist > 1.0 then
-            -- Road-parallel direction = 90° rotation of (dx, dy)
-            local nx = -dy / perpDist
-            local ny =  dx / perpDist
-            walkDir = math.atan2(nx, ny)
-            -- 50/50 chance of walking toward or away from player's heading
-            local flip = (math.random() > 0.5) and math.pi or 0.0
-            walkDir = walkDir + flip
-
-            -- Sidewalk offset: always shift RIGHT of the walk direction.
-            -- Forward vector = (sin(walkDir), cos(walkDir))
-            -- Right perpendicular (90° clockwise) = (cos(walkDir), -sin(walkDir))
-            local rightX = math.cos(walkDir)
-            local rightY = -math.sin(walkDir)
-            walkOffsetX = rightX * sidewalkOffset
-            walkOffsetY = rightY * sidewalkOffset
-        else
-            walkDir = math.random() * 2 * math.pi
-        end
-    else
-        walkDir = math.random() * 2 * math.pi
-    end
 
     state = "grace"
 end
@@ -192,8 +158,36 @@ local function updateGFX(dt)
     if state == "grace" then
         startupTimer = startupTimer + dt
         if startupTimer >= STARTUP_GRACE then
-            -- Snapshot settled positions — these are correct world coords now
+            -- Snapshot settled positions — these are correct world coords now.
+            -- Also compute walk direction and sidewalk offset using REAL world
+            -- positions (not the jbeam-local coords available at init() time).
             allNodes = {}
+            local p0 = vec3(obj:getNodePosition(rawNodeIds[1]))
+
+            -- Road direction: player→dummy vector is road-perpendicular;
+            -- rotate 90° to get road-parallel walk direction.
+            local pp = getPlayerPos()
+            if pp and (math.abs(pp.x - p0.x) > 1.0 or math.abs(pp.y - p0.y) > 1.0) then
+                local dx = pp.x - p0.x
+                local dy = pp.y - p0.y
+                local perpDist = math.sqrt(dx*dx + dy*dy)
+                if perpDist > 1.0 then
+                    local nx = -dy / perpDist
+                    local ny =  dx / perpDist
+                    walkDir = math.atan2(nx, ny)
+                    local flip = (math.random() > 0.5) and math.pi or 0.0
+                    walkDir = walkDir + flip
+
+                    -- Sidewalk offset: shift RIGHT of walk direction (toward kerb)
+                    local rightX = math.cos(walkDir)
+                    local rightY = -math.sin(walkDir)
+                    walkOffsetX = rightX * sidewalkOffset
+                    walkOffsetY = rightY * sidewalkOffset
+                end
+            else
+                walkDir = math.random() * 2 * math.pi
+            end
+
             for _, cid in ipairs(rawNodeIds) do
                 local p = vec3(obj:getNodePosition(cid))
                 table.insert(allNodes, {
