@@ -13,7 +13,8 @@
 --              Walk direction is aligned to the road (perpendicular of the
 --              player→dummy spawn vector) so the dummy walks like a pedestrian
 --              along the sidewalk rather than drifting across the road.
---              Spawn position is shifted 2.5 m to the side of the road centerline.
+--              Spawn position is shifted 5.0 m RIGHT of the lane direction
+--              (sidewalk side of the traffic lane).
 --
 --   STANDING — All position overrides stop.  The existing stabiliser beams hold
 --              the dummy upright as a solid physics object.  A vehicle impact
@@ -26,10 +27,12 @@
 --     impact force knocks it over naturally via physics.
 --
 -- Controller params (set in the jbeam slot entry):
---   walkSpeed        (default 0.03 m/s) — slow pedestrian pace in ghost mode
+--   walkSpeed        (default 0.008 m/s) — very slow pedestrian shuffle in ghost mode
 --   maxWalkSpeed     (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
 --   walkChangePeriod (default 5.0 s)  — seconds between gentle road-parallel tweaks
---   sidewalkOffset   (default 2.5 m)  — lateral shift from road centreline at spawn
+--   sidewalkOffset   (default 5.0 m)  — lateral shift RIGHT of lane direction at spawn
+--                                        (half-road-width offset; ~5 m puts dummy on kerb
+--                                         for a typical 2×10 m lane layout)
 
 local M = {}
 
@@ -42,20 +45,23 @@ local walkDir            = 0.0
 local walkTimer          = 0.0
 
 -- configurable params
-local walkSpeed          = 0.03     -- m/s  (slow GTA pedestrian pace)
+local walkSpeed          = 0.008    -- m/s  (very slow GTA pedestrian shuffle)
 -- Hard speed cap: teleport delta per frame is clamped so physics velocity
 -- never accumulates beyond this regardless of frame rate or walk speed setting.
 -- 5 mph = 2.235 m/s
 local maxWalkSpeed        = 2.235    -- m/s  (~5 mph)
 local walkChangePeriod   = 5.0      -- s    (how often direction gently drifts)
-local sidewalkOffset     = 2.5      -- m    (lateral shift from road centreline)
+local sidewalkOffset     = 5.0      -- m    (5 m RIGHT of lane direction = on kerb)
 
 -- Direction change magnitude — tight so dummy stays road-parallel with only a
 -- gentle drift over time.
 local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
--- Impact detection threshold: normal walking drift ≈ 1 mm; anything larger
--- than IMPACT_THRESHOLD (3 cm) means a wall or vehicle physically displaced a node.
-local IMPACT_THRESHOLD_SQ  = 0.03 * 0.03   -- metres²  (3 cm)
+-- Impact detection threshold: only check XY (horizontal) displacement.
+-- Terrain height changes push nodes vertically (Z) — checking Z causes false
+-- triggers on any slope or bump.  Real vehicle/wall impacts displace nodes
+-- laterally (XY) by ≥ 3 cm; terrain slope only affects Z.
+-- Normal ghost-walking XY residual drift ≈ 1 mm (30× safety margin).
+local IMPACT_THRESHOLD_SQ  = 0.03 * 0.03   -- metres²  (3 cm in XY only)
 
 
 -- ── helpers ───────────────────────────────────────────────────────────────────
@@ -125,11 +131,14 @@ local function init(jbeamData)
             local flip = (math.random() > 0.5) and math.pi or 0.0
             walkDir = walkDir + flip
 
-            -- Sidewalk offset: shift spawn sideways (along perpendicular to road,
-            -- i.e. in the player→dummy direction) so the dummy stands on the kerb.
-            local sideSign = (math.random() > 0.5) and 1 or -1
-            local offX = (dx / perpDist) * sidewalkOffset * sideSign
-            local offY = (dy / perpDist) * sidewalkOffset * sideSign
+            -- Sidewalk offset: always shift RIGHT of the walk direction.
+            -- Forward vector = (sin(walkDir), cos(walkDir))
+            -- Right perpendicular (90° clockwise) = (cos(walkDir), -sin(walkDir))
+            -- This places the dummy on the right kerb/sidewalk of their traffic lane.
+            local rightX = math.cos(walkDir)
+            local rightY = -math.sin(walkDir)
+            local offX = rightX * sidewalkOffset
+            local offY = rightY * sidewalkOffset
             for _, rec in ipairs(allNodes) do
                 rec.spawnX = rec.spawnX + offX
                 rec.spawnY = rec.spawnY + offY
@@ -184,11 +193,10 @@ local function updateGFX(dt)
         local cur = vec3(obj:getNodePosition(ref.cid))
         local expX = ref.spawnX + walkOffsetX
         local expY = ref.spawnY + walkOffsetY
-        local expZ = ref.spawnZ
         local ddx = cur.x - expX
         local ddy = cur.y - expY
-        local ddz = cur.z - expZ
-        if (ddx*ddx + ddy*ddy + ddz*ddz) > IMPACT_THRESHOLD_SQ then
+        -- XY-only: ignore Z so terrain slope / bumps don't false-trigger
+        if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
             state = "standing"
             return
         end
