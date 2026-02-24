@@ -19,19 +19,16 @@
 --              the dummy upright as a solid physics object.  A vehicle impact
 --              will overwhelm the stabilisers and the dummy tumbles naturally.
 --
--- GHOST → STANDING transitions:
---   • Player vehicle enters effectiveProxRadius (= spawnDist × 0.25).
---     The dummy stops ghost-walking and stands in place waiting to be hit.
+-- GHOST → STANDING transition:
 --   • Reference node is displaced ≥ 3 cm from expected position while in GHOST.
---     (e.g. brushed by a fast-moving car while phasing — stops overrides,
---      dummy becomes solid immediately.)
+--     Any vehicle (player or traffic) physically contacting the dummy triggers
+--     this — overrides stop, dummy becomes a solid upright pedestrian, the
+--     impact force knocks it over naturally via physics.
 --
 -- Controller params (set in the jbeam slot entry):
 --   walkSpeed        (default 0.03 m/s) — slow pedestrian pace in ghost mode
 --   maxWalkSpeed     (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
 --   walkChangePeriod (default 5.0 s)  — seconds between gentle road-parallel tweaks
---   proximityRadius  (default 20 m)   — fallback radius if spawn distance can't
---                                       be measured; actual radius = spawnDist×0.25
 --   sidewalkOffset   (default 2.5 m)  — lateral shift from road centreline at spawn
 
 local M = {}
@@ -43,7 +40,6 @@ local walkOffsetX        = 0.0
 local walkOffsetY        = 0.0
 local walkDir            = 0.0
 local walkTimer          = 0.0
-local effectiveProxRadius = 20.0    -- computed at init from spawnDist × 0.25
 
 -- configurable params
 local walkSpeed          = 0.03     -- m/s  (slow GTA pedestrian pace)
@@ -52,14 +48,11 @@ local walkSpeed          = 0.03     -- m/s  (slow GTA pedestrian pace)
 -- 5 mph = 2.235 m/s
 local maxWalkSpeed        = 2.235    -- m/s  (~5 mph)
 local walkChangePeriod   = 5.0      -- s    (how often direction gently drifts)
-local proximityRadius    = 20.0     -- m    (fallback if spawn dist unavailable)
 local sidewalkOffset     = 2.5      -- m    (lateral shift from road centreline)
 
 -- Direction change magnitude — tight so dummy stays road-parallel with only a
 -- gentle drift over time.
 local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
--- Minimum effective proximity radius regardless of spawn distance
-local MIN_PROXIMITY_RADIUS = 6.0            -- metres
 -- Impact detection threshold: normal walking drift ≈ 1 mm; anything larger
 -- than IMPACT_THRESHOLD (3 cm) means a wall or vehicle physically displaced a node.
 local IMPACT_THRESHOLD_SQ  = 0.03 * 0.03   -- metres²  (3 cm)
@@ -68,6 +61,7 @@ local IMPACT_THRESHOLD_SQ  = 0.03 * 0.03   -- metres²  (3 cm)
 -- ── helpers ───────────────────────────────────────────────────────────────────
 
 -- Safely get the player vehicle's world position (returns vec3 or nil).
+-- Used during init() to compute road direction and sidewalk offset.
 local function getPlayerPos()
     local ok, result = pcall(function()
         local pv = be:getPlayerVehicle(0)
@@ -78,13 +72,6 @@ local function getPlayerPos()
     return (ok and result) or nil
 end
 
--- World position of the dummy's walk origin (spawn centre + accumulated offset).
-local function getDummyWorldPos()
-    if #allNodes == 0 then return nil end
-    local r = allNodes[1]
-    return vec3(r.spawnX + walkOffsetX, r.spawnY + walkOffsetY, r.spawnZ)
-end
-
 
 -- ── jbeam lifecycle callbacks ─────────────────────────────────────────────────
 
@@ -92,7 +79,6 @@ local function init(jbeamData)
     walkSpeed        = jbeamData.walkSpeed        or walkSpeed
     maxWalkSpeed     = jbeamData.maxWalkSpeed      or maxWalkSpeed
     walkChangePeriod = jbeamData.walkChangePeriod or walkChangePeriod
-    proximityRadius  = jbeamData.proximityRadius  or proximityRadius
     sidewalkOffset   = jbeamData.sidewalkOffset   or sidewalkOffset
 
     -- Record spawn position for every node
@@ -153,17 +139,8 @@ local function init(jbeamData)
             -- Player is almost on top of spawn — fall back to random direction
             walkDir = math.random() * 2 * math.pi
         end
-
-        -- Compute effective proximity radius from updated spawn distance
-        local r2 = allNodes[1]
-        local ddx = pp.x - r2.spawnX
-        local ddy = pp.y - r2.spawnY
-        local ddz = pp.z - r2.spawnZ
-        local spawnDist = math.sqrt(ddx*ddx + ddy*ddy + ddz*ddz)
-        effectiveProxRadius = math.max(spawnDist * 0.25, MIN_PROXIMITY_RADIUS)
     else
         walkDir = math.random() * 2 * math.pi
-        effectiveProxRadius = proximityRadius
     end
 
     state = "ghost"
@@ -184,18 +161,6 @@ local function reset()
     if allNodes[1] then seed = allNodes[1].cid end
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
-
-    -- Recalculate effective proximity radius from new spawn positions
-    local pp = getPlayerPos()
-    if pp and allNodes[1] then
-        local r = allNodes[1]
-        local dx = pp.x - r.spawnX
-        local dy = pp.y - r.spawnY
-        local dz = pp.z - r.spawnZ
-        local spawnDist = math.sqrt(dx*dx + dy*dy + dz*dz)
-        effectiveProxRadius = math.max(spawnDist * 0.25, MIN_PROXIMITY_RADIUS)
-    end
-
     state = "ghost"
 end
 
@@ -229,38 +194,21 @@ local function updateGFX(dt)
         end
     end
 
-    -- ── 2. Player proximity → standing (stabilisers keep dummy upright) ───────
-    -- The dummy stops ghost-walking and becomes a solid physics pedestrian.
-    -- It will stand in place until a vehicle actually hits it.
-    local myPos = getDummyWorldPos()
-    if myPos then
-        local pp = getPlayerPos()
-        if pp then
-            local dx = pp.x - myPos.x
-            local dy = pp.y - myPos.y
-            local dz = pp.z - myPos.z
-            if (dx*dx + dy*dy + dz*dz) < (effectiveProxRadius * effectiveProxRadius) then
-                state = "standing"
-                return
-            end
-        end
-    end
-
-    -- ── 3. Periodically tweak walk direction (gentle, ±5°, road-parallel) ─────
+    -- ── 2. Periodically tweak walk direction (gentle, ±5°, road-parallel) ─────
     walkTimer = walkTimer + dt
     if walkTimer >= walkChangePeriod then
         walkTimer = 0
         walkDir = walkDir + (math.random() - 0.5) * 2 * DIRECTION_CHANGE_MAX
     end
 
-    -- ── 4. Accumulate horizontal walk displacement ────────────────────────────
+    -- ── 3. Accumulate horizontal walk displacement ────────────────────────────
     local effectiveSpeed = math.min(walkSpeed, maxWalkSpeed)
     local stepX = math.sin(walkDir) * effectiveSpeed * dt
     local stepY = math.cos(walkDir) * effectiveSpeed * dt
     walkOffsetX = walkOffsetX + stepX
     walkOffsetY = walkOffsetY + stepY
 
-    -- ── 5. Teleport every node to its desired ghost position ─────────────────
+    -- ── 4. Teleport every node to its desired ghost position ─────────────────
     --  Moving ALL nodes by the same XY offset keeps every beam length constant
     --  → no spurious internal forces or vibration.  Z is fixed (anti-gravity).
     for _, rec in ipairs(allNodes) do

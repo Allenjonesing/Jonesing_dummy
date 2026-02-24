@@ -38,13 +38,13 @@
 // Enables the jonesingGtaNpc Lua controller.
 // GHOST phase: walks slowly parallel to road (sidewalk-offset from centreline),
 //   phases through everything.
-// Transitions to STANDING when player approaches within 1/4 spawn distance
-//   OR a 3 cm node displacement is detected (contact while ghost).
+// Transitions to STANDING only when a physical contact displaces a node ≥ 3 cm
+//   (any vehicle — player car, traffic, etc. — hitting the dummy triggers this).
 // STANDING phase: stabiliser beams hold dummy upright as a solid physics object.
 //   A vehicle hit overwhelms the stabilisers and the dummy tumbles naturally.
 "jonesing_gta_npc_on": {
     "information":{
-        "name":"GTA NPC Mode (sidewalk ghost walk → standing → tumble on hit)",
+        "name":"GTA NPC Mode (sidewalk ghost walk → tumble on vehicle hit)",
         "authors":"Jonesing",
     },
     "slotType":"AgentY_Dummy_npc_behavior",
@@ -53,7 +53,6 @@
         ["jonesingGtaNpc", {
             "walkSpeed":       0.03,
             "walkChangePeriod":5.0,
-            "proximityRadius": 20.0,
             "sidewalkOffset":  2.5
         }],
     ],
