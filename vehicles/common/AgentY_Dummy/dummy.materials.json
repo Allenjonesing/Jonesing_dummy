@@ -274,6 +274,32 @@
     "order_simset": 0,
     "version": 1.5
   },
+  "Heart_Tex-material": {
+    "name": "Heart_Tex-material",
+    "class": "Material",
+    "mapTo": "Heart_Tex",
+    "version": 1.5,
+    "Stages": [
+      {
+        "diffuseColor": [
+          0.75,
+          0.12,
+          0.18,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.4,
+        "clearCoatFactor": 0.5,
+        "clearCoatRoughnessFactor": 0.8
+      },
+      {},
+      {},
+      {}
+    ],
+    "twoSided": true,
+    "materialTag0": "beamng",
+    "materialTag1": "object"
+  },
   "organs_lung": {
     "name": "organs_lung",
     "class": "Material",
@@ -358,7 +384,7 @@
   "thairoid01_lungh_part02_002-material": {
     "name": "thairoid01_lungh_part02_002-material",
     "class": "Material",
-    "mapTo": "thairoid01:lungh_part02.001",
+    "mapTo": "thairoid01_lungh_part02_002",
     "version": 1.5,
     "Stages": [
       {
@@ -405,7 +431,7 @@
   "thairoid01_lungh_part02-material": {
     "name": "thairoid01_lungh_part02-material",
     "class": "Material",
-    "mapTo": "thairoid01:lungh_part02",
+    "mapTo": "thairoid01_lungh_part02",
     "version": 1.5,
     "Stages": [
       {

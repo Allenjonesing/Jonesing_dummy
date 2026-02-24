@@ -75,10 +75,11 @@ local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
 -- Impact / fall detection — both checked on the named chest node "dummy1_thoraxtfl"
 -- (~1.45 m above ground) to avoid false positives from foot/terrain contact.
 --
--- XY threshold: 8 cm.  A car hit at 5 mph displaces the chest node ~6 cm in one
--- 60 fps frame; terrain/walking residual drift ≈ 1 mm.  3 cm was too tight —
--- cars driving nearby caused false triggers.  8 cm requires a genuine contact.
-local IMPACT_THRESHOLD_SQ  = 0.08 * 0.08   -- metres²  (8 cm in XY)
+-- XY threshold: 4 cm.  A car hit at walking speed displaces the chest node
+-- ~3 cm in one 60 fps frame; terrain/walking residual drift ≈ 1 mm.  8 cm was
+-- too large — slow car hits didn't trigger ragdoll in time.  4 cm catches slow
+-- nudges while still being 4× the normal drift margin.
+local IMPACT_THRESHOLD_SQ  = 0.04 * 0.04   -- metres²  (4 cm in XY)
 -- Z-drop threshold: 20 cm.  A standing dummy's chest stays within ±3 cm of
 -- baseline.  If the dummy tips over, the chest Z drops 20-60 cm immediately.
 -- This catches the case where the dummy falls due to uneven terrain or a slow
