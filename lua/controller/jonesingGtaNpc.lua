@@ -72,14 +72,22 @@ local sidewalkOffset     = 5.0      -- m    (5 m RIGHT of lane direction = on ke
 -- gentle drift over time.
 local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
 
+-- Ghost-mode vertical lift: all nodes are teleported GHOST_LIFT metres above
+-- their baseline Z.  This keeps foot nodes slightly above the terrain surface,
+-- preventing ground contact forces from vibrating through beams into the chest
+-- reference node and triggering false impact detection on bumpy terrain.
+-- 5 cm is barely visible (dummy appears to walk on the ground) but is enough
+-- to avoid any terrain-contact impulse.
+local GHOST_LIFT           = 0.05           -- metres above baseline Z
+
 -- Impact / fall detection — both checked on the named chest node "dummy1_thoraxtfl"
 -- (~1.45 m above ground) to avoid false positives from foot/terrain contact.
 --
--- XY threshold: 4 cm.  A car hit at walking speed displaces the chest node
--- ~3 cm in one 60 fps frame; terrain/walking residual drift ≈ 1 mm.  8 cm was
--- too large — slow car hits didn't trigger ragdoll in time.  4 cm catches slow
--- nudges while still being 4× the normal drift margin.
-local IMPACT_THRESHOLD_SQ  = 0.04 * 0.04   -- metres²  (4 cm in XY)
+-- XY threshold: 8 cm.  A car hit at walking speed displaces the chest node
+-- ~3-5 cm in one 60 fps frame; normal walking residual drift ≈ 1 mm.
+-- 8 cm catches genuine vehicle contacts while ignoring vibration from close
+-- proximity (player driving within 1 m but not touching the dummy).
+local IMPACT_THRESHOLD_SQ  = 0.08 * 0.08   -- metres²  (8 cm in XY)
 -- Z-drop threshold: 20 cm.  A standing dummy's chest stays within ±3 cm of
 -- baseline.  If the dummy tips over, the chest Z drops 20-60 cm immediately.
 -- This catches the case where the dummy falls due to uneven terrain or a slow
@@ -219,15 +227,15 @@ local function updateGFX(dt)
                 local p = vec3(obj:getNodePosition(cid))
                 table.insert(allNodes, {
                     cid    = cid,
-                    spawnX = p.x - walkOffsetX,   -- bake sidewalk offset in
-                    spawnY = p.y - walkOffsetY,
-                    spawnZ = p.z,
+                    spawnX = p.x,   -- baseline at lane centre; walkOffsetX adds sidewalk shift
+                    spawnY = p.y,
+                    spawnZ = p.z + GHOST_LIFT,  -- lift 5 cm above terrain, prevents ground contact
                 })
             end
-            -- Store the chest reference node's baseline Z for fall detection
+            -- Store the chest reference node's baseline Z (+ lift) for fall detection
             if refCid then
                 local rp = vec3(obj:getNodePosition(refCid))
-                refSpawnZ = rp.z
+                refSpawnZ = rp.z + GHOST_LIFT
             end
             state = "ghost"
         end
