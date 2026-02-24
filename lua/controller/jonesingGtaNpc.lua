@@ -13,18 +13,24 @@
 --              Walk direction is aligned to the road (perpendicular of the
 --              player→dummy spawn vector) so the dummy walks like a pedestrian
 --              along the sidewalk rather than drifting across the road.
---              Spawn position is shifted 5.0 m RIGHT of the lane direction
---              (sidewalk side of the traffic lane).
+--              Spawn position is shifted sidewalkOffset metres RIGHT of the lane
+--              direction (toward the kerb) so the dummy walks on the sidewalk,
+--              not in the lane centre.
 --
 --   STANDING — All position overrides stop.  The existing stabiliser beams hold
 --              the dummy upright as a solid physics object.  A vehicle impact
 --              will overwhelm the stabilisers and the dummy tumbles naturally.
 --
 -- GHOST → STANDING transition:
---   • Reference node is displaced ≥ 3 cm from expected position while in GHOST.
---     Any vehicle (player or traffic) physically contacting the dummy triggers
---     this — overrides stop, dummy becomes a solid upright pedestrian, the
---     impact force knocks it over naturally via physics.
+--   • After STARTUP_GRACE seconds, the reference node is checked each frame.
+--     If it is displaced ≥ 3 cm in XY (horizontal) from the expected ghost
+--     position, a vehicle has physically contacted the dummy → switch to
+--     STANDING so the impact force acts on a solid upright body.
+--   • The startup grace period prevents the physics-settling jitter that
+--     occurs in the first ~1-2 s after a traffic-script spawn from triggering
+--     a false transition.  During grace, spawnXY is re-baselined each frame to
+--     track the settling, so the post-grace impact check starts from an accurate
+--     reference.
 --
 -- Controller params (set in the jbeam slot entry):
 --   walkSpeed        (default 0.008 m/s) — very slow pedestrian shuffle in ghost mode
@@ -43,6 +49,7 @@ local walkOffsetX        = 0.0
 local walkOffsetY        = 0.0
 local walkDir            = 0.0
 local walkTimer          = 0.0
+local startupTimer       = 0.0
 
 -- configurable params
 local walkSpeed          = 0.008    -- m/s  (very slow GTA pedestrian shuffle)
@@ -62,6 +69,11 @@ local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
 -- laterally (XY) by ≥ 3 cm; terrain slope only affects Z.
 -- Normal ghost-walking XY residual drift ≈ 1 mm (30× safety margin).
 local IMPACT_THRESHOLD_SQ  = 0.03 * 0.03   -- metres²  (3 cm in XY only)
+-- Grace period after spawn before the impact check is enabled.
+-- Traffic-script spawning runs physics-settling for ~1 s after init();
+-- during this time nodes can move > 3 cm in XY purely from spring/damper
+-- settling, which would otherwise false-trigger the STANDING transition.
+local STARTUP_GRACE        = 2.0             -- seconds
 
 
 -- ── helpers ───────────────────────────────────────────────────────────────────
@@ -104,15 +116,22 @@ local function init(jbeamData)
     if allNodes[1] then seed = allNodes[1].cid end
     math.randomseed(os.time() + seed)
 
-    walkOffsetX = 0
-    walkOffsetY = 0
-    walkTimer   = 0
+    -- Reset accumulators and startup grace timer
+    walkOffsetX  = 0
+    walkOffsetY  = 0
+    walkTimer    = 0
+    startupTimer = 0
 
     -- Align walk direction to road and apply sidewalk offset.
     -- Heuristic: assume the player is near the road centreline when spawning
     -- the dummy.  The vector from the dummy spawn to the player is therefore
     -- roughly PERPENDICULAR to the road.  Rotating it 90° gives the road
     -- direction (parallel), which we use as the walk direction.
+    --
+    -- IMPORTANT: the sidewalk offset is stored in walkOffsetX/Y (not in
+    -- spawnXY) so the ghost teleport loop applies it every frame.  Storing it
+    -- in spawnXY and calling setNodePosition here would be overridden by
+    -- BeamNG's physics settlement in the first frames after spawning.
     local pp = getPlayerPos()
     if pp and #allNodes > 0 then
         local r = allNodes[1]
@@ -137,13 +156,9 @@ local function init(jbeamData)
             -- This places the dummy on the right kerb/sidewalk of their traffic lane.
             local rightX = math.cos(walkDir)
             local rightY = -math.sin(walkDir)
-            local offX = rightX * sidewalkOffset
-            local offY = rightY * sidewalkOffset
-            for _, rec in ipairs(allNodes) do
-                rec.spawnX = rec.spawnX + offX
-                rec.spawnY = rec.spawnY + offY
-                obj:setNodePosition(rec.cid, vec3(rec.spawnX, rec.spawnY, rec.spawnZ))
-            end
+            -- Store in walkOffset so teleport loop applies it every frame
+            walkOffsetX = rightX * sidewalkOffset
+            walkOffsetY = rightY * sidewalkOffset
         else
             -- Player is almost on top of spawn — fall back to random direction
             walkDir = math.random() * 2 * math.pi
@@ -163,9 +178,10 @@ local function reset()
         rec.spawnY = p.y
         rec.spawnZ = p.z
     end
-    walkOffsetX = 0
-    walkOffsetY = 0
-    walkTimer   = 0
+    walkOffsetX  = 0
+    walkOffsetY  = 0
+    walkTimer    = 0
+    startupTimer = 0
     local seed = 0
     if allNodes[1] then seed = allNodes[1].cid end
     math.randomseed(os.time() + seed)
@@ -182,41 +198,66 @@ local function updateGFX(dt)
     -- A vehicle hit will overwhelm the stabilisers and the dummy tumbles naturally.
     if state == "standing" then return end
 
-    -- ── 1. Impact detection ───────────────────────────────────────────────────
-    -- Compare where physics currently has the reference node vs. where we put it
-    -- last frame (spawnXY + accumulated walk offset, same Z we always set).
-    -- Normal walking residual drift ≈ 1 mm.  A wall or vehicle contact pushes the
-    -- node far more (≥ 3 cm) → switch to standing immediately so the dummy
-    -- reacts to the collision instead of teleporting through it.
-    if #allNodes > 0 then
-        local ref = allNodes[1]
-        local cur = vec3(obj:getNodePosition(ref.cid))
-        local expX = ref.spawnX + walkOffsetX
-        local expY = ref.spawnY + walkOffsetY
-        local ddx = cur.x - expX
-        local ddy = cur.y - expY
-        -- XY-only: ignore Z so terrain slope / bumps don't false-trigger
-        if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
-            state = "standing"
-            return
+    -- ── 1. Startup grace period ────────────────────────────────────────────────
+    -- During STARTUP_GRACE seconds, BeamNG physics is settling the dummy's nodes
+    -- from jbeam default positions onto the ground via spring/damper forces.
+    -- Nodes can move > 3 cm in XY during this settling, which would otherwise
+    -- immediately false-trigger the impact check → STANDING transition.
+    --
+    -- Strategy: re-baseline spawnXY each frame from the current physics position
+    -- so that by the time the grace period ends, our reference accurately reflects
+    -- the settled state.  The teleport target (spawnXY + walkOffset) always equals
+    -- the current physics position during grace, so the offset is preserved.
+    --   desired position = spawnXY + walkOffset
+    --   ∴  spawnXY = cur − walkOffset
+    local inStartup = (startupTimer < STARTUP_GRACE)
+    if inStartup then
+        startupTimer = startupTimer + dt
+        for _, rec in ipairs(allNodes) do
+            local cur = vec3(obj:getNodePosition(rec.cid))
+            rec.spawnX = cur.x - walkOffsetX
+            rec.spawnY = cur.y - walkOffsetY
+            -- spawnZ is not re-baselined: we always hold the dummy at its initial
+            -- spawn height (anti-gravity ghost effect).
+        end
+        -- Skip impact check — false positives guaranteed during settling.
+    else
+        -- ── 2. Impact detection (XY only, post-grace) ─────────────────────────
+        -- Compare where physics currently has the reference node vs. where we put
+        -- it last frame (spawnXY + accumulated walk offset).
+        -- Normal walking residual drift ≈ 1 mm.  A wall or vehicle contact pushes
+        -- the node ≥ 3 cm in XY → switch to STANDING immediately so the dummy
+        -- reacts to the collision instead of teleporting through it.
+        if #allNodes > 0 then
+            local ref = allNodes[1]
+            local cur = vec3(obj:getNodePosition(ref.cid))
+            local expX = ref.spawnX + walkOffsetX
+            local expY = ref.spawnY + walkOffsetY
+            local ddx = cur.x - expX
+            local ddy = cur.y - expY
+            -- XY-only: ignore Z so terrain slope / bumps don't false-trigger
+            if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
+                state = "standing"
+                return
+            end
         end
     end
 
-    -- ── 2. Periodically tweak walk direction (gentle, ±5°, road-parallel) ─────
+    -- ── 3. Periodically tweak walk direction (gentle, ±5°, road-parallel) ─────
     walkTimer = walkTimer + dt
     if walkTimer >= walkChangePeriod then
         walkTimer = 0
         walkDir = walkDir + (math.random() - 0.5) * 2 * DIRECTION_CHANGE_MAX
     end
 
-    -- ── 3. Accumulate horizontal walk displacement ────────────────────────────
+    -- ── 4. Accumulate horizontal walk displacement ────────────────────────────
     local effectiveSpeed = math.min(walkSpeed, maxWalkSpeed)
     local stepX = math.sin(walkDir) * effectiveSpeed * dt
     local stepY = math.cos(walkDir) * effectiveSpeed * dt
     walkOffsetX = walkOffsetX + stepX
     walkOffsetY = walkOffsetY + stepY
 
-    -- ── 4. Teleport every node to its desired ghost position ─────────────────
+    -- ── 5. Teleport every node to its desired ghost position ─────────────────
     --  Moving ALL nodes by the same XY offset keeps every beam length constant
     --  → no spurious internal forces or vibration.  Z is fixed (anti-gravity).
     for _, rec in ipairs(allNodes) do
