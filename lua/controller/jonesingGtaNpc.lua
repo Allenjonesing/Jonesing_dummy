@@ -50,6 +50,8 @@ local state              = "grace"   -- "grace", "ghost", or "standing"
 local allNodes           = {}        -- {cid, spawnX, spawnY, spawnZ} — set after baseline
 local refCid             = nil       -- cid of "dummy1_thoraxtfl" (chest reference node)
 local refSpawnZ          = 0.0       -- baseline Z of reference node after settling
+local lastRefX           = 0.0      -- where we LAST teleported the reference node (X)
+local lastRefY           = 0.0      -- where we LAST teleported the reference node (Y)
 local walkOffsetX        = 0.0
 local walkOffsetY        = 0.0
 local walkDir            = 0.0
@@ -165,11 +167,14 @@ end
 
 local function reset()
     allNodes     = {}
+    allNodes     = {}
     walkOffsetX  = 0
     walkOffsetY  = 0
     walkTimer    = 0
     startupTimer = 0
     refSpawnZ    = 0
+    lastRefX     = 0
+    lastRefY     = 0
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
@@ -229,13 +234,17 @@ local function updateGFX(dt)
                     cid    = cid,
                     spawnX = p.x,   -- baseline at lane centre; walkOffsetX adds sidewalk shift
                     spawnY = p.y,
-                    spawnZ = p.z + GHOST_LIFT,  -- lift 5 cm above terrain, prevents ground contact
+                    spawnZ = p.z,   -- true settled Z; GHOST_LIFT added in teleport step
                 })
             end
-            -- Store the chest reference node's baseline Z (+ lift) for fall detection
+            -- Store the chest reference node's baseline Z for fall detection,
+            -- and initialize lastRefX/Y to CURRENT position (before any sidewalk
+            -- teleport) so the first-frame impact check has zero displacement.
             if refCid then
                 local rp = vec3(obj:getNodePosition(refCid))
-                refSpawnZ = rp.z + GHOST_LIFT
+                refSpawnZ = rp.z
+                lastRefX  = rp.x   -- where the ref node IS right now (not +sidewalkOffset)
+                lastRefY  = rp.y
             end
             state = "ghost"
         end
@@ -244,25 +253,20 @@ local function updateGFX(dt)
 
     -- ── 2. Impact / fall detection (post-grace, chest reference node) ───────────
     -- Uses "dummy1_thoraxtfl" (top-left chest, ~1.45 m above ground) as reference.
-    -- This high node is never touched by the ground so terrain height changes
-    -- cannot cause false triggers — only vehicle/wall contact or a physical fall.
     --
-    --   • XY displacement ≥ 8 cm in one frame  → something hit the dummy laterally
-    --   • Z drops ≥ 20 cm below baseline        → dummy has physically tipped over
+    -- The check compares the current node position against WHERE WE PLACED IT last
+    -- frame (lastRefX/Y), NOT against the mathematical expected position.  This
+    -- prevents false triggers on the first ghost frame (when walkOffsetX already
+    -- holds the 5 m sidewalk shift but the nodes haven't been teleported yet —
+    -- that would look like a 5 m displacement and immediately trigger "standing").
+    --
+    --   • XY displacement ≥ 8 cm since last teleport  → something hit the dummy
+    --   • Z drops ≥ 20 cm below baseline              → dummy has physically fallen
     --
     if refCid and #allNodes > 0 then
         local cur = vec3(obj:getNodePosition(refCid))
-        -- Find this node's expected position in allNodes
-        local expX, expY = 0, 0
-        for _, rec in ipairs(allNodes) do
-            if rec.cid == refCid then
-                expX = rec.spawnX + walkOffsetX
-                expY = rec.spawnY + walkOffsetY
-                break
-            end
-        end
-        local ddx = cur.x - expX
-        local ddy = cur.y - expY
+        local ddx = cur.x - lastRefX
+        local ddy = cur.y - lastRefY
         -- XY impact check (vehicle/wall contact)
         if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
             state = "standing"
@@ -291,13 +295,25 @@ local function updateGFX(dt)
 
     -- ── 5. Teleport every node to its desired ghost position ─────────────────
     --  Moving ALL nodes by the same XY offset keeps every beam length constant
-    --  → no spurious internal forces or vibration.  Z is fixed (anti-gravity).
+    --  → no spurious internal forces or vibration.  Z is fixed + GHOST_LIFT.
     for _, rec in ipairs(allNodes) do
         obj:setNodePosition(rec.cid, vec3(
             rec.spawnX + walkOffsetX,
             rec.spawnY + walkOffsetY,
-            rec.spawnZ
+            rec.spawnZ + GHOST_LIFT
         ))
+    end
+
+    -- Update the reference position for next frame's impact check.
+    -- This is where we ACTUALLY placed the ref node this frame.
+    if refCid then
+        for _, rec in ipairs(allNodes) do
+            if rec.cid == refCid then
+                lastRefX = rec.spawnX + walkOffsetX
+                lastRefY = rec.spawnY + walkOffsetY
+                break
+            end
+        end
     end
 end
 
