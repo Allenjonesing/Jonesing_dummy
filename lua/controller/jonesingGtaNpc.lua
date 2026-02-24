@@ -20,13 +20,9 @@
 --              the dummy upright as a solid physics object.  A vehicle impact
 --              will overwhelm the stabilisers and the dummy tumbles naturally.
 --
--- GHOST → STANDING transition:
---   • After STARTUP_GRACE seconds the node baseline is snapshotted from the
---     fully-settled physics positions.  Walk direction + sidewalk offset are
---     computed from real world coords at that moment (player vs. dummy position).
---     From that point, if the reference node is displaced ≥ 3 cm in XY
---     (horizontal) from the expected ghost position, a vehicle has physically
---     contacted the dummy → switch to STANDING.
+-- GHOST → STANDING transition triggers (both on the chest/thorax reference node):
+--   1. XY displacement ≥ 8 cm in a single frame  → vehicle/wall physically hit it
+--   2. Z drops ≥ 20 cm below baseline             → dummy has physically fallen over
 --
 -- IMPORTANT — why we wait before teleporting:
 --   Traffic scripts call init() BEFORE placing the vehicle at its spawn world
@@ -35,6 +31,11 @@
 --   wrong coordinates creates enormous beam-spring forces that send the dummy
 --   flying and exploding.  The grace period lets BeamNG move and settle the
 --   vehicle at its real world position; we snapshot AFTER settling.
+--
+-- Reference node: "dummy1_thoraxtfl" (top-left chest node, ~1.45 m above ground).
+--   Using a high chest node as reference avoids false triggers from foot/ground
+--   contact and is far enough from the ground that a ≥8 cm XY displacement is
+--   only caused by a vehicle or wall impact (not terrain).
 --
 -- Controller params (set in the jbeam slot entry):
 --   walkSpeed        (default 0.008 m/s) — very slow pedestrian shuffle in ghost mode
@@ -47,6 +48,8 @@ local M = {}
 -- ── internal state ────────────────────────────────────────────────────────────
 local state              = "grace"   -- "grace", "ghost", or "standing"
 local allNodes           = {}        -- {cid, spawnX, spawnY, spawnZ} — set after baseline
+local refCid             = nil       -- cid of "dummy1_thoraxtfl" (chest reference node)
+local refSpawnZ          = 0.0       -- baseline Z of reference node after settling
 local walkOffsetX        = 0.0
 local walkOffsetY        = 0.0
 local walkDir            = 0.0
@@ -68,16 +71,28 @@ local sidewalkOffset     = 5.0      -- m    (5 m RIGHT of lane direction = on ke
 -- Direction change magnitude — tight so dummy stays road-parallel with only a
 -- gentle drift over time.
 local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
--- Impact detection threshold: only check XY (horizontal) displacement.
--- Terrain height changes push nodes vertically (Z) — checking Z causes false
--- triggers on any slope or bump.  Real vehicle/wall impacts displace nodes
--- laterally (XY) by ≥ 3 cm; terrain slope only affects Z.
--- Normal ghost-walking XY residual drift ≈ 1 mm (30× safety margin).
-local IMPACT_THRESHOLD_SQ  = 0.03 * 0.03   -- metres²  (3 cm in XY only)
+
+-- Impact / fall detection — both checked on the named chest node "dummy1_thoraxtfl"
+-- (~1.45 m above ground) to avoid false positives from foot/terrain contact.
+--
+-- XY threshold: 8 cm.  A car hit at 5 mph displaces the chest node ~6 cm in one
+-- 60 fps frame; terrain/walking residual drift ≈ 1 mm.  3 cm was too tight —
+-- cars driving nearby caused false triggers.  8 cm requires a genuine contact.
+local IMPACT_THRESHOLD_SQ  = 0.08 * 0.08   -- metres²  (8 cm in XY)
+-- Z-drop threshold: 20 cm.  A standing dummy's chest stays within ±3 cm of
+-- baseline.  If the dummy tips over, the chest Z drops 20-60 cm immediately.
+-- This catches the case where the dummy falls due to uneven terrain or a slow
+-- nudge that doesn't register as an XY impact.
+local FALL_Z_THRESHOLD     = 0.20           -- metres  (20 cm Z-drop = dummy fell over)
+
 -- Grace period after spawn before the impact check is enabled.
 -- Traffic-script spawning runs physics-settling for ~2 s after init();
 -- 3.5 s provides comfortable margin for all map/PC speeds.
 local STARTUP_GRACE        = 3.5             -- seconds
+
+-- Name of the reference body node (chest, ~1.45 m above ground).
+-- Using a high thorax node avoids false-positive falls from foot/ground contact.
+local REF_NODE_NAME        = "dummy1_thoraxtfl"
 
 
 -- ── helpers ───────────────────────────────────────────────────────────────────
@@ -109,8 +124,17 @@ local function init(jbeamData)
     -- which are completely wrong.  We snapshot after STARTUP_GRACE seconds.
     rawNodeIds = {}
     allNodes   = {}
+    refCid     = nil
     for _, n in pairs(v.data.nodes) do
         table.insert(rawNodeIds, n.cid)
+        -- Find the named chest reference node for impact/fall detection
+        if n.name == REF_NODE_NAME then
+            refCid = n.cid
+        end
+    end
+    -- Fallback: if named node not found, use the first node (same as before)
+    if not refCid and #rawNodeIds > 0 then
+        refCid = rawNodeIds[1]
     end
 
     -- Per-instance random seed (unique per vehicle object)
@@ -124,6 +148,7 @@ local function init(jbeamData)
     walkDir      = 0
     walkTimer    = 0
     startupTimer = 0
+    refSpawnZ    = 0
 
     state = "grace"
 end
@@ -135,6 +160,7 @@ local function reset()
     walkOffsetY  = 0
     walkTimer    = 0
     startupTimer = 0
+    refSpawnZ    = 0
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
@@ -197,20 +223,44 @@ local function updateGFX(dt)
                     spawnZ = p.z,
                 })
             end
+            -- Store the chest reference node's baseline Z for fall detection
+            if refCid then
+                local rp = vec3(obj:getNodePosition(refCid))
+                refSpawnZ = rp.z
+            end
             state = "ghost"
         end
         return  -- no teleportation until baseline is captured
     end
 
-    -- ── 2. Impact detection (XY only, post-grace) ────────────────────────────
-    if #allNodes > 0 then
-        local ref = allNodes[1]
-        local cur = vec3(obj:getNodePosition(ref.cid))
-        local expX = ref.spawnX + walkOffsetX
-        local expY = ref.spawnY + walkOffsetY
+    -- ── 2. Impact / fall detection (post-grace, chest reference node) ───────────
+    -- Uses "dummy1_thoraxtfl" (top-left chest, ~1.45 m above ground) as reference.
+    -- This high node is never touched by the ground so terrain height changes
+    -- cannot cause false triggers — only vehicle/wall contact or a physical fall.
+    --
+    --   • XY displacement ≥ 8 cm in one frame  → something hit the dummy laterally
+    --   • Z drops ≥ 20 cm below baseline        → dummy has physically tipped over
+    --
+    if refCid and #allNodes > 0 then
+        local cur = vec3(obj:getNodePosition(refCid))
+        -- Find this node's expected position in allNodes
+        local expX, expY = 0, 0
+        for _, rec in ipairs(allNodes) do
+            if rec.cid == refCid then
+                expX = rec.spawnX + walkOffsetX
+                expY = rec.spawnY + walkOffsetY
+                break
+            end
+        end
         local ddx = cur.x - expX
         local ddy = cur.y - expY
+        -- XY impact check (vehicle/wall contact)
         if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
+            state = "standing"
+            return
+        end
+        -- Z-drop fall check (dummy tipped over)
+        if cur.z < (refSpawnZ - FALL_Z_THRESHOLD) then
             state = "standing"
             return
         end
