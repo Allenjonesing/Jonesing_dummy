@@ -30,8 +30,10 @@
 --   position.  getNodePosition() at init() time returns jbeam-local coordinates
 --   (near the world origin), not the final world location.  Teleporting to those
 --   wrong coordinates creates enormous beam-spring forces that send the dummy
---   flying and exploding.  The grace period lets BeamNG move and settle the
---   vehicle at its real world position; we snapshot AFTER settling.
+--   flying and exploding.  The controller detects the traffic-script placement
+--   teleport (a sudden > 2 m position jump in one frame) and immediately locks
+--   the dummy in place so it never visibly falls.  A fixed STARTUP_GRACE timeout
+--   acts as a fallback for edge cases where the jump is not detected.
 --
 -- Reference node: "dummy1_thoraxtfl" (top-left chest node, ~1.45 m above ground).
 --   Using a high chest node as reference avoids false triggers from foot/ground
@@ -42,7 +44,7 @@
 --   walkSpeed        (default 0.008 m/s) — very slow pedestrian shuffle in ghost mode
 --   maxWalkSpeed     (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
 --   walkChangePeriod (default 5.0 s)  — seconds between gentle road-parallel tweaks
---   sidewalkOffset   (default 5.0 m)  — lateral shift RIGHT of lane direction at spawn
+--   sidewalkOffset   (default 0.0 m)  — lateral shift RIGHT of lane direction at spawn (0 = walk from spawn position)
 
 local M = {}
 
@@ -60,6 +62,10 @@ local startupTimer       = 0.0
 -- rawNodeIds: cid list stored during init() before baseline is captured.
 -- (getNodePosition at init() returns wrong positions; we snapshot later.)
 local rawNodeIds         = {}        -- list of cids for all nodes
+-- Track node position each grace frame to detect when the traffic script
+-- teleports the vehicle to its world position (sudden large jump).
+local gracePrevX         = nil
+local gracePrevY         = nil
 
 -- configurable params
 local walkSpeed          = 0.008    -- m/s  (very slow GTA pedestrian shuffle)
@@ -68,7 +74,12 @@ local walkSpeed          = 0.008    -- m/s  (very slow GTA pedestrian shuffle)
 -- 5 mph = 2.235 m/s
 local maxWalkSpeed        = 2.235    -- m/s  (~5 mph)
 local walkChangePeriod   = 5.0      -- s    (how often direction gently drifts)
-local sidewalkOffset     = 5.0      -- m    (5 m RIGHT of lane direction = on kerb)
+local sidewalkOffset     = 0.0      -- m    (0 = walk from spawn position, no sidewalk shift)
+
+-- Threshold for detecting that the traffic script has teleported the vehicle to
+-- its real world position: if a node jumps more than this distance in one frame
+-- during the grace period we treat the vehicle as placed and snapshot immediately.
+local PLACED_DETECTION_SQ  = 2.0 * 2.0  -- metres²  (2 m jump)
 
 -- Direction change magnitude — tight so dummy stays road-parallel with only a
 -- gentle drift over time.
@@ -145,6 +156,8 @@ local function init(jbeamData)
     walkDir      = 0
     walkTimer    = 0
     startupTimer = 0
+    gracePrevX   = nil
+    gracePrevY   = nil
 
     state = "grace"
 end
@@ -158,6 +171,8 @@ local function reset()
     startupTimer = 0
     lastRefX     = 0
     lastRefY     = 0
+    gracePrevX   = nil
+    gracePrevY   = nil
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
@@ -176,10 +191,31 @@ local function updateGFX(dt)
     -- init() time returns jbeam-local coords that are wrong for world space.
     -- If we teleport during this window we create enormous beam spring forces
     -- (nodes snapped to pre-placement positions) → dummy flies up → explodes.
-    -- Solution: do absolutely nothing for STARTUP_GRACE seconds, then snapshot
-    -- the real world positions as our baseline.
+    -- Solution: wait until the traffic script teleports the vehicle to its world
+    -- position (detected as a sudden > 2 m jump in one frame), then snapshot
+    -- the real world positions immediately.  If no teleport is detected within
+    -- STARTUP_GRACE seconds, fall back to the original snapshot-at-timeout path.
     if state == "grace" then
         startupTimer = startupTimer + dt
+
+        -- Detect traffic-script vehicle placement: the script teleports the vehicle
+        -- to its real world position in one frame, causing a sudden large position
+        -- jump.  As soon as we see that, skip remaining grace time and snapshot now
+        -- so the dummy locks in place immediately and never visibly falls over.
+        if rawNodeIds[1] then
+            local cp = vec3(obj:getNodePosition(rawNodeIds[1]))
+            if gracePrevX ~= nil then
+                local ddx = cp.x - gracePrevX
+                local ddy = cp.y - gracePrevY
+                if (ddx*ddx + ddy*ddy) > PLACED_DETECTION_SQ then
+                    -- Vehicle just teleported to world position — force transition now.
+                    startupTimer = STARTUP_GRACE
+                end
+            end
+            gracePrevX = cp.x
+            gracePrevY = cp.y
+        end
+
         if startupTimer >= STARTUP_GRACE then
             -- Snapshot settled positions — these are correct world coords now.
             -- Also compute walk direction and sidewalk offset using REAL world
