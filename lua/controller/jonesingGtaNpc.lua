@@ -15,6 +15,8 @@
 --              player→dummy spawn vector, computed after physics settles).
 --              Spawn position is shifted sidewalkOffset metres RIGHT of the lane
 --              direction (toward the kerb) so the dummy walks on the sidewalk.
+--              Z tracking: each frame the settled physics Z is read back and
+--              stored so the dummy follows terrain height automatically.
 --
 --   STANDING — All position overrides stop.  The existing stabiliser beams hold
 --              the dummy upright as a solid physics object.  A vehicle impact
@@ -22,7 +24,6 @@
 --
 -- GHOST → STANDING transition trigger (chest/thorax reference node):
 --   XY displacement ≥ 6 cm in a single frame  → vehicle/wall physically hit it
---   Lateral velocity  ≥ 1.5 m/s               → high-speed car (>100 mph tunneling)
 --
 -- IMPORTANT — why we wait before teleporting:
 --   Traffic scripts call init() BEFORE placing the vehicle at its spawn world
@@ -77,13 +78,9 @@ local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
 -- (~1.45 m above ground) to avoid false positives from foot/terrain contact.
 --
 -- XY threshold: 6 cm.  A car hit displaces the chest node ≥ 5-8 cm per frame;
--- normal walking residual drift ≈ 1 mm.
+-- normal walking residual drift ≈ 1 mm.  Z is excluded — terrain height changes
+-- only produce vertical displacement; XY-only check avoids false triggers.
 local IMPACT_THRESHOLD_SQ  = 0.06 * 0.06   -- metres²  (6 cm in XY)
-
--- Velocity threshold for high-speed impact detection.
--- At >100 mph a car passes through in < 1 GFX frame (position check misses it).
--- Any lateral velocity > 1.5 m/s on the chest node means something hit it.
-local IMPACT_VELOCITY_SQ   = 1.5 * 1.5     -- m²/s²
 
 -- Grace period after spawn before the impact check is enabled.
 -- Traffic-script spawning runs physics-settling for ~2 s after init();
@@ -212,7 +209,12 @@ local function updateGFX(dt)
                     walkOffsetY = (-dy / perpDist) * sidewalkOffset
                 end
             else
+                -- Fallback: player is too close to the dummy to compute road direction.
+                -- Pick a random walk direction and apply the sidewalk offset perpendicular to it.
                 walkDir = math.random() * 2 * math.pi
+                local sideSign = (math.random() > 0.5) and 1.0 or -1.0
+                walkOffsetX = math.cos(walkDir) * sidewalkOffset * sideSign
+                walkOffsetY = -math.sin(walkDir) * sidewalkOffset * sideSign
             end
 
             for _, cid in ipairs(rawNodeIds) do
@@ -256,13 +258,6 @@ local function updateGFX(dt)
             state = "standing"
             return
         end
-        -- Lateral velocity check (catches high-speed impacts where car passes
-        -- through in < 1 GFX frame, leaving position near original but velocity high)
-        local vel = vec3(obj:getNodeVelocity(refCid))
-        if (vel.x*vel.x + vel.y*vel.y) > IMPACT_VELOCITY_SQ then
-            state = "standing"
-            return
-        end
     end
 
     -- ── 3. Periodically tweak walk direction (gentle, ±5°, road-parallel) ─────
@@ -281,8 +276,12 @@ local function updateGFX(dt)
 
     -- ── 5. Teleport every node to its desired ghost position ─────────────────
     --  Moving ALL nodes by the same XY offset keeps every beam length constant
-    --  → no spurious internal forces or vibration.  Z is fixed + GHOST_LIFT.
+    --  → no spurious internal forces or vibration.
+    --  Z tracking: read current physics Z before teleporting — this follows terrain
+    --  height so feet never clip into slopes at the sidewalk offset location.
     for _, rec in ipairs(allNodes) do
+        local curZ = obj:getNodePosition(rec.cid)
+        rec.spawnZ = curZ.z  -- track settled physics terrain height
         obj:setNodePosition(rec.cid, vec3(
             rec.spawnX + walkOffsetX,
             rec.spawnY + walkOffsetY,
