@@ -35,25 +35,56 @@
 },
 
 // ── GTA NPC Behavior slots ────────────────────────────────────────────────────
-// Enables the jonesingGtaNpc Lua controller.
-// GHOST phase: walks slowly parallel to road (sidewalk-offset from centreline),
-//   phases through everything.
-// Transitions to STANDING only when a physical contact displaces a node ≥ 3 cm
-//   (any vehicle — player car, traffic, etc. — hitting the dummy triggers this).
-// STANDING phase: stabiliser beams hold dummy upright as a solid physics object.
-//   A vehicle hit overwhelms the stabilisers and the dummy tumbles naturally.
+// Enables the jonesingGtaNpc Lua controller with FSM + obstacle avoidance.
+//
+// AI states (automatic FSM):
+//   WANDER  — semi-random walk biased toward open space via fan raycasts.
+//   IDLE    — brief stationary pause, then back to WANDER.
+//   FLEE    — run away from a threat position (set via M.setState("flee", {threatPos=…})).
+//   PURSUE  — walk toward a target position (set via M.setState("pursue", {targetPos=…})).
+//
+// Physics states (automatic):
+//   grace   — holds dummy upright until world placement settles (~3.5 s).
+//   active  — ghost walk; nodes teleported each frame, no collision with world.
+//   standing— position overrides off; full physics body after vehicle impact.
+//
+// Tunable params (all optional, defaults shown):
+//   walkSpeed        — m/s wander/pursue speed            (default 1.2)
+//   runSpeed         — m/s flee speed                     (default 4.0)
+//   maxWalkSpeed     — m/s absolute cap                   (default 2.235)
+//   wanderInterval   — s between random heading changes   (default 4.0)
+//   sidewalkOffset   — m lateral shift at spawn           (default 0.0)
+//   fleeSpeed        — m/s flee speed override            (default 4.0)
+//   fleeSafeRadius   — m threat distance before WANDER    (default 20.0)
+//   pursueSpeed      — m/s pursue speed                   (default 2.0)
+//   rayLenWalk       — m forward ray length while walking (default 3.0)
+//   rayLenRun        — m forward ray length while running (default 6.0)
+//   rayFanAngle      — rad side-ray angle (default π/9 ≈ 20°)
+//   turnRateMax      — rad/s max heading rotation rate    (default π)
+//   aiTickHz         — AI/steering update rate in Hz      (default 15)
+//   idleChance       — probability of IDLE per wander interval (default 0.15)
+//   stuckTime        — s stuck before heading reseed      (default 2.5)
+//   debugMode        — true/false enables debug logging   (default false)
 "jonesing_gta_npc_on": {
     "information":{
-        "name":"GTA NPC Mode (sidewalk ghost walk → tumble on vehicle hit)",
+        "name":"GTA NPC Mode (FSM walk/flee/pursue + obstacle avoidance → tumble on hit)",
         "authors":"Jonesing",
     },
     "slotType":"AgentY_Dummy_npc_behavior",
     "controller": [
         ["fileName"],
         ["jonesingGtaNpc", {
-            "walkSpeed":       0.008,
-            "walkChangePeriod":5.0,
-            "sidewalkOffset":  0.0
+            "walkSpeed":       1.2,
+            "walkChangePeriod":4.0,
+            "sidewalkOffset":  0.0,
+            "fleeSpeed":       4.0,
+            "pursueSpeed":     2.0,
+            "fleeSafeRadius":  20.0,
+            "rayLenWalk":      3.0,
+            "rayLenRun":       6.0,
+            "aiTickHz":        15,
+            "idleChance":      0.15,
+            "debugMode":       false
         }],
     ],
 },

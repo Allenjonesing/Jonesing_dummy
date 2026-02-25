@@ -3,120 +3,160 @@
 -- file, You can obtain one at http://beamng.com/bCDDL-1.1.txt
 
 -- jonesingGtaNpc.lua
--- GTA-style NPC controller for the Jonesing dummy.
+-- Enhanced GTA-style NPC controller with FSM (WANDER/IDLE/FLEE/PURSUE) and
+-- steering/obstacle avoidance via fan raycasts.
 --
--- Two states (GHOST and STANDING):
+-- PHYSICS STATES:
+--   "grace"    — hold dummy upright during traffic-script world placement.
+--   "active"   — ghost-mode: nodes teleported every frame; AI FSM drives movement.
+--   "standing" — position overrides OFF; physics body after vehicle impact.
 --
---   GHOST    — Immediately upon traffic-script vehicle placement (detected as a
---              sudden > 2 m jump in one frame), all nodes are snapped to their
---              jbeam-local upright pose at the correct world position and locked
---              there.  The dummy walks slowly along the road by teleporting all
---              nodes simultaneously (constant beam lengths, no internal forces),
---              phasing through everything.
---              Walk direction is aligned to the road (perpendicular of the
---              player→dummy spawn vector, computed after physics settles).
---              Z tracking: each frame Z is allowed to INCREASE (uphill terrain)
---              but never decrease, preventing gravity-induced sinking.
+-- AI STATES (within "active"):
+--   "wander"  — semi-random walk biased toward open space via fan raycasts.
+--   "idle"    — stand still for a short random duration, then return to wander.
+--   "flee"    — run away from threatPos at fleeSpeed.
+--   "pursue"  — walk/run toward targetPos, stop on arrival.
 --
---   STANDING — All position overrides stop.  The existing stabiliser beams hold
---              the dummy upright as a solid physics object.  A vehicle impact
---              will overwhelm the stabilisers and the dummy tumbles naturally.
+-- Steering layer (run at aiTickHz, default 15 Hz):
+--   Fan of 3 raycasts: forward, ±rayFanAngle.
+--   desiredHeading is updated each AI tick; currentHeading is smoothly rotated
+--   toward desiredHeading every frame at turnRateMax rad/s.
+--   Stuck detection: if speed intent > 0 but XY movement < stuckSpeedMin for
+--   stuckTime seconds, reseed heading randomly.
 --
--- GHOST → STANDING transition trigger (chest/thorax reference node):
---   XY displacement ≥ 6 cm in a single frame  → vehicle/wall physically hit it
+-- External API:
+--   M.setState(newState, params)   params: {targetPos, threatPos, duration}
+--   M.setDebug(enabled)
+--   M.getState()  →  "grace" | "active-wander" | "active-idle" | … | "standing"
 --
--- IMPORTANT — grace period and upright holding:
---   Traffic scripts call init() BEFORE placing the vehicle at its spawn world
---   position.  getNodePosition() at init() time returns jbeam-local coordinates
---   (near the world origin), not the final world location.  The controller
---   teleports ALL nodes every single frame (including during the grace period)
---   using the jbeam-relative offsets captured at init() time, maintaining the
---   rigid upright body shape wherever rawNodeIds[1] currently is.  This means
---   the dummy NEVER falls and NEVER builds up velocity.  When the traffic-script
---   placement teleport is detected (sudden >2 m jump), the dummy is already
---   upright at the correct world position, and ghost mode starts cleanly with
---   zero accumulated velocity — so the impact check cannot spuriously fire.
---
--- Reference node: "dummy1_thoraxtfl" (top-left chest node, ~1.45 m above ground).
---   Using a high chest node as reference avoids false triggers from foot/ground
---   contact and is far enough from the ground that a ≥8 cm XY displacement is
---   only caused by a vehicle or wall impact (not terrain).
---
--- Controller params (set in the jbeam slot entry):
---   walkSpeed        (default 0.008 m/s) — very slow pedestrian shuffle in ghost mode
---   maxWalkSpeed     (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
---   walkChangePeriod (default 5.0 s)  — seconds between gentle road-parallel tweaks
---   sidewalkOffset   (default 0.0 m)  — lateral shift RIGHT of lane direction at spawn (0 = walk from spawn position)
+-- All tunables live in the config table below and can be overridden via jbeam
+-- slot params (same key names).
 
 local M = {}
 
--- ── internal state ────────────────────────────────────────────────────────────
-local state              = "grace"   -- "grace", "ghost", or "standing"
-local allNodes           = {}        -- {cid, spawnX, spawnY, spawnZ} — set after baseline
-local refCid             = nil       -- cid of "dummy1_thoraxtfl" (chest reference node)
-local lastRefX           = 0.0      -- where we LAST teleported the reference node (X)
-local lastRefY           = 0.0      -- where we LAST teleported the reference node (Y)
-local walkOffsetX        = 0.0
-local walkOffsetY        = 0.0
-local walkDir            = 0.0
-local walkTimer          = 0.0
-local startupTimer       = 0.0
--- rawNodeIds: cid list stored during init() before baseline is captured.
--- (getNodePosition at init() returns wrong positions; we snapshot later.)
-local rawNodeIds         = {}        -- list of cids for all nodes
--- localOffsets: XY relative to rawNodeIds[1], Z relative to the LOWEST jbeam node
--- (foot level), captured in jbeam-local space at init() time.  dz is always >= 0
--- (feet dz≈0, head dz≈1.8 m).  This ensures reconstruction never places any node
--- below the terrain surface regardless of which node is rawNodeIds[1].
-local localOffsets       = {}        -- {cid, dx, dy, dz}
--- lowestCid: the node with the minimum jbeam Z (foot/sole node).  Used as terrain
--- Z reference at ghost-mode entry so reconstruction always starts from road level.
-local lowestCid          = nil
--- Track node position each grace frame to detect when the traffic script
--- teleports the vehicle to its world position (sudden large jump).
-local gracePrevX         = nil
-local gracePrevY         = nil
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Config / Tunables (all overridable from jbeam slot params)
+-- ─────────────────────────────────────────────────────────────────────────────
+local config = {
+    -- Speeds (m/s)
+    walkSpeed        = 1.2,          -- default wander/pursue speed
+    runSpeed         = 4.0,          -- flee/panic speed
+    maxWalkSpeed     = 2.235,        -- absolute per-frame cap (~5 mph)
 
--- configurable params
-local walkSpeed          = 0.008    -- m/s  (very slow GTA pedestrian shuffle)
--- Hard speed cap: teleport delta per frame is clamped so physics velocity
--- never accumulates beyond this regardless of frame rate or walk speed setting.
--- 5 mph = 2.235 m/s
-local maxWalkSpeed        = 2.235    -- m/s  (~5 mph)
-local walkChangePeriod   = 5.0      -- s    (how often direction gently drifts)
-local sidewalkOffset     = 0.0      -- m    (0 = walk from spawn position, no sidewalk shift)
+    -- Obstacle-avoidance raycasting
+    rayLenWalk       = 3.0,          -- m, ray length while walking
+    rayLenRun        = 6.0,          -- m, ray length while running/fleeing
+    rayFanAngle      = math.pi / 9,  -- ±20° side rays (radians)
 
--- Threshold for detecting that the traffic script has teleported the vehicle to
--- its real world position: if a node jumps more than this distance in one frame
--- during the grace period we treat the vehicle as placed and snapshot immediately.
-local PLACED_DETECTION_SQ  = 2.0 * 2.0  -- metres²  (2 m jump)
+    -- Steering / turn-rate
+    turnRateMax      = math.pi,      -- rad/s max smooth turn rate (180°/s)
+    avoidanceWeight  = 1.5,          -- multiplier for avoidance steering
 
--- Direction change magnitude — tight so dummy stays road-parallel with only a
--- gentle drift over time.
-local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
+    -- WANDER behaviour
+    wanderInterval   = 4.0,          -- s between random heading samples
+    wanderAngleMax   = math.pi / 4,  -- ±45° per random heading change
+    dirChangeMag     = math.pi / 36, -- ±5° gentle road-parallel drift per step
 
--- Impact detection — checked on the named chest node "dummy1_thoraxtfl"
--- (~1.45 m above ground) to avoid false positives from foot/terrain contact.
---
--- XY threshold: 6 cm.  A car hit displaces the chest node ≥ 5-8 cm per frame;
--- normal walking residual drift ≈ 1 mm.  Z is excluded — terrain height changes
--- only produce vertical displacement; XY-only check avoids false triggers.
-local IMPACT_THRESHOLD_SQ  = 0.06 * 0.06   -- metres²  (6 cm in XY)
+    -- IDLE behaviour
+    idleChance       = 0.15,         -- probability to idle each wander interval
+    idleDurationMin  = 2.0,          -- s
+    idleDurationMax  = 5.0,          -- s
 
--- Grace period after spawn before the impact check is enabled.
--- Traffic-script spawning runs physics-settling for ~2 s after init();
--- 3.5 s provides comfortable margin for all map/PC speeds.
-local STARTUP_GRACE        = 3.5             -- seconds
+    -- FLEE behaviour
+    fleeSpeed        = 4.0,          -- m/s
+    fleeSafeRadius   = 20.0,         -- m, return to wander when threat is this far
+    fleeDurationMax  = 10.0,         -- s, hard timeout on flee state
 
--- Name of the reference body node (chest, ~1.45 m above ground).
--- Using a high thorax node avoids false-positive falls from foot/ground contact.
+    -- PURSUE behaviour
+    pursueSpeed      = 2.0,          -- m/s
+    pursueArrivalR   = 1.5,          -- m, "arrived" threshold
+    pursueDuration   = 20.0,         -- s, timeout
+
+    -- Stuck detection
+    stuckTime        = 2.5,          -- s below stuckSpeedMin triggers reseed
+    stuckSpeedMin    = 0.05,         -- m/s, below this = stuck
+
+    -- AI tick rate
+    aiTickHz         = 15,           -- Hz (raycasts + state decisions run here)
+
+    -- Legacy / spawn alignment
+    sidewalkOffset   = 0.0,          -- m, lateral shift at spawn
+
+    -- Debug logging (set debugMode=true in jbeam slot to enable)
+    debugMode        = false,
+}
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Internal state variables
+-- ─────────────────────────────────────────────────────────────────────────────
+local physState      = "grace"   -- "grace" | "active" | "standing"
+local aiState        = "wander"  -- "wander" | "idle" | "flee" | "pursue"
+
+-- Node tables (same mechanism as original implementation)
+local allNodes       = {}        -- {cid, spawnX, spawnY, spawnZ}
+local refCid         = nil       -- cid of chest reference node (impact detection)
+local lastRefX       = 0.0       -- last teleported position of ref node (X)
+local lastRefY       = 0.0       -- last teleported position of ref node (Y)
+local rawNodeIds     = {}        -- all node cids (collected at init)
+local localOffsets   = {}        -- {cid, dx, dy, dz} jbeam-local offsets
+local lowestCid      = nil       -- node with minimum jbeam Z (foot level)
+local gracePrevX     = nil       -- previous frame grace-period X (jump detection)
+local gracePrevY     = nil
+
+-- Timing
+local startupTimer   = 0.0       -- grace-period accumulator
+local aiTickAccum    = 0.0       -- accumulates dt; AI tick fires at 1/aiTickHz
+local stateTimer     = 0.0       -- time spent in current AI state
+local walkTimer      = 0.0       -- time since last wander direction change
+local idleTimer      = 0.0       -- remaining idle duration (s)
+local stuckTimer     = 0.0       -- time below stuckSpeedMin
+
+-- Movement
+local walkOffsetX    = 0.0       -- accumulated XY displacement from spawn (X)
+local walkOffsetY    = 0.0
+local currentHeading = 0.0       -- actual smoothed heading (radians)
+local desiredHeading = 0.0       -- target heading set by AI/steering
+local currentSpeed   = 0.0       -- desired movement speed this frame (m/s)
+
+-- State targets
+local threatPos      = nil       -- vec3, flee source
+local targetPos      = nil       -- vec3, pursue destination
+
+-- Stuck detection — XY sampled each AI tick
+local stuckPrevX     = 0.0
+local stuckPrevY     = 0.0
+
+-- Derived constant updated at init from config
+local aiTickInterval = 1.0 / 15  -- seconds between AI ticks
+
+-- Immutable physics/safety constants
+local PLACED_DETECTION_SQ  = 2.0  * 2.0    -- m²  (2 m jump → world placement)
+local IMPACT_THRESHOLD_SQ  = 0.06 * 0.06   -- m²  (6 cm XY → vehicle impact)
+local STARTUP_GRACE        = 3.5            -- seconds
+local TWO_PI               = 2 * math.pi
 local REF_NODE_NAME        = "dummy1_thoraxtfl"
 
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Internal helpers
+-- ─────────────────────────────────────────────────────────────────────────────
 
--- ── helpers ───────────────────────────────────────────────────────────────────
+local function dbg(fmt, ...)
+    if config.debugMode then
+        local ok, msg = pcall(string.format, fmt, ...)
+        if ok then
+            log("D", "jonesingNpc", msg)
+        end
+    end
+end
 
--- Safely get the player vehicle's world position (returns vec3 or nil).
--- Used during init() to compute road direction and sidewalk offset.
+-- Wrap angle into [-π, π]
+local function normalizeAngle(a)
+    a = a % TWO_PI
+    if a > math.pi then a = a - TWO_PI end
+    return a
+end
+
+-- Safely get player vehicle world position (returns vec3 or nil)
 local function getPlayerPos()
     local ok, result = pcall(function()
         local pv = be:getPlayerVehicle(0)
@@ -127,127 +167,388 @@ local function getPlayerPos()
     return (ok and result) or nil
 end
 
+-- Return the dummy's current world XY (reference/chest node via walk offset)
+local function getDummyXY()
+    if #allNodes > 0 then
+        for _, rec in ipairs(allNodes) do
+            if rec.cid == refCid then
+                return rec.spawnX + walkOffsetX, rec.spawnY + walkOffsetY
+            end
+        end
+        local rec = allNodes[1]
+        return rec.spawnX + walkOffsetX, rec.spawnY + walkOffsetY
+    end
+    return 0, 0
+end
 
--- ── jbeam lifecycle callbacks ─────────────────────────────────────────────────
+-- Return the dummy's chest world Z
+local function getDummyZ()
+    for _, rec in ipairs(allNodes) do
+        if rec.cid == refCid then return rec.spawnZ end
+    end
+    if #allNodes > 0 then return allNodes[1].spawnZ end
+    return 0
+end
+
+-- Cast a single obstacle-detection ray against static world geometry.
+-- Returns hit distance in (0, maxDist], or maxDist if clear / API unavailable.
+-- Uses pcall so missing API degrades gracefully (no obstacle detected).
+local function castObstacleRay(ox, oy, oz, dx, dy, maxDist)
+    local ok, result = pcall(castRayStatic,
+        Point3F(ox, oy, oz),
+        Point3F(dx, dy, 0),
+        maxDist
+    )
+    if ok and type(result) == "number" and result > 0 then
+        return math.min(result, maxDist)
+    end
+    return maxDist
+end
+
+-- Cast a fan of 3 rays (forward, forward-left, forward-right) from the dummy's
+-- chest position along the given heading.  Returns:
+--   bestHeading (radians) — steered away from the nearest obstacle
+--   clearDist   (m)       — clear distance along the best heading
+-- Also logs per-ray distances when debugMode is on.
+local function steerAroundObstacles(heading, rayLen)
+    local cx, cy = getDummyXY()
+    local cz     = getDummyZ() + 0.5   -- chest height offset above spawnZ
+
+    local fAngle = heading
+    local lAngle = heading + config.rayFanAngle
+    local rAngle = heading - config.rayFanAngle
+
+    local fDist = castObstacleRay(cx, cy, cz, math.sin(fAngle), math.cos(fAngle), rayLen)
+    local lDist = castObstacleRay(cx, cy, cz, math.sin(lAngle), math.cos(lAngle), rayLen)
+    local rDist = castObstacleRay(cx, cy, cz, math.sin(rAngle), math.cos(rAngle), rayLen)
+
+    dbg("rays fwd=%.2f left=%.2f right=%.2f heading=%.1f°", fDist, lDist, rDist, math.deg(heading))
+
+    -- If the forward ray is significantly blocked, steer toward the clearer side.
+    local bestHeading = heading
+    local clearDist   = fDist
+    if fDist < rayLen * 0.7 then
+        local avoidAngle = config.rayFanAngle * config.avoidanceWeight
+        if lDist >= rDist then
+            bestHeading = heading + avoidAngle
+            clearDist   = lDist
+        else
+            bestHeading = heading - avoidAngle
+            clearDist   = rDist
+        end
+        -- Both sides blocked: turn ~90° toward a random side
+        if lDist < rayLen * 0.3 and rDist < rayLen * 0.3 then
+            local flip = (math.random() > 0.5) and 1 or -1
+            bestHeading = heading + flip * math.pi * 0.5
+            clearDist   = 0.5
+        end
+    end
+
+    return bestHeading, clearDist, lDist, fDist, rDist
+end
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- AI state transitions
+-- ─────────────────────────────────────────────────────────────────────────────
+
+-- Internal transition: sets aiState + resets state-local timers.
+-- params table is optional: { targetPos=vec3, threatPos=vec3, duration=number }
+local function setAiStateInternal(newState, params)
+    params     = params or {}
+    aiState    = newState
+    stateTimer = 0.0
+
+    if newState == "wander" then
+        dbg("→ WANDER")
+    elseif newState == "idle" then
+        local lo, hi = config.idleDurationMin, config.idleDurationMax
+        idleTimer = params.duration or (lo + math.random() * (hi - lo))
+        dbg("→ IDLE %.1fs", idleTimer)
+    elseif newState == "flee" then
+        if params.threatPos then threatPos = params.threatPos end
+        dbg("→ FLEE threatPos=%s", tostring(threatPos ~= nil))
+    elseif newState == "pursue" then
+        if params.targetPos then targetPos = params.targetPos end
+        dbg("→ PURSUE targetPos=%s", tostring(targetPos ~= nil))
+    end
+end
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Per-state AI tick functions (called at aiTickHz, ~15 Hz)
+-- ─────────────────────────────────────────────────────────────────────────────
+
+local function tickWander(dt)
+    currentSpeed = math.min(config.walkSpeed, config.maxWalkSpeed)
+
+    walkTimer = walkTimer + dt
+    if walkTimer >= config.wanderInterval then
+        walkTimer = 0.0
+
+        -- Random idle break
+        if math.random() < config.idleChance then
+            setAiStateInternal("idle")
+            return
+        end
+
+        -- Sample candidate headings and pick the one with the farthest clear ray.
+        local rayLen  = config.rayLenWalk
+        local bestH   = desiredHeading
+        local bestD   = -1
+        local delta   = config.wanderAngleMax
+        local candidates = {
+            desiredHeading,
+            desiredHeading + delta * (math.random() * 2 - 1),
+            desiredHeading + delta * (math.random() * 2 - 1),
+        }
+        for _, h in ipairs(candidates) do
+            local _, d = steerAroundObstacles(h, rayLen)
+            if d > bestD then bestD = d; bestH = h end
+        end
+        desiredHeading = bestH + (math.random() * 2 - 1) * config.dirChangeMag
+        dbg("WANDER new heading=%.1f° clearDist=%.2f", math.deg(desiredHeading), bestD)
+    end
+
+    -- Continuous mid-cycle avoidance: redirect if something ahead is close
+    local steerH, clearD = steerAroundObstacles(currentHeading, config.rayLenWalk)
+    if clearD < config.rayLenWalk * 0.5 then
+        desiredHeading = steerH
+    end
+end
+
+local function tickIdle(dt)
+    currentSpeed = 0.0
+    idleTimer    = idleTimer - dt
+    if idleTimer <= 0 then
+        setAiStateInternal("wander")
+    end
+end
+
+local function tickFlee(dt)
+    currentSpeed = math.min(config.fleeSpeed, config.maxWalkSpeed)
+    stateTimer   = stateTimer + dt
+
+    local cx, cy = getDummyXY()
+
+    if threatPos then
+        local dx   = cx - threatPos.x
+        local dy   = cy - threatPos.y
+        local dist = math.sqrt(dx * dx + dy * dy)
+
+        -- Return to wander once safe or timed out
+        if dist >= config.fleeSafeRadius or stateTimer >= config.fleeDurationMax then
+            setAiStateInternal("wander")
+            return
+        end
+
+        if dist > 0.5 then
+            local fleeH         = math.atan2(dx, dy)
+            local steerH, _     = steerAroundObstacles(fleeH, config.rayLenRun)
+            desiredHeading      = steerH
+        end
+        dbg("FLEE dist=%.1f t=%.1f", dist, stateTimer)
+    else
+        -- No threat set: flee in current direction until timeout
+        if stateTimer >= config.fleeDurationMax then
+            setAiStateInternal("wander")
+            return
+        end
+        local steerH, _ = steerAroundObstacles(currentHeading, config.rayLenRun)
+        desiredHeading  = steerH
+    end
+end
+
+local function tickPursue(dt)
+    currentSpeed = math.min(config.pursueSpeed, config.maxWalkSpeed)
+    stateTimer   = stateTimer + dt
+
+    if not targetPos or stateTimer >= config.pursueDuration then
+        setAiStateInternal("wander")
+        return
+    end
+
+    local cx, cy = getDummyXY()
+    local dx     = targetPos.x - cx
+    local dy     = targetPos.y - cy
+    local dist   = math.sqrt(dx * dx + dy * dy)
+
+    if dist <= config.pursueArrivalR then
+        dbg("PURSUE arrived")
+        setAiStateInternal("wander")
+        return
+    end
+
+    local pursueH       = math.atan2(dx, dy)
+    local steerH, _     = steerAroundObstacles(pursueH, config.rayLenWalk)
+    desiredHeading      = steerH
+    dbg("PURSUE dist=%.2f heading=%.1f°", dist, math.deg(desiredHeading))
+end
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Stuck detection (runs each AI tick)
+-- ─────────────────────────────────────────────────────────────────────────────
+local function checkStuck(tickDt)
+    if currentSpeed <= 0 then stuckTimer = 0.0; return end
+
+    local cx, cy      = getDummyXY()
+    local moved       = math.sqrt((cx - stuckPrevX)^2 + (cy - stuckPrevY)^2)
+    local movedPerSec = moved / math.max(tickDt, 0.001)
+
+    if movedPerSec < config.stuckSpeedMin then
+        stuckTimer = stuckTimer + tickDt
+        if stuckTimer >= config.stuckTime then
+            desiredHeading = math.random() * TWO_PI
+            stuckTimer     = 0.0
+            dbg("STUCK → reseed heading=%.1f°", math.deg(desiredHeading))
+        end
+    else
+        stuckTimer = 0.0
+    end
+
+    stuckPrevX = cx
+    stuckPrevY = cy
+end
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Combined AI tick dispatcher
+-- ─────────────────────────────────────────────────────────────────────────────
+local function runAiTick(tickDt)
+    if     aiState == "wander"  then tickWander(tickDt)
+    elseif aiState == "idle"    then tickIdle(tickDt)
+    elseif aiState == "flee"    then tickFlee(tickDt)
+    elseif aiState == "pursue"  then tickPursue(tickDt)
+    end
+    checkStuck(tickDt)
+    dbg("state=%s heading=%.1f° speed=%.2f stuck=%.1f",
+        aiState, math.deg(currentHeading), currentSpeed, stuckTimer)
+end
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- jbeam lifecycle callbacks
+-- ─────────────────────────────────────────────────────────────────────────────
 
 local function init(jbeamData)
-    walkSpeed        = jbeamData.walkSpeed        or walkSpeed
-    maxWalkSpeed     = jbeamData.maxWalkSpeed      or maxWalkSpeed
-    walkChangePeriod = jbeamData.walkChangePeriod or walkChangePeriod
-    sidewalkOffset   = jbeamData.sidewalkOffset   or sidewalkOffset
+    -- Apply jbeam-slot overrides to config (legacy param names mapped here)
+    config.walkSpeed      = jbeamData.walkSpeed        or config.walkSpeed
+    config.maxWalkSpeed   = jbeamData.maxWalkSpeed     or config.maxWalkSpeed
+    config.runSpeed       = jbeamData.runSpeed         or config.runSpeed
+    config.wanderInterval = jbeamData.walkChangePeriod or config.wanderInterval
+    config.wanderInterval = jbeamData.wanderInterval   or config.wanderInterval
+    config.sidewalkOffset = jbeamData.sidewalkOffset   or config.sidewalkOffset
+    config.debugMode      = jbeamData.debugMode        or config.debugMode
+    config.fleeSpeed      = jbeamData.fleeSpeed        or config.fleeSpeed
+    config.pursueSpeed    = jbeamData.pursueSpeed      or config.pursueSpeed
+    config.fleeSafeRadius = jbeamData.fleeSafeRadius   or config.fleeSafeRadius
+    config.rayLenWalk     = jbeamData.rayLenWalk       or config.rayLenWalk
+    config.rayLenRun      = jbeamData.rayLenRun        or config.rayLenRun
+    config.rayFanAngle    = jbeamData.rayFanAngle      or config.rayFanAngle
+    config.turnRateMax    = jbeamData.turnRateMax      or config.turnRateMax
+    config.aiTickHz       = jbeamData.aiTickHz         or config.aiTickHz
+    config.stuckTime      = jbeamData.stuckTime        or config.stuckTime
+    config.idleChance     = jbeamData.idleChance       or config.idleChance
 
-    -- Collect all node cids — we do NOT snapshot positions here.
-    -- Traffic scripts call init() before placing the vehicle at its world
-    -- position, so getNodePosition() returns jbeam-local coords (near origin)
-    -- which are completely wrong.  We snapshot after STARTUP_GRACE seconds.
+    aiTickInterval = 1.0 / config.aiTickHz
+
+    -- Collect node cids — positions are NOT valid here (jbeam-local, near origin).
     rawNodeIds = {}
     allNodes   = {}
     refCid     = nil
     for _, n in pairs(v.data.nodes) do
         table.insert(rawNodeIds, n.cid)
-        -- Find the named chest reference node for impact/fall detection
-        if n.name == REF_NODE_NAME then
-            refCid = n.cid
-        end
+        if n.name == REF_NODE_NAME then refCid = n.cid end
     end
-    -- Fallback: if named node not found, use the first node (same as before)
-    if not refCid and #rawNodeIds > 0 then
-        refCid = rawNodeIds[1]
-    end
+    if not refCid and #rawNodeIds > 0 then refCid = rawNodeIds[1] end
 
-    -- Record jbeam-local relative positions for upright pose reconstruction.
-    -- XY offsets are relative to rawNodeIds[1] (arbitrary anchor).
-    -- Z offsets are relative to the LOWEST node's Z (foot/sole level) so that
-    -- dz is always >= 0.  This prevents feet from being placed below terrain when
-    -- rawNodeIds[1] is a mid-body node whose jbeam Z > 0.
+    -- Capture jbeam-local relative offsets for upright-pose reconstruction.
+    -- XY relative to rawNodeIds[1]; Z relative to LOWEST node (foot sole, dz >= 0).
     localOffsets = {}
     lowestCid    = nil
     if #rawNodeIds > 0 then
-        -- Pass 1: find minimum jbeam Z (foot level) and XY anchor.
-        local p0      = vec3(obj:getNodePosition(rawNodeIds[1]))
-        local minZ    = math.huge
+        local p0   = vec3(obj:getNodePosition(rawNodeIds[1]))
+        local minZ = math.huge
         for _, cid in ipairs(rawNodeIds) do
             local p = vec3(obj:getNodePosition(cid))
-            if p.z < minZ then
-                minZ      = p.z
-                lowestCid = cid
-            end
+            if p.z < minZ then minZ = p.z; lowestCid = cid end
         end
-        -- Pass 2: record offsets (dz = height above foot level, always >= 0).
         for _, cid in ipairs(rawNodeIds) do
             local p = vec3(obj:getNodePosition(cid))
             table.insert(localOffsets, {
                 cid = cid,
                 dx  = p.x - p0.x,
                 dy  = p.y - p0.y,
-                dz  = p.z - minZ,   -- height above foot sole (>= 0)
+                dz  = p.z - minZ,
             })
         end
     end
 
-    -- Per-instance random seed (unique per vehicle object)
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
 
-    -- Reset accumulators and startup grace timer.
-    -- walkDir, walkOffsetX, walkOffsetY are computed at grace END (world coords).
-    walkOffsetX  = 0
-    walkOffsetY  = 0
-    walkDir      = 0
-    walkTimer    = 0
-    startupTimer = 0
-    gracePrevX   = nil
-    gracePrevY   = nil
-
-    state = "grace"
+    -- Reset all mutable state
+    walkOffsetX    = 0.0
+    walkOffsetY    = 0.0
+    currentHeading = math.random() * TWO_PI
+    desiredHeading = currentHeading
+    currentSpeed   = 0.0
+    walkTimer      = 0.0
+    aiTickAccum    = 0.0
+    stateTimer     = 0.0
+    stuckTimer     = 0.0
+    idleTimer      = 0.0
+    startupTimer   = 0.0
+    lastRefX       = 0.0
+    lastRefY       = 0.0
+    gracePrevX     = nil
+    gracePrevY     = nil
+    threatPos      = nil
+    targetPos      = nil
+    physState      = "grace"
+    aiState        = "wander"
 end
 
 
 local function reset()
-    allNodes     = {}
-    walkOffsetX  = 0
-    walkOffsetY  = 0
-    walkTimer    = 0
-    startupTimer = 0
-    lastRefX     = 0
-    lastRefY     = 0
-    gracePrevX   = nil
-    gracePrevY   = nil
+    allNodes    = {}
+    walkOffsetX = 0.0
+    walkOffsetY = 0.0
+    walkTimer   = 0.0
+    aiTickAccum = 0.0
+    stateTimer  = 0.0
+    stuckTimer  = 0.0
+    startupTimer = 0.0
+    lastRefX    = 0.0
+    lastRefY    = 0.0
+    gracePrevX  = nil
+    gracePrevY  = nil
+    threatPos   = nil
+    targetPos   = nil
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
-    walkDir = math.random() * 2 * math.pi
-    state = "grace"
+    currentHeading = math.random() * TWO_PI
+    desiredHeading = currentHeading
+    currentSpeed   = 0.0
+    aiState        = "wander"
+    physState      = "grace"
 end
 
 
 local function updateGFX(dt)
     if dt <= 0 then return end
 
-    -- STANDING state: all position overrides are OFF.
-    if state == "standing" then return end
+    -- STANDING: all position overrides are OFF.
+    if physState == "standing" then return end
 
-    -- ── 1. Grace period: hold upright and wait for world placement ───────────────
-    -- Traffic scripts place the vehicle AFTER init().  We use localOffsets
-    -- (jbeam-relative offsets captured at init) to teleport ALL nodes every frame
-    -- to maintain the rigid upright body shape relative to rawNodeIds[1].
-    -- Before placement rawNodeIds[1] is near jbeam-origin so the dummy stands
-    -- frozen at origin — harmless, invisible.  The moment the traffic script
-    -- teleports the vehicle to its world position (detected as a sudden >2 m jump),
-    -- rawNodeIds[1] jumps to the world location, our per-frame teleport locks the
-    -- upright pose there, and we transition to ghost mode.
-    -- Because we are teleporting every frame, physics velocity NEVER accumulates,
-    -- so the impact check cannot spuriously fire on ghost-mode entry.
-    if state == "grace" then
+    -- ── 1. Grace period: hold upright, wait for traffic-script world placement ──
+    -- This section is preserved exactly from the original implementation.
+    if physState == "grace" then
         startupTimer = startupTimer + dt
 
-        -- Detect traffic-script vehicle placement: sudden large position jump.
+        -- Detect sudden large XY jump → traffic-script placed vehicle at world pos
         if rawNodeIds[1] then
             local cp = vec3(obj:getNodePosition(rawNodeIds[1]))
             if gracePrevX ~= nil then
                 local ddx = cp.x - gracePrevX
                 local ddy = cp.y - gracePrevY
                 if (ddx*ddx + ddy*ddy) > PLACED_DETECTION_SQ then
-                    -- Vehicle just teleported to world position — force transition now.
                     startupTimer = STARTUP_GRACE
                 end
             end
@@ -255,13 +556,10 @@ local function updateGFX(dt)
             gracePrevY = cp.y
         end
 
-        -- Hold every node in the upright pose every grace frame.
-        -- Using relative offsets from the CURRENT anchor position means we never
-        -- create large beam-spring forces — we are just re-asserting the jbeam
-        -- body shape wherever rawNodeIds[1] currently is.
+        -- Hold every node in upright pose each grace frame
         if #localOffsets > 0 and rawNodeIds[1] then
             local p0g = vec3(obj:getNodePosition(rawNodeIds[1]))
-            local tzg  = lowestCid and obj:getNodePosition(lowestCid).z or p0g.z
+            local tzg = lowestCid and obj:getNodePosition(lowestCid).z or p0g.z
             for _, off in ipairs(localOffsets) do
                 obj:setNodePosition(off.cid, vec3(
                     p0g.x + off.dx,
@@ -272,9 +570,7 @@ local function updateGFX(dt)
         end
 
         if startupTimer >= STARTUP_GRACE then
-            -- Snapshot settled positions — these are correct world coords now.
-            -- Also compute walk direction and sidewalk offset using REAL world
-            -- positions (not the jbeam-local coords available at init() time).
+            -- Snapshot settled world positions; compute initial walk heading
             allNodes = {}
             local p0 = vec3(obj:getNodePosition(rawNodeIds[1]))
 
@@ -282,54 +578,36 @@ local function updateGFX(dt)
             -- rotate 90° to get road-parallel walk direction.
             local pp = getPlayerPos()
             if pp and (math.abs(pp.x - p0.x) > 1.0 or math.abs(pp.y - p0.y) > 1.0) then
-                local dx = pp.x - p0.x
-                local dy = pp.y - p0.y
-                local perpDist = math.sqrt(dx*dx + dy*dy)
-                if perpDist > 1.0 then
-                    local nx = -dy / perpDist
-                    local ny =  dx / perpDist
-                    walkDir = math.atan2(nx, ny)
-                    local flip = (math.random() > 0.5) and math.pi or 0.0
-                    walkDir = walkDir + flip
-
-                    -- Sidewalk offset: shift the dummy AWAY from the player.
-                    -- The player is typically near the road centreline, so
-                    -- p0→pp (dummy-to-player direction) = toward road centre.
-                    -- Negate to get "away from road" = toward the kerb/sidewalk.
-                    walkOffsetX = (-dx / perpDist) * sidewalkOffset
-                    walkOffsetY = (-dy / perpDist) * sidewalkOffset
+                local dx   = pp.x - p0.x
+                local dy   = pp.y - p0.y
+                local dist = math.sqrt(dx*dx + dy*dy)
+                if dist > 1.0 then
+                    local nx = -dy / dist
+                    local ny =  dx / dist
+                    currentHeading = math.atan2(nx, ny) + ((math.random() > 0.5) and math.pi or 0.0)
+                    desiredHeading = currentHeading
+                    walkOffsetX    = (-dx / dist) * config.sidewalkOffset
+                    walkOffsetY    = (-dy / dist) * config.sidewalkOffset
                 end
             else
-                -- Fallback: player is too close to the dummy to compute road direction.
-                -- Pick a random walk direction and apply the sidewalk offset perpendicular to it.
-                walkDir = math.random() * 2 * math.pi
+                currentHeading = math.random() * TWO_PI
+                desiredHeading = currentHeading
                 local sideSign = (math.random() > 0.5) and 1.0 or -1.0
-                walkOffsetX = math.cos(walkDir) * sidewalkOffset * sideSign
-                walkOffsetY = -math.sin(walkDir) * sidewalkOffset * sideSign
+                walkOffsetX    = math.cos(currentHeading) * config.sidewalkOffset * sideSign
+                walkOffsetY    = -math.sin(currentHeading) * config.sidewalkOffset * sideSign
             end
 
-            -- Reconstruct the upright body pose.
-            -- XY: use rawNodeIds[1] world XY as the horizontal anchor.
-            -- Z:  use the lowest (foot) node's current world Z as terrain reference,
-            --     then add each node's jbeam height-above-feet (off.dz >= 0).
-            --     This ensures NO node is placed below the road surface regardless
-            --     of which node rawNodeIds[1] is or how the dummy has fallen.
+            -- Build allNodes from jbeam-local offsets + world anchor
             local terrainZ = lowestCid and obj:getNodePosition(lowestCid).z or p0.z
             for _, off in ipairs(localOffsets) do
                 local nx = p0.x + off.dx
                 local ny = p0.y + off.dy
                 local nz = terrainZ + off.dz
-                table.insert(allNodes, {
-                    cid    = off.cid,
-                    spawnX = nx,
-                    spawnY = ny,
-                    spawnZ = nz,
-                })
+                table.insert(allNodes, { cid=off.cid, spawnX=nx, spawnY=ny, spawnZ=nz })
                 obj:setNodePosition(off.cid, vec3(nx, ny, nz))
             end
-            -- Initialize lastRefX/Y from the RECONSTRUCTED position so the first-
-            -- frame impact check has zero displacement and doesn't immediately
-            -- trigger a spurious "standing" transition.
+
+            -- Initialise impact-check baseline to reconstructed position
             if refCid then
                 for _, off in ipairs(localOffsets) do
                     if off.cid == refCid then
@@ -339,60 +617,58 @@ local function updateGFX(dt)
                     end
                 end
             end
-            state = "ghost"
+
+            -- Initialise stuck-detection position baseline
+            stuckPrevX, stuckPrevY = getDummyXY()
+
+            physState = "active"
+            aiState   = "wander"
+            dbg("Grace → ACTIVE/WANDER")
         end
-        return  -- walkDir/allNodes not ready yet; ghost teleportation starts next state
+        return
     end
 
-    -- ── 2. Impact detection (post-grace, chest reference node) ──────────────────
-    -- Uses "dummy1_thoraxtfl" (top-left chest, ~1.45 m above ground) as reference.
-    --
-    -- The check compares the current node position against WHERE WE PLACED IT last
-    -- frame (lastRefX/Y), NOT against the mathematical expected position.  This
-    -- prevents false triggers on the first ghost frame (when walkOffsetX already
-    -- holds the 5 m sidewalk shift but the nodes haven't been teleported yet —
-    -- that would look like a 5 m displacement and immediately trigger "standing").
-    --
-    --   • XY displacement ≥ 4 cm since last teleport  → something hit the dummy
-    --
+    -- ── 2. Impact detection (chest node XY displacement) ─────────────────────
+    -- Compares current physics position against WHERE we placed it last frame.
+    -- XY ≥ 6 cm displacement = vehicle/wall impact → switch to physics body.
     if refCid and #allNodes > 0 then
         local cur = vec3(obj:getNodePosition(refCid))
         local ddx = cur.x - lastRefX
         local ddy = cur.y - lastRefY
-        -- XY position displacement check (slow/medium speed vehicle contact)
         if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
-            state = "standing"
+            physState = "standing"
+            dbg("Impact → STANDING")
             return
         end
     end
 
-    -- ── 3. Periodically tweak walk direction (gentle, ±5°, road-parallel) ─────
-    walkTimer = walkTimer + dt
-    if walkTimer >= walkChangePeriod then
-        walkTimer = 0
-        walkDir = walkDir + (math.random() - 0.5) * 2 * DIRECTION_CHANGE_MAX
+    -- ── 3. AI tick (rate-limited to aiTickHz) ─────────────────────────────────
+    aiTickAccum = aiTickAccum + dt
+    if aiTickAccum >= aiTickInterval then
+        local tickDt = aiTickAccum
+        aiTickAccum  = 0.0
+        runAiTick(tickDt)
     end
 
-    -- ── 4. Accumulate horizontal walk displacement ────────────────────────────
-    local effectiveSpeed = math.min(walkSpeed, maxWalkSpeed)
-    local stepX = math.sin(walkDir) * effectiveSpeed * dt
-    local stepY = math.cos(walkDir) * effectiveSpeed * dt
-    walkOffsetX = walkOffsetX + stepX
-    walkOffsetY = walkOffsetY + stepY
+    -- ── 4. Smooth heading rotation toward desiredHeading (every frame) ────────
+    local headingErr = normalizeAngle(desiredHeading - currentHeading)
+    local maxTurn    = config.turnRateMax * dt
+    if math.abs(headingErr) <= maxTurn then
+        currentHeading = desiredHeading
+    else
+        currentHeading = currentHeading + (headingErr > 0 and maxTurn or -maxTurn)
+    end
 
-    -- ── 5. Teleport every node to its desired ghost position ─────────────────
-    --  Moving ALL nodes by the same XY offset keeps every beam length constant
-    --  → no spurious internal forces or vibration.
-    --  Z tracking: read current physics Z.  We only allow Z to INCREASE so the
-    --  dummy follows uphill terrain.  We never decrease spawnZ, because gravity
-    --  pulls nodes ~1 mm downward between each setNodePosition call; updating
-    --  downward would accumulate into the "sinking / sliding on ground" behaviour.
+    -- ── 5. Accumulate walk displacement ───────────────────────────────────────
+    local speed = math.min(currentSpeed, config.maxWalkSpeed)
+    walkOffsetX = walkOffsetX + math.sin(currentHeading) * speed * dt
+    walkOffsetY = walkOffsetY + math.cos(currentHeading) * speed * dt
+
+    -- ── 6. Teleport all nodes (preserving beam lengths, no physics forces) ────
+    -- Z tracking: allow terrain-following uphill only — never decrease spawnZ.
     for _, rec in ipairs(allNodes) do
         local curZ = obj:getNodePosition(rec.cid).z
-        -- Uphill terrain following: allow Z to rise, never sink.
-        if curZ > rec.spawnZ then
-            rec.spawnZ = curZ
-        end
+        if curZ > rec.spawnZ then rec.spawnZ = curZ end
         obj:setNodePosition(rec.cid, vec3(
             rec.spawnX + walkOffsetX,
             rec.spawnY + walkOffsetY,
@@ -400,8 +676,7 @@ local function updateGFX(dt)
         ))
     end
 
-    -- Update the reference position for next frame's impact check.
-    -- This is where we ACTUALLY placed the ref node this frame.
+    -- Update impact-check baseline to actual placed position
     if refCid then
         for _, rec in ipairs(allNodes) do
             if rec.cid == refCid then
@@ -413,6 +688,32 @@ local function updateGFX(dt)
     end
 end
 
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Public API
+-- ─────────────────────────────────────────────────────────────────────────────
+
+-- Set AI state externally.
+-- newState: "wander" | "idle" | "flee" | "pursue"
+-- params (optional): { targetPos=vec3, threatPos=vec3, duration=number }
+M.setState = function(newState, params)
+    if physState ~= "active" then return end
+    setAiStateInternal(newState, params or {})
+end
+
+-- Enable or disable debug logging.
+M.setDebug = function(enabled)
+    config.debugMode = enabled
+end
+
+-- Return a descriptive state string:
+--   "grace" | "active-wander" | "active-idle" | "active-flee" | "active-pursue" | "standing"
+M.getState = function()
+    if physState == "active" then
+        return "active-" .. aiState
+    end
+    return physState
+end
 
 -- ── public interface ──────────────────────────────────────────────────────────
 M.init      = init
