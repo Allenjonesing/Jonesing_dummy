@@ -30,7 +30,7 @@
     ],
     "beams": [
         ["id1:", "id2:"],
-     	{"beamDeform": 2000, "beamStrength":"15000"}, 
+     	{"beamDeform": 4000, "beamStrength":"8000"}, 
     ],
 },
 

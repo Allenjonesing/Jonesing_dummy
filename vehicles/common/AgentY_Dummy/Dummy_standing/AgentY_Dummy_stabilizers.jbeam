@@ -16,8 +16,8 @@
         ["id1:", "id2:"],
 	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
 	{"breakGroup":"dummy1_standlatch"},
-	{"beamDeform": "$adummy1stabilizers", "beamStrength": "$adummy1stabilizers"},
-	{"beamSpring": "$=$adummy1weight*500000","beamDamp":"$=$adummy1weight*300"},
+	{"beamDeform": "FLT_MAX", "beamStrength": "FLT_MAX"},
+	{"beamSpring": "$=$adummy1weight*80000","beamDamp":"$=$adummy1weight*150"},
 		
 	["dummy1_R_footbrr", "dummy1_R_legshinbrr"],
 	["dummy1_R_footbrl", "dummy1_R_legshinbrl"],
@@ -45,7 +45,7 @@
 	["dummy1_L_thightrl", "dummy1_pelvismrl"],
 
 	// Extra ankle stabilizers — softer spring so ankles can flex slightly on uneven ground
-	{"beamSpring": "$=$adummy1weight*200000","beamDamp":"$=$adummy1weight*400"},
+	{"beamSpring": "$=$adummy1weight*40000","beamDamp":"$=$adummy1weight*100"},
 	["dummy1_L_footbmr", "dummy1_L_legshinbfr"],
 	["dummy1_L_footbml", "dummy1_L_legshinbfl"],
 	["dummy1_R_footbmr", "dummy1_R_legshinbfr"],

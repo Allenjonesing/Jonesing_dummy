@@ -21,7 +21,8 @@
 --              will overwhelm the stabilisers and the dummy tumbles naturally.
 --
 -- GHOST → STANDING transition trigger (chest/thorax reference node):
---   XY displacement ≥ 4 cm in a single frame → vehicle/wall physically hit it
+--   XY displacement ≥ 6 cm in a single frame  → vehicle/wall physically hit it
+--   Lateral velocity  ≥ 1.5 m/s               → high-speed car (>100 mph tunneling)
 --
 -- IMPORTANT — why we wait before teleporting:
 --   Traffic scripts call init() BEFORE placing the vehicle at its spawn world
@@ -75,10 +76,14 @@ local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
 -- Impact detection — checked on the named chest node "dummy1_thoraxtfl"
 -- (~1.45 m above ground) to avoid false positives from foot/terrain contact.
 --
--- XY threshold: 4 cm.  A car hit at walking speed displaces the chest node
--- ~3-5 cm in one 60 fps frame; normal walking residual drift ≈ 1 mm.
--- 4 cm catches slow vehicle contacts while staying well above normal drift.
-local IMPACT_THRESHOLD_SQ  = 0.04 * 0.04   -- metres²  (4 cm in XY)
+-- XY threshold: 6 cm.  A car hit displaces the chest node ≥ 5-8 cm per frame;
+-- normal walking residual drift ≈ 1 mm.
+local IMPACT_THRESHOLD_SQ  = 0.06 * 0.06   -- metres²  (6 cm in XY)
+
+-- Velocity threshold for high-speed impact detection.
+-- At >100 mph a car passes through in < 1 GFX frame (position check misses it).
+-- Any lateral velocity > 1.5 m/s on the chest node means something hit it.
+local IMPACT_VELOCITY_SQ   = 1.5 * 1.5     -- m²/s²
 
 -- Grace period after spawn before the impact check is enabled.
 -- Traffic-script spawning runs physics-settling for ~2 s after init();
@@ -199,11 +204,12 @@ local function updateGFX(dt)
                     local flip = (math.random() > 0.5) and math.pi or 0.0
                     walkDir = walkDir + flip
 
-                    -- Sidewalk offset: shift RIGHT of walk direction (toward kerb)
-                    local rightX = math.cos(walkDir)
-                    local rightY = -math.sin(walkDir)
-                    walkOffsetX = rightX * sidewalkOffset
-                    walkOffsetY = rightY * sidewalkOffset
+                    -- Sidewalk offset: shift the dummy AWAY from the player.
+                    -- The player is typically near the road centreline, so
+                    -- p0→pp (dummy-to-player direction) = toward road centre.
+                    -- Negate to get "away from road" = toward the kerb/sidewalk.
+                    walkOffsetX = (-dx / perpDist) * sidewalkOffset
+                    walkOffsetY = (-dy / perpDist) * sidewalkOffset
                 end
             else
                 walkDir = math.random() * 2 * math.pi
@@ -245,8 +251,15 @@ local function updateGFX(dt)
         local cur = vec3(obj:getNodePosition(refCid))
         local ddx = cur.x - lastRefX
         local ddy = cur.y - lastRefY
-        -- XY impact check (vehicle/wall contact)
+        -- XY position displacement check (slow/medium speed vehicle contact)
         if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
+            state = "standing"
+            return
+        end
+        -- Lateral velocity check (catches high-speed impacts where car passes
+        -- through in < 1 GFX frame, leaving position near original but velocity high)
+        local vel = vec3(obj:getNodeVelocity(refCid))
+        if (vel.x*vel.x + vel.y*vel.y) > IMPACT_VELOCITY_SQ then
             state = "standing"
             return
         end

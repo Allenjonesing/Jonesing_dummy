@@ -26,7 +26,7 @@
     "nodes": [
         ["id", "posX", "posY", "posZ"],
 		{"nodeMaterial":"|NM_SKIN"},
-        {"frictionCoef":0.8},
+        {"frictionCoef":0.3},
         {"collision":true},
 
 
@@ -129,7 +129,7 @@
 		//--LEFT FOOT--
         {"group":"agenty_dummy1_foot_L"},
 		{"nodeWeight":"$=$adummy1weight*0.27388"},
-		{"frictionCoef":1},
+		{"frictionCoef":0.3},
 		
 		["dummy1_L_foottfr", "$=$adummy1scale*0.07","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
 		["dummy1_L_foottfl", "$=$adummy1scale*0.22","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
@@ -150,7 +150,7 @@
 		//--RIGHT FOOT--
         {"group":"agenty_dummy1_foot_R"},
 		{"nodeWeight":"$=$adummy1weight*0.27388"},
-		{"frictionCoef":1},
+		{"frictionCoef":0.3},
 		
 		["dummy1_R_foottfl", "$=$adummy1scale*-0.07","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
 		["dummy1_R_foottfr", "$=$adummy1scale*-0.22","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
@@ -173,7 +173,7 @@
     "beams": [
         ["id1:", "id2:"],
         {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-     	{"beamDeform": 1500, "beamStrength":"FLT_MAX"}, 
+     	{"beamDeform": 3000, "beamStrength":"FLT_MAX"}, 
         {"breakGroup":""},
 		
 		//--LEFT THIGH--

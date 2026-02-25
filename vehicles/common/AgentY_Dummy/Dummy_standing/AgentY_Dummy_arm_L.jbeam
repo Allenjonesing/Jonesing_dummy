@@ -97,7 +97,7 @@
     "beams": [
         ["id1:", "id2:"],
         {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-     	{"beamDeform": 2000, "beamStrength":"FLT_MAX"}, 
+     	{"beamDeform": 3000, "beamStrength":"FLT_MAX"}, 
         {"breakGroup":""},
 		
 		//--LEFT UPPER ARM--
