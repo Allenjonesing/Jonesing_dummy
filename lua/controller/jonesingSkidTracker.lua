@@ -3,61 +3,65 @@
 -- file, You can obtain one at http://beamng.com/bCDDL-1.1.txt
 
 -- jonesingSkidTracker.lua
--- Leaves red skid streaks on the ground whenever the dummy ragdoll is sliding
--- (sustained ground contact + any horizontal movement).  Works in freeroam with
--- spawned dummies; no world-editor placement needed.
+-- Leaves red blood streaks on the ground whenever the dummy ragdoll slides
+-- on any surface.  Works in freeroam with spawned dummies.
 --
--- Rendering: uses obj:addSkidmarkSegment() — the same C++ path that draws
--- tire tracks — so marks render identically to real tire skidmarks and fade/
--- cull with distance exactly like they do.  The "blood_skid" decal name used
--- in art/groundModels/flesh.json is reused here for a red/blood appearance.
+-- Rendering path:
+--   obj:queueGameEngineLua()  →  game-engine (GE) Lua context
+--   GE Lua: Engine.Render.DecalMgr.addDecalTangent()
 --
--- Detection (all must be true):
---   (a) Body flat   — chestZ - torsoZ < bodyFlatThreshold (1.1 m)
---   (b) On ground   — torso Z within groundClearance (0.40 m) of surface
---   (c) Moving      — horizontal speed ≥ speedThreshold (0.25 m/s)
---   (d) Not flying  — upward vertical velocity < vertVelThreshold (4 m/s)
+--   This is the same decal-manager that BeamNG uses for persistent road marks
+--   placed by the world editor.  Decals cull and fade with distance identically
+--   to tire skidmarks.  The "blood_skid" DecalData is registered by BeamNG's
+--   C++ ground-model system when it loads our art/groundModels/flesh.json
+--   (which specifies  "skidmarkColorDecal": "blood_skid").
 --
--- Tunable params (set in the jbeam slot entry, all optional):
+-- Detection (all must be true simultaneously):
+--   (a) Body flat   — chestZ - torsoZ < bodyFlatThreshold (default 1.10 m)
+--   (b) On ground   — torso Z within groundClearance (default 0.40 m) of surface
+--   (c) Moving      — horizontal speed ≥ speedThreshold (default 0.25 m/s)
+--   (d) Not flying  — upward vertical velocity < vertVelThreshold (default 4 m/s)
+--
+-- Tunable params (jbeam slot entry, all optional):
 --   skidGroundClearance   (default 0.40  m)
 --   skidBodyFlatThreshold (default 1.10  m)
 --   skidSpeedThreshold    (default 0.25 m/s)
 --   skidVertVelThreshold  (default 4.00 m/s)
---   skidSampleInterval    (default 0.04  s)  — ~25 Hz
---   skidMarkWidth         (default 0.18  m)  — total mark width
+--   skidSampleInterval    (default 0.04  s)   ~25 Hz
+--   skidMarkWidth         (default 0.50  m)   scale passed to DecalMgr
 --   skidDebugMode         (default false)
 --   skidTrackNodeName     (default "dummy1_L_footbmr")
 --   skidBodyNodeName      (default "dummy1_thoraxtfl")
 
 local M = {}
 
--- ── Configuration (overridable from jbeam) ────────────────────────────────────
+-- ── Configuration ──────────────────────────────────────────────────────────────
 local cfg = {
-    groundClearance    = 0.40,   -- m
-    bodyFlatThreshold  = 1.10,   -- m: (chestZ - torsoZ) when lying flat
-    speedThreshold     = 0.25,   -- m/s: minimum horizontal speed
-    vertVelThreshold   = 4.00,   -- m/s: upward velocity cap
-    sampleInterval     = 0.04,   -- s: ~25 Hz
-    markWidth          = 0.18,   -- m: total width of one skidmark strip
+    groundClearance    = 0.40,
+    bodyFlatThreshold  = 1.10,
+    speedThreshold     = 0.25,
+    vertVelThreshold   = 4.00,
+    sampleInterval     = 0.04,
+    markWidth          = 0.50,   -- larger = more visible; passed as DecalMgr scale
     debugMode          = false,
     trackNodeName      = "dummy1_L_footbmr",
     bodyNodeName       = "dummy1_thoraxtfl",
 }
 
 -- ── Internal state ─────────────────────────────────────────────────────────────
-local trackCid       = nil    -- cid of ground-contact reference node
-local chestCid       = nil    -- cid of body-orientation reference node
-local rawNodeIds     = {}
-local sampleTimer    = 0.0
-local prevPos        = nil    -- previous-frame world pos of trackNode (vec3)
-local prevZ          = nil    -- previous-frame Z for vertical-velocity estimate
-local isSliding      = false
-local lastMarkPos    = nil    -- world pos of the last emitted mark point
+local trackCid   = nil
+local chestCid   = nil
+local rawNodeIds = {}
+local sampleTimer = 0.0
+local prevPos    = nil   -- vec3: previous-frame position of trackNode
+local prevZ      = nil   -- float: previous-frame Z for vertical-velocity estimate
+local isSliding  = false
+local lastDx     = 1.0   -- last known slide direction X (for tangent vector)
+local lastDy     = 0.0   -- last known slide direction Y
 
 
--- ── Helpers ───────────────────────────────────────────────────────────────────
+-- ── Helpers ────────────────────────────────────────────────────────────────────
 
--- Query terrain height below a world position.  Returns nil on failure.
 local function getSurfaceHeight(x, y, z)
     local ok, h = pcall(function()
         return be:getSurfaceHeightBelow(x, y, z)
@@ -65,18 +69,26 @@ local function getSurfaceHeight(x, y, z)
     return (ok and type(h) == "number") and h or nil
 end
 
--- Emit one skidmark segment using BeamNG's built-in tire-track system.
--- obj:addSkidmarkSegment(x1,y1,z1, x2,y2,z2, nx,ny,nz, width, r,g,b,a)
--- All wrapped in pcall so failure is silent on any BeamNG build.
-local function emitSegment(x1, y1, z1, x2, y2, z2)
+-- Place one decal stamp at world-space (x,y,z), oriented along (dx,dy).
+-- Executes in the GE Lua context via queueGameEngineLua, where the real
+-- DecalMgr lives.  The template ("blood_skid") is looked up lazily on first
+-- call and cached in the global `jonesingBloodSkidTmpl`.
+-- Signature:  Engine.Render.DecalMgr.addDecalTangent(
+--               pos, normal, tangent, template, scale, texIndex, flags, alpha)
+local function emitMark(x, y, z, dx, dy)
+    local dlen = math.sqrt(dx*dx + dy*dy)
+    if dlen < 0.001 then dx, dy = 1.0, 0.0 else dx, dy = dx/dlen, dy/dlen end
+
     pcall(function()
-        obj:addSkidmarkSegment(
-            x1, y1, z1,
-            x2, y2, z2,
-            0, 0, 1,             -- upward surface normal
-            cfg.markWidth,
-            0.75, 0.02, 0.02, 1.0  -- deep red, fully opaque
-        )
+        obj:queueGameEngineLua(string.format(
+            'if not jonesingBloodSkidTmpl then'
+            .. ' jonesingBloodSkidTmpl=scenetree.findObject("blood_skid") end;'
+            .. ' if jonesingBloodSkidTmpl then'
+            .. ' Engine.Render.DecalMgr.addDecalTangent('
+            .. 'vec3(%f,%f,%f),vec3(0,0,1),vec3(%f,%f,0),'
+            .. 'jonesingBloodSkidTmpl,%f,-1,0,1.0) end',
+            x, y, z, dx, dy, cfg.markWidth
+        ))
     end)
 end
 
@@ -107,11 +119,12 @@ local function init(jbeamData)
     if not trackCid and #rawNodeIds > 0 then trackCid = rawNodeIds[1] end
     if not chestCid and #rawNodeIds > 0 then chestCid = rawNodeIds[1] end
 
-    sampleTimer  = 0.0
-    prevPos      = nil
-    prevZ        = nil
-    isSliding    = false
-    lastMarkPos  = nil
+    sampleTimer = 0.0
+    prevPos     = nil
+    prevZ       = nil
+    isSliding   = false
+    lastDx      = 1.0
+    lastDy      = 0.0
 
     if cfg.debugMode then
         log("I", "jonesingSkidTracker", "init() trackCid=" .. tostring(trackCid)
@@ -121,38 +134,40 @@ end
 
 
 local function reset()
-    sampleTimer  = 0.0
-    prevPos      = nil
-    prevZ        = nil
-    isSliding    = false
-    lastMarkPos  = nil
+    sampleTimer = 0.0
+    prevPos     = nil
+    prevZ       = nil
+    isSliding   = false
+    lastDx      = 1.0
+    lastDy      = 0.0
 end
 
 
--- ── Per-frame update ──────────────────────────────────────────────────────────
+-- ── Per-frame update ───────────────────────────────────────────────────────────
 
 local function updateGFX(dt)
     if dt <= 0 then return end
     if not trackCid or not chestCid then return end
 
-    -- ── 1. Node positions ───────────────────────────────────────────────────
+    -- 1. Node positions
     local tPos = vec3(obj:getNodePosition(trackCid))
     local cPos = vec3(obj:getNodePosition(chestCid))
 
-    -- ── 2. Per-frame velocity ───────────────────────────────────────────────
+    -- 2. Per-frame velocity
     local hSpeed = 0.0
     local vVel   = 0.0
-    if prevPos and dt > 0 then
+    if prevPos then
         local dx = tPos.x - prevPos.x
         local dy = tPos.y - prevPos.y
-        hSpeed = math.sqrt(dx * dx + dy * dy) / dt
+        hSpeed = math.sqrt(dx*dx + dy*dy) / dt
+        if hSpeed > 0.01 then lastDx, lastDy = dx, dy end  -- keep last non-zero direction
     end
     if prevZ then
         vVel = (tPos.z - prevZ) / dt
     end
 
-    -- ── 3. Ground-contact check ─────────────────────────────────────────────
-    local surfH   = getSurfaceHeight(tPos.x, tPos.y, tPos.z + 2.0)
+    -- 3. Ground contact
+    local surfH = getSurfaceHeight(tPos.x, tPos.y, tPos.z + 2.0)
     local grounded
     if surfH then
         grounded = (tPos.z - surfH) < cfg.groundClearance
@@ -160,50 +175,35 @@ local function updateGFX(dt)
         grounded = (math.abs(vVel) < 2.0)
     end
 
-    -- ── 4. Detection gates ──────────────────────────────────────────────────
-    local heightDiff = cPos.z - tPos.z
-    local bodyFlat   = (heightDiff < cfg.bodyFlatThreshold)
-    local moving     = (hSpeed    >= cfg.speedThreshold)
-    local notFlying  = (vVel      <  cfg.vertVelThreshold)
+    -- 4. Detection gates
+    local bodyFlat  = (cPos.z - tPos.z)  < cfg.bodyFlatThreshold
+    local moving    = hSpeed              >= cfg.speedThreshold
+    local notFlying = vVel               <  cfg.vertVelThreshold
 
     local wasSliding = isSliding
     isSliding = bodyFlat and grounded and moving and notFlying
 
     if cfg.debugMode and (isSliding ~= wasSliding) then
         log("I", "jonesingSkidTracker", string.format(
-            "sliding=%s  hSpeed=%.2f  heightDiff=%.2f  vVel=%.2f  grounded=%s",
-            tostring(isSliding), hSpeed, heightDiff, vVel, tostring(grounded)))
+            "sliding=%s  hSpeed=%.2f  hDiff=%.2f  vVel=%.2f  grounded=%s",
+            tostring(isSliding), hSpeed, cPos.z - tPos.z, vVel, tostring(grounded)))
     end
 
-    -- ── 5. Emit skidmark segments ───────────────────────────────────────────
+    -- 5. Emit marks at regular intervals while sliding
     sampleTimer = sampleTimer + dt
 
     if isSliding and sampleTimer >= cfg.sampleInterval then
         sampleTimer = 0.0
-        -- Pin the mark to the surface (or foot Z if surface unavailable)
-        local markZ  = surfH and (surfH + 0.012) or tPos.z
-        local curPos = vec3(tPos.x, tPos.y, markZ)
+        local markZ = surfH and (surfH + 0.01) or tPos.z
+        emitMark(tPos.x, tPos.y, markZ, lastDx, lastDy)
 
-        if lastMarkPos then
-            local dx = curPos.x - lastMarkPos.x
-            local dy = curPos.y - lastMarkPos.y
-            if (dx * dx + dy * dy) > 0.0009 then  -- > 3 cm movement between samples
-                emitSegment(
-                    lastMarkPos.x, lastMarkPos.y, lastMarkPos.z,
-                    curPos.x,      curPos.y,      curPos.z
-                )
-                if cfg.debugMode then
-                    log("I", "jonesingSkidTracker", string.format(
-                        "  mark (%.2f,%.2f)→(%.2f,%.2f)",
-                        lastMarkPos.x, lastMarkPos.y, curPos.x, curPos.y))
-                end
-            end
+        if cfg.debugMode then
+            log("I", "jonesingSkidTracker", string.format(
+                "  mark @ (%.2f,%.2f,%.2f)", tPos.x, tPos.y, markZ))
         end
-        lastMarkPos = curPos
     end
 
     if not isSliding then
-        lastMarkPos = nil
         sampleTimer = 0.0
     end
 
@@ -213,7 +213,7 @@ local function updateGFX(dt)
 end
 
 
--- ── Public interface ──────────────────────────────────────────────────────────
+-- ── Public interface ───────────────────────────────────────────────────────────
 M.init      = init
 M.reset     = reset
 M.updateGFX = updateGFX

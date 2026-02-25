@@ -84,7 +84,7 @@
             "skidSpeedThreshold":    0.25,
             "skidVertVelThreshold":  4.00,
             "skidSampleInterval":    0.04,
-            "skidMarkWidth":         0.18,
+            "skidMarkWidth":         0.50,
             "skidDebugMode":         false
         }],
     ],
