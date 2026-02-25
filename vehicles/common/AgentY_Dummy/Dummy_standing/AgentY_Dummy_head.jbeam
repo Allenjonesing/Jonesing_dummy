@@ -26,7 +26,7 @@
      "nodes": [
         ["id", "posX", "posY", "posZ"],
 		{"nodeWeight":"$=$adummy1weight*0.33314"},
-		{"nodeMaterial":"|NM_SKIN"},
+		{"nodeMaterial":"|NM_CLOTH"},
         {"frictionCoef":1},
         {"collision":true},
 
@@ -160,7 +160,7 @@
     ],
     "triangles": [
         ["id1:","id2:","id3:"],
-        {"groundModel":"flesh"},
+        {"groundModel":"cloth"},
         {"group":"agenty_dummy1_head"},
 	{"dragCoef":4},
         

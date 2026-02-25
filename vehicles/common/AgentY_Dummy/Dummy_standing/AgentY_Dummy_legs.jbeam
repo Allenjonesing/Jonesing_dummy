@@ -25,7 +25,7 @@
     ],
     "nodes": [
         ["id", "posX", "posY", "posZ"],
-		{"nodeMaterial":"|NM_SKIN"},
+		{"nodeMaterial":"|NM_CLOTH"},
         {"frictionCoef":0.3},
         {"collision":true},
 
@@ -749,7 +749,7 @@
     ],
     "triangles": [
         ["id1:","id2:","id3:"],
-        {"groundModel":"flesh"},
+        {"groundModel":"cloth"},
 		{"dragCoef":4},
 		
 		//left thigh
