@@ -9,7 +9,9 @@
 -- Each frame the position displacement is divided by dt to estimate instantaneous
 -- impact speed.  When that speed exceeds the threshold and the cooldown has
 -- expired, a random sound is selected from the pool and played via
--- Engine.Audio.playOnce at the dummy's world position (3-D spatialized).
+-- Engine.Audio.playOnce.  Because the dummy is itself the vehicle object in
+-- BeamNG, audio emitted from vehicle Lua is naturally positioned at the dummy's
+-- world location, giving correct 3-D spatialization.
 --
 -- ── Configuration ─────────────────────────────────────────────────────────────
 -- All tuneable values live in the `cfg` table below.
@@ -17,7 +19,9 @@
 --   screams_cooldown   → cfg.cooldown
 --   screams_speed      → cfg.impactSpeed
 --   screams_maxDist    → cfg.maxDistance
---   screams_volume     → cfg.volume
+--   screams_volume     → cfg.volume  (NOTE: volume is not passed to playOnce
+--                        directly; adjust audio level in BeamNG audio settings
+--                        or normalise your .ogg files to the desired level)
 --
 -- ── Sound assets ──────────────────────────────────────────────────────────────
 -- Place 10 .ogg files at:
@@ -52,8 +56,6 @@ local cfg = {
     maxDistance     = 60.0,
     -- Base playback volume [0..1].
     volume          = 0.85,
-    -- Pitch variation: random pitch in [1-pitchRange, 1+pitchRange].
-    pitchRange      = 0.15,
     -- BeamNG audio channel used for playback.
     channel         = "AudioGui",
     -- Grace period (seconds) after init() before detection is active.
@@ -90,19 +92,18 @@ local function getCamPos()
 end
 
 
--- Plays one randomly chosen scream at the given world-space position.
-local function playScream(x, y, z)
+-- Plays one randomly chosen scream.
+-- Engine.Audio.playOnce in vehicle Lua accepts (channel, path) only;
+-- the table/Point3F form is not available in the vehicle VM.
+-- Spatialization comes naturally because the dummy is itself the vehicle
+-- object — BeamNG positions vehicle-originated audio at the vehicle's
+-- world location.
+local function playScream()
     if numSounds < 1 then return end
-    local path  = cfg.sounds[math.random(1, numSounds)]
-    local pitch = 1.0 + (math.random() * 2.0 - 1.0) * cfg.pitchRange
+    local path = cfg.sounds[math.random(1, numSounds)]
     -- Wrapped in pcall so a missing/corrupt audio file never crashes the sim.
     pcall(function()
-        Engine.Audio.playOnce(cfg.channel, path, {
-            volume   = cfg.volume,
-            pitch    = pitch,
-            -- Point3F is the BeamNG world-position type accepted by playOnce.
-            pos      = Point3F(x, y, z),
-        })
+        Engine.Audio.playOnce(cfg.channel, path)
     end)
 end
 
@@ -193,7 +194,7 @@ local function updateGFX(dt)
     end
 
     -- ── 6. Play scream and start cooldown ────────────────────────────────────
-    playScream(cur.x, cur.y, cur.z)
+    playScream()
     cooldownLeft = cfg.cooldown
 end
 
