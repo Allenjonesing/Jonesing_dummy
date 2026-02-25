@@ -7,16 +7,16 @@
 --
 -- Two states (GHOST and STANDING):
 --
---   GHOST    — After a 3.5-second physics-settling grace period, the dummy is
---              locked to a fixed world position and walks slowly along the road
---              by teleporting all nodes simultaneously (constant beam lengths,
---              no internal forces).  The dummy phases through everything.
+--   GHOST    — Immediately upon traffic-script vehicle placement (detected as a
+--              sudden > 2 m jump in one frame), all nodes are snapped to their
+--              jbeam-local upright pose at the correct world position and locked
+--              there.  The dummy walks slowly along the road by teleporting all
+--              nodes simultaneously (constant beam lengths, no internal forces),
+--              phasing through everything.
 --              Walk direction is aligned to the road (perpendicular of the
 --              player→dummy spawn vector, computed after physics settles).
---              Spawn position is shifted sidewalkOffset metres RIGHT of the lane
---              direction (toward the kerb) so the dummy walks on the sidewalk.
---              Z tracking: each frame the settled physics Z is read back and
---              stored so the dummy follows terrain height automatically.
+--              Z tracking: each frame Z is allowed to INCREASE (uphill terrain)
+--              but never decrease, preventing gravity-induced sinking.
 --
 --   STANDING — All position overrides stop.  The existing stabiliser beams hold
 --              the dummy upright as a solid physics object.  A vehicle impact
@@ -25,13 +25,17 @@
 -- GHOST → STANDING transition trigger (chest/thorax reference node):
 --   XY displacement ≥ 6 cm in a single frame  → vehicle/wall physically hit it
 --
--- IMPORTANT — why we wait before teleporting:
+-- IMPORTANT — grace period and upright holding:
 --   Traffic scripts call init() BEFORE placing the vehicle at its spawn world
 --   position.  getNodePosition() at init() time returns jbeam-local coordinates
---   (near the world origin), not the final world location.  Teleporting to those
---   wrong coordinates creates enormous beam-spring forces that send the dummy
---   flying and exploding.  The grace period lets BeamNG move and settle the
---   vehicle at its real world position; we snapshot AFTER settling.
+--   (near the world origin), not the final world location.  The controller
+--   teleports ALL nodes every single frame (including during the grace period)
+--   using the jbeam-relative offsets captured at init() time, maintaining the
+--   rigid upright body shape wherever rawNodeIds[1] currently is.  This means
+--   the dummy NEVER falls and NEVER builds up velocity.  When the traffic-script
+--   placement teleport is detected (sudden >2 m jump), the dummy is already
+--   upright at the correct world position, and ghost mode starts cleanly with
+--   zero accumulated velocity — so the impact check cannot spuriously fire.
 --
 -- Reference node: "dummy1_thoraxtfl" (top-left chest node, ~1.45 m above ground).
 --   Using a high chest node as reference avoids false triggers from foot/ground
@@ -42,7 +46,7 @@
 --   walkSpeed        (default 0.008 m/s) — very slow pedestrian shuffle in ghost mode
 --   maxWalkSpeed     (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
 --   walkChangePeriod (default 5.0 s)  — seconds between gentle road-parallel tweaks
---   sidewalkOffset   (default 5.0 m)  — lateral shift RIGHT of lane direction at spawn
+--   sidewalkOffset   (default 0.0 m)  — lateral shift RIGHT of lane direction at spawn (0 = walk from spawn position)
 
 local M = {}
 
@@ -60,6 +64,18 @@ local startupTimer       = 0.0
 -- rawNodeIds: cid list stored during init() before baseline is captured.
 -- (getNodePosition at init() returns wrong positions; we snapshot later.)
 local rawNodeIds         = {}        -- list of cids for all nodes
+-- localOffsets: XY relative to rawNodeIds[1], Z relative to the LOWEST jbeam node
+-- (foot level), captured in jbeam-local space at init() time.  dz is always >= 0
+-- (feet dz≈0, head dz≈1.8 m).  This ensures reconstruction never places any node
+-- below the terrain surface regardless of which node is rawNodeIds[1].
+local localOffsets       = {}        -- {cid, dx, dy, dz}
+-- lowestCid: the node with the minimum jbeam Z (foot/sole node).  Used as terrain
+-- Z reference at ghost-mode entry so reconstruction always starts from road level.
+local lowestCid          = nil
+-- Track node position each grace frame to detect when the traffic script
+-- teleports the vehicle to its world position (sudden large jump).
+local gracePrevX         = nil
+local gracePrevY         = nil
 
 -- configurable params
 local walkSpeed          = 0.008    -- m/s  (very slow GTA pedestrian shuffle)
@@ -68,7 +84,12 @@ local walkSpeed          = 0.008    -- m/s  (very slow GTA pedestrian shuffle)
 -- 5 mph = 2.235 m/s
 local maxWalkSpeed        = 2.235    -- m/s  (~5 mph)
 local walkChangePeriod   = 5.0      -- s    (how often direction gently drifts)
-local sidewalkOffset     = 5.0      -- m    (5 m RIGHT of lane direction = on kerb)
+local sidewalkOffset     = 0.0      -- m    (0 = walk from spawn position, no sidewalk shift)
+
+-- Threshold for detecting that the traffic script has teleported the vehicle to
+-- its real world position: if a node jumps more than this distance in one frame
+-- during the grace period we treat the vehicle as placed and snapshot immediately.
+local PLACED_DETECTION_SQ  = 2.0 * 2.0  -- metres²  (2 m jump)
 
 -- Direction change magnitude — tight so dummy stays road-parallel with only a
 -- gentle drift over time.
@@ -134,6 +155,36 @@ local function init(jbeamData)
         refCid = rawNodeIds[1]
     end
 
+    -- Record jbeam-local relative positions for upright pose reconstruction.
+    -- XY offsets are relative to rawNodeIds[1] (arbitrary anchor).
+    -- Z offsets are relative to the LOWEST node's Z (foot/sole level) so that
+    -- dz is always >= 0.  This prevents feet from being placed below terrain when
+    -- rawNodeIds[1] is a mid-body node whose jbeam Z > 0.
+    localOffsets = {}
+    lowestCid    = nil
+    if #rawNodeIds > 0 then
+        -- Pass 1: find minimum jbeam Z (foot level) and XY anchor.
+        local p0      = vec3(obj:getNodePosition(rawNodeIds[1]))
+        local minZ    = math.huge
+        for _, cid in ipairs(rawNodeIds) do
+            local p = vec3(obj:getNodePosition(cid))
+            if p.z < minZ then
+                minZ      = p.z
+                lowestCid = cid
+            end
+        end
+        -- Pass 2: record offsets (dz = height above foot level, always >= 0).
+        for _, cid in ipairs(rawNodeIds) do
+            local p = vec3(obj:getNodePosition(cid))
+            table.insert(localOffsets, {
+                cid = cid,
+                dx  = p.x - p0.x,
+                dy  = p.y - p0.y,
+                dz  = p.z - minZ,   -- height above foot sole (>= 0)
+            })
+        end
+    end
+
     -- Per-instance random seed (unique per vehicle object)
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
@@ -145,6 +196,8 @@ local function init(jbeamData)
     walkDir      = 0
     walkTimer    = 0
     startupTimer = 0
+    gracePrevX   = nil
+    gracePrevY   = nil
 
     state = "grace"
 end
@@ -158,6 +211,8 @@ local function reset()
     startupTimer = 0
     lastRefX     = 0
     lastRefY     = 0
+    gracePrevX   = nil
+    gracePrevY   = nil
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
@@ -171,15 +226,51 @@ local function updateGFX(dt)
     -- STANDING state: all position overrides are OFF.
     if state == "standing" then return end
 
-    -- ── 1. Grace period: physics settles, we do NOTHING ──────────────────────
-    -- Traffic scripts place the vehicle AFTER init().  getNodePosition() at
-    -- init() time returns jbeam-local coords that are wrong for world space.
-    -- If we teleport during this window we create enormous beam spring forces
-    -- (nodes snapped to pre-placement positions) → dummy flies up → explodes.
-    -- Solution: do absolutely nothing for STARTUP_GRACE seconds, then snapshot
-    -- the real world positions as our baseline.
+    -- ── 1. Grace period: hold upright and wait for world placement ───────────────
+    -- Traffic scripts place the vehicle AFTER init().  We use localOffsets
+    -- (jbeam-relative offsets captured at init) to teleport ALL nodes every frame
+    -- to maintain the rigid upright body shape relative to rawNodeIds[1].
+    -- Before placement rawNodeIds[1] is near jbeam-origin so the dummy stands
+    -- frozen at origin — harmless, invisible.  The moment the traffic script
+    -- teleports the vehicle to its world position (detected as a sudden >2 m jump),
+    -- rawNodeIds[1] jumps to the world location, our per-frame teleport locks the
+    -- upright pose there, and we transition to ghost mode.
+    -- Because we are teleporting every frame, physics velocity NEVER accumulates,
+    -- so the impact check cannot spuriously fire on ghost-mode entry.
     if state == "grace" then
         startupTimer = startupTimer + dt
+
+        -- Detect traffic-script vehicle placement: sudden large position jump.
+        if rawNodeIds[1] then
+            local cp = vec3(obj:getNodePosition(rawNodeIds[1]))
+            if gracePrevX ~= nil then
+                local ddx = cp.x - gracePrevX
+                local ddy = cp.y - gracePrevY
+                if (ddx*ddx + ddy*ddy) > PLACED_DETECTION_SQ then
+                    -- Vehicle just teleported to world position — force transition now.
+                    startupTimer = STARTUP_GRACE
+                end
+            end
+            gracePrevX = cp.x
+            gracePrevY = cp.y
+        end
+
+        -- Hold every node in the upright pose every grace frame.
+        -- Using relative offsets from the CURRENT anchor position means we never
+        -- create large beam-spring forces — we are just re-asserting the jbeam
+        -- body shape wherever rawNodeIds[1] currently is.
+        if #localOffsets > 0 and rawNodeIds[1] then
+            local p0g = vec3(obj:getNodePosition(rawNodeIds[1]))
+            local tzg  = lowestCid and obj:getNodePosition(lowestCid).z or p0g.z
+            for _, off in ipairs(localOffsets) do
+                obj:setNodePosition(off.cid, vec3(
+                    p0g.x + off.dx,
+                    p0g.y + off.dy,
+                    tzg   + off.dz
+                ))
+            end
+        end
+
         if startupTimer >= STARTUP_GRACE then
             -- Snapshot settled positions — these are correct world coords now.
             -- Also compute walk direction and sidewalk offset using REAL world
@@ -217,25 +308,40 @@ local function updateGFX(dt)
                 walkOffsetY = -math.sin(walkDir) * sidewalkOffset * sideSign
             end
 
-            for _, cid in ipairs(rawNodeIds) do
-                local p = vec3(obj:getNodePosition(cid))
+            -- Reconstruct the upright body pose.
+            -- XY: use rawNodeIds[1] world XY as the horizontal anchor.
+            -- Z:  use the lowest (foot) node's current world Z as terrain reference,
+            --     then add each node's jbeam height-above-feet (off.dz >= 0).
+            --     This ensures NO node is placed below the road surface regardless
+            --     of which node rawNodeIds[1] is or how the dummy has fallen.
+            local terrainZ = lowestCid and obj:getNodePosition(lowestCid).z or p0.z
+            for _, off in ipairs(localOffsets) do
+                local nx = p0.x + off.dx
+                local ny = p0.y + off.dy
+                local nz = terrainZ + off.dz
                 table.insert(allNodes, {
-                    cid    = cid,
-                    spawnX = p.x,   -- baseline at lane centre; walkOffsetX adds sidewalk shift
-                    spawnY = p.y,
-                    spawnZ = p.z,   -- true settled Z
+                    cid    = off.cid,
+                    spawnX = nx,
+                    spawnY = ny,
+                    spawnZ = nz,
                 })
+                obj:setNodePosition(off.cid, vec3(nx, ny, nz))
             end
-            -- Initialize lastRefX/Y to CURRENT position (before any sidewalk
-            -- teleport) so the first-frame impact check has zero displacement.
+            -- Initialize lastRefX/Y from the RECONSTRUCTED position so the first-
+            -- frame impact check has zero displacement and doesn't immediately
+            -- trigger a spurious "standing" transition.
             if refCid then
-                local rp = vec3(obj:getNodePosition(refCid))
-                lastRefX  = rp.x
-                lastRefY  = rp.y
+                for _, off in ipairs(localOffsets) do
+                    if off.cid == refCid then
+                        lastRefX = p0.x + off.dx
+                        lastRefY = p0.y + off.dy
+                        break
+                    end
+                end
             end
             state = "ghost"
         end
-        return  -- no teleportation until baseline is captured
+        return  -- walkDir/allNodes not ready yet; ghost teleportation starts next state
     end
 
     -- ── 2. Impact detection (post-grace, chest reference node) ──────────────────
@@ -277,11 +383,16 @@ local function updateGFX(dt)
     -- ── 5. Teleport every node to its desired ghost position ─────────────────
     --  Moving ALL nodes by the same XY offset keeps every beam length constant
     --  → no spurious internal forces or vibration.
-    --  Z tracking: read current physics Z before teleporting — this follows terrain
-    --  height so feet never clip into slopes at the sidewalk offset location.
+    --  Z tracking: read current physics Z.  We only allow Z to INCREASE so the
+    --  dummy follows uphill terrain.  We never decrease spawnZ, because gravity
+    --  pulls nodes ~1 mm downward between each setNodePosition call; updating
+    --  downward would accumulate into the "sinking / sliding on ground" behaviour.
     for _, rec in ipairs(allNodes) do
-        local curZ = obj:getNodePosition(rec.cid)
-        rec.spawnZ = curZ.z  -- track settled physics terrain height
+        local curZ = obj:getNodePosition(rec.cid).z
+        -- Uphill terrain following: allow Z to rise, never sink.
+        if curZ > rec.spawnZ then
+            rec.spawnZ = curZ
+        end
         obj:setNodePosition(rec.cid, vec3(
             rec.spawnX + walkOffsetX,
             rec.spawnY + walkOffsetY,
