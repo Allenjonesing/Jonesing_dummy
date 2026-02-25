@@ -256,6 +256,28 @@ local function updateGFX(dt)
         -- XY position displacement check (slow/medium speed vehicle contact)
         if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
             state = "standing"
+            -- ── Trigger impact particle effects ─────────────────────────────
+            -- Estimate impact speed from the XY displacement magnitude.
+            -- displacement is in metres/frame; divide by dt to get approx m/s.
+            local dispMag   = math.sqrt(ddx*ddx + ddy*ddy)
+            local impactMs  = dispMag / math.max(dt, 0.001)
+            -- Map 0-20 m/s to intensity 0.2-2.0 (clamped).
+            local intensity = math.max(0.2, math.min(impactMs / 10.0, 2.0))
+            -- Use the current chest-node position as the spawn point.
+            local cx = cur.x
+            local cy = cur.y
+            local cz = cur.z
+            -- Queue into the Game Engine Lua context where the GE extension lives.
+            obj:queueGameEngineLua(string.format(
+                'if extensions.jonesing_impactParticles then ' ..
+                '  extensions.jonesing_impactParticles.spawnImpactParticles(' ..
+                '    %f,%f,%f, 0,0,1, %f,"impact_blood_spray",nil);' ..
+                '  extensions.jonesing_impactParticles.spawnImpactParticles(' ..
+                '    %f,%f,%f, 0,0,1, %f,"impact_dust_puff",nil);' ..
+                'end',
+                cx, cy, cz, intensity,
+                cx, cy, cz, intensity * 0.7
+            ))
             return
         end
     end
