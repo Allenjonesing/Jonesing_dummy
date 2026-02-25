@@ -79,14 +79,12 @@
     "controller": [
         ["fileName"],
         ["jonesingSkidTracker", {
-            "skidGroundClearance":   0.25,
-            "skidBodyFlatThreshold": 0.80,
-            "skidSpeedThreshold":    0.80,
-            "skidVertVelThreshold":  3.00,
-            "skidSampleInterval":    0.05,
-            "skidMaxSegments":       50,
-            "skidSegmentLifetime":   10.0,
-            "skidMarkWidth":         0.10,
+            "skidGroundClearance":   0.40,
+            "skidBodyFlatThreshold": 1.10,
+            "skidSpeedThreshold":    0.25,
+            "skidVertVelThreshold":  4.00,
+            "skidSampleInterval":    0.04,
+            "skidMarkWidth":         0.18,
             "skidDebugMode":         false
         }],
     ],
