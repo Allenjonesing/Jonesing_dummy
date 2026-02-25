@@ -160,7 +160,7 @@
     ],
     "triangles": [
         ["id1:","id2:","id3:"],
-        {"groundModel":"plastic"},
+        {"groundModel":"flesh"},
         {"group":"agenty_dummy1_head"},
 	{"dragCoef":4},
         

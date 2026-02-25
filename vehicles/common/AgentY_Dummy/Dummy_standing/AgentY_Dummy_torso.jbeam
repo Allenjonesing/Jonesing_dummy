@@ -1140,7 +1140,7 @@
         ["oi1_9","oi3_9","oi4_9"],
 
         {"triangleType":"NORMALTYPE"},
-        {"groundModel":"plastic"},
+        {"groundModel":"flesh"},
         {"group":""}
     ]
 }

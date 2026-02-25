@@ -24,7 +24,7 @@
      ],
      "nodes": [
         ["id", "posX", "posY", "posZ"],
-		{"nodeMaterial":"|NM_PLASTIC"},
+		{"nodeMaterial":"|NM_SKIN"},
         {"frictionCoef":0.5},
         {"collision":true},
 
@@ -307,7 +307,7 @@
     ],
     "triangles": [
         ["id1:","id2:","id3:"],
-        {"groundModel":"plastic"},
+        {"groundModel":"flesh"},
 	{"dragCoef":4},
 
 		//thorax
