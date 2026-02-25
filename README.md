@@ -26,10 +26,9 @@ Both actions have **no default key** — you must bind them yourself so they nev
 
 ### How it works
 
-* `settings/inputmaps/jonesingDummyMod.json` registers the two action names and their display strings so they appear in BeamNG's Controls UI.
-* `lua/ge/extensions/gameplay/jonesingDummySpawner.lua` is a GE-side extension that receives `onInputAction` events and calls `core_vehicles.spawnNewVehicle("agenty_dummy", ...)` with the `Normal` config — the same vehicle used when spawning dummies through other means.
-* A **500 ms cooldown** prevents accidental repeat-spawns while holding the key.
-* Spawned IDs are tracked so **Despawn / Clear Dummies** can remove exactly the dummies this session created.
+* `lua/ge/extensions/gameplay/jonesingDummySpawner.lua` is a GE-side extension that registers the two actions **programmatically** via `core_input_actionFilter.addAction()` in its `onExtensionLoaded` hook. This is what creates the **"Jonesing Dummy Mod"** category entry in the Controls UI with the display names "Spawn Ped Dummies" and "Despawn / Clear Dummies".
+* `settings/inputmaps/jonesingDummyMod.json` seeds the default (empty) key bindings for those action names so BeamNG has a binding record ready before the user assigns a key.
+* Once the user binds a key, pressing it calls `core_vehicles.spawnNewVehicle("agenty_dummy", ...)` with the `Normal` config — the same vehicle used when spawning dummies through other means.
 
 ### Tuning spawn parameters
 

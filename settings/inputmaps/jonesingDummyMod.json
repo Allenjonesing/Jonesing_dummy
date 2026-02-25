@@ -2,20 +2,22 @@
   "version": 2,
   "bindings": [
     {
-      "action":   "jonesingDummy_spawnPeds",
-      "display":  "Spawn Ped Dummies",
-      "category": "Jonesing Dummy Mod",
-      "isTrigger": true,
-      "device":   "keyboard",
-      "button":   ""
+      "action": "jonesingDummy_spawnPeds",
+      "type":   "BUTTON",
+      "ctrl":   false,
+      "shift":  false,
+      "alt":    false,
+      "device": "keyboard",
+      "button": ""
     },
     {
-      "action":   "jonesingDummy_despawnPeds",
-      "display":  "Despawn / Clear Dummies",
-      "category": "Jonesing Dummy Mod",
-      "isTrigger": true,
-      "device":   "keyboard",
-      "button":   ""
+      "action": "jonesingDummy_despawnPeds",
+      "type":   "BUTTON",
+      "ctrl":   false,
+      "shift":  false,
+      "alt":    false,
+      "device": "keyboard",
+      "button": ""
     }
   ]
 }
