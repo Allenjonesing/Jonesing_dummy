@@ -22,23 +22,28 @@
   ["AgentY_Dummy_abdomen", ["agenty_dummy1_abdomen"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
   ["AgentY_Dummy_pelvis",  ["agenty_dummy1_pelvis"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
 
-// Organs: visual-only, deforms with their node groups (same scaling as body)
-["AgentY_Dummy_Right_Lung",  ["right_lung_g"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Left_Lung",   ["left_lung_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Bladder",       ["bladder_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Heart",       ["heart_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Liver",    ["liver_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Stomach",  ["stomach_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine",      ["intestine_g"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.001",  ["intestine_g1"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.002",  ["intestine_g2"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.003",  ["intestine_g3"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.004",  ["intestine_g4"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.005",  ["intestine_g5"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.006",  ["intestine_g6"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.007",  ["intestine_g7"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.008",  ["intestine_g8"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.009",  ["intestine_g9"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}]
+// Organs: visual flexbodies referencing scene node IDs in AgentY_Dummy.dae.
+// The names MUST match the <node id="..."> in the DAE scene graph exactly.
+["AgentY_Dummy_Right_Lung",    ["right_lung_g"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Left_Lung",     ["left_lung_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Bladder",       ["bladder_g"],     {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Heart",         ["heart_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Liver",         ["liver_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Stomach",       ["stomach_g"],     {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+// Intestines: 10 separate scene nodes in AgentY_Dummy.dae.
+// The flexbody mesh names MUST match BOTH the node id AND name in the DAE.
+// IDs are underscore-notation (AgentY_Dummy_Intestine_001 etc); we updated
+// the DAE node names to match so both id and name are underscore.
+["AgentY_Dummy_Intestine",     ["intestine_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_001", ["intestine_g1"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_002", ["intestine_g2"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_003", ["intestine_g3"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_004", ["intestine_g4"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_005", ["intestine_g5"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_006", ["intestine_g6"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_007", ["intestine_g7"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_008", ["intestine_g8"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_009", ["intestine_g9"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}]
 
 
 ],
@@ -46,7 +51,7 @@
     "nodes": [
         ["id", "posX", "posY", "posZ"],
         {"nodeMaterial":"|NM_SKIN"},
-        {"frictionCoef":0.8},
+        {"frictionCoef":0.3},
         {"collision":true},
 
         //--THORAX--
@@ -85,7 +90,7 @@
         //--ABDOMEN--
         {"group":"agenty_dummy1_abdomen"},
         {"nodeWeight":0.930},
-        {"frictionCoef":0.9},
+        {"frictionCoef":0.3},
 
         //main shape
         ["dummy1_abdomentfl", "$=$adummy1scale*0.07","$=$adummy1scale*-0.09", "$=$adummy1scale*1.28"],
@@ -102,7 +107,7 @@
         //--PELVIS--
         {"group":"agenty_dummy1_pelvis"},
         {"nodeWeight":1.112},
-        {"frictionCoef":0.8},
+        {"frictionCoef":0.3},
 
         //main shape
         ["dummy1_pelvistfl", "$=$adummy1scale*0.12","$=$adummy1scale*-0.13", "$=$adummy1scale*1.05"],
@@ -134,7 +139,7 @@
 {"collision":true}, {"selfCollision":false},
 {"nodeMaterial":"|NM_SKIN"},
 {"nodeWeight":0.30},
-{"frictionCoef":5},
+{"frictionCoef":0.5},
 
 // INTESTINE (BASE) — reference positions
 ["oi1",  0.00, -0.030, 1.21],
@@ -214,11 +219,10 @@
 ["oi3_9", -0.04, -0.040, 1.14],
 ["oi4_9",  0.00, -0.005, 1.07],
 {"group":""},
-
 // RIGHT LUNG ////////////////////////
 {"group":"right_lung_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.28},   // was 0.14
-{"frictionCoef":5}
+{"frictionCoef":0.5}
 ["orl1","$=$adummy1scale*-0.10","$=$adummy1scale*-0.02","$=$adummy1scale*1.36"],
 ["orl2","$=$adummy1scale*-0.05","$=$adummy1scale*-0.05","$=$adummy1scale*1.33"],
 ["orl3","$=$adummy1scale*-0.08","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.33"],
@@ -228,7 +232,7 @@
 // LEFT LUNG
 {"group":"left_lung_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.28},   // was 0.14
-{"frictionCoef":5}
+{"frictionCoef":0.5}
 ["oll1","$=$adummy1scale*0.10","$=$adummy1scale*-0.02","$=$adummy1scale*1.36"],
 ["oll2","$=$adummy1scale*0.05","$=$adummy1scale*-0.05","$=$adummy1scale*1.33"],
 ["oll3","$=$adummy1scale*0.08","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.33"],
@@ -238,7 +242,7 @@
 // LIVER
 {"group":"liver_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.30},   // was 0.16
-{"frictionCoef":5}
+{"frictionCoef":0.5}
 ["olv1","$=$adummy1scale*-0.06","$=$adummy1scale*-0.02","$=$adummy1scale*1.08"],
 ["olv2","$=$adummy1scale*-0.02","$=$adummy1scale*-0.04","$=$adummy1scale*1.05"],
 ["olv3","$=$adummy1scale*-0.05","$=$adummy1scale*0.03" ,"$=$adummy1scale*1.03"],
@@ -248,7 +252,7 @@
 // HEART
 {"group":"heart_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.27},   // was 0.12
-{"frictionCoef":5}
+{"frictionCoef":0.5}
 ["oht1","$=$adummy1scale*0.00","$=$adummy1scale*-0.02","$=$adummy1scale*1.32"],
 ["oht2","$=$adummy1scale*0.03","$=$adummy1scale*-0.04","$=$adummy1scale*1.29"],
 ["oht3","$=$adummy1scale*-0.03","$=$adummy1scale*-0.04","$=$adummy1scale*1.29"],
@@ -258,7 +262,7 @@
 // STOMACH
 {"group":"stomach_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},
-{"nodeWeight":0.28}, {"frictionCoef":5},
+{"nodeWeight":0.28}, {"frictionCoef":0.5},
 ["ost1","$=$adummy1scale*0.06","$=$adummy1scale*-0.03","$=$adummy1scale*1.14"],
 ["ost2","$=$adummy1scale*0.09","$=$adummy1scale*-0.05","$=$adummy1scale*1.12"],
 ["ost3","$=$adummy1scale*0.05","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.10"],
@@ -268,7 +272,7 @@
 // BLADDER
 {"group":"bladder_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},
-{"nodeWeight":0.26},{"frictionCoef":5},
+{"nodeWeight":0.26},{"frictionCoef":0.5},
 ["obd1","$=$adummy1scale*0.02","$=$adummy1scale*-0.05","$=$adummy1scale*0.98"],
 ["obd2","$=$adummy1scale*-0.02","$=$adummy1scale*-0.05","$=$adummy1scale*0.98"],
 ["obd3","$=$adummy1scale*0.02","$=$adummy1scale*0.00","$=$adummy1scale*0.94"],
@@ -286,7 +290,7 @@
   "beamLongBound":1.1,   // can stretch 10%
   "beamShortBound":0.8,  // can squish down to 60%
   }
-        {"beamDeform": 10000, "beamStrength":"FLT_MAX"},
+        {"beamDeform": 4000, "beamStrength":"FLT_MAX"},
         {"deformLimitExpansion":1.1},
         {"breakGroup":""},
 
@@ -472,7 +476,7 @@
   "beamLongBound":1.20, "beamShortBound":0.80,
   "beamSpring":16000, "beamDamp":22,
   "beamLimitSpring":30000, "beamLimitDamp":150,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
+  "beamDeform":500, "beamStrength":"FLT_MAX"
 }},
 
 {"TETHER_TOOTHPICK_DEFAULT":{
@@ -912,13 +916,48 @@
 ["obd1","dummy1_pelvisbr"], ["obd3","dummy1_abdomenbfl"],
 ["obd2","dummy1_pelvisbr"], ["obd4","dummy1_abdomenbfr"]
 
+// ===============================================================================
+// ORGAN CONTAINMENT — soft SUPPORT beams keep organs inside body cavity
+// These are one-way springs: they only push back when organs move >15% beyond
+// their initial distance from a wall node, preventing clipping out of the body.
+// ===============================================================================
+{"breakGroup":""},
+{ "ORGAN_LEASH":{
+  "beamType":"|NORMAL",
+  "beamPrecompression":1.0,
+  "beamLongBound":0.15,
+  "beamShortBound":9999,
+  "beamSpring":20000, "beamDamp":200,
+  "beamDeform":"FLT_MAX", "beamStrength":2500
+}},
+{"$ref":"ORGAN_LEASH"},
+
+// THORAX-CAGE organs (lungs, heart) — anchored to thorax corners
+["orl1","dummy1_thoraxmfr"],["orl2","dummy1_thoraxmrr"],["orl3","dummy1_thoraxmrl"],["orl4","dummy1_thoraxmfl"],
+["orl1","dummy1_thoraxbfr"],["orl2","dummy1_thoraxbrr"],["orl3","dummy1_thoraxbrl"],["orl4","dummy1_thoraxbfl"],
+["oll1","dummy1_thoraxmfl"],["oll2","dummy1_thoraxmrl"],["oll3","dummy1_thoraxmrr"],["oll4","dummy1_thoraxmfr"],
+["oll1","dummy1_thoraxbfl"],["oll2","dummy1_thoraxbrl"],["oll3","dummy1_thoraxbrr"],["oll4","dummy1_thoraxbfr"],
+["oht1","dummy1_thoraxmfl"],["oht2","dummy1_thoraxmfr"],["oht3","dummy1_thoraxmrl"],["oht4","dummy1_thoraxmrr"],
+["oht1","dummy1_thoraxbfl"],["oht2","dummy1_thoraxbfr"],["oht3","dummy1_thoraxbrl"],["oht4","dummy1_thoraxbrr"],
+
+// ABDOMEN-CAGE organs (liver, stomach, bladder) — anchored to abdomen corners
+["olv1","dummy1_abdomentfl"],["olv2","dummy1_abdomentfr"],["olv3","dummy1_abdomentrl"],["olv4","dummy1_abdomentrr"],
+["olv1","dummy1_abdomenbfl"],["olv2","dummy1_abdomenbfr"],["olv3","dummy1_abdomenbrl"],["olv4","dummy1_abdomenbrr"],
+["ost1","dummy1_abdomentfl"],["ost2","dummy1_abdomentfr"],["ost3","dummy1_abdomentrl"],["ost4","dummy1_abdomentrr"],
+["ost1","dummy1_abdomenbfl"],["ost2","dummy1_abdomenbfr"],["ost3","dummy1_abdomenbrl"],["ost4","dummy1_abdomenbrr"],
+["obd1","dummy1_abdomenbfl"],["obd2","dummy1_abdomenbfr"],["obd3","dummy1_abdomenbrl"],["obd4","dummy1_abdomenbrr"],
+["obd1","dummy1_pelvistfl"],["obd2","dummy1_pelvistfr"],["obd3","dummy1_pelvistrl"],["obd4","dummy1_pelvistrr"],
+
+
+{"breakGroup":""},
+
 //// ========================== --- END ORGANS --- ==============================
 
     ],
 
     "triangles": [
         ["id1:","id2:","id3:"],
-        {"groundModel":"plastic"},
+        {"groundModel":"flesh"},
         {"dragCoef":4},
 
         //thorax
@@ -1013,6 +1052,95 @@
         ["dummy1_pelvisbr" ,"dummy1_pelvismrl","dummy1_pelvismfl"],
 
         {"triangleType":"NORMALTYPE"},
+        {"group":""},
+
+        // ---- ORGAN SURFACE TRIANGLES (flesh ground model for blood effects) ----
+        {"groundModel":"flesh"},
+        {"dragCoef":2},
+        {"triangleType":"NONCOLLIDABLE"},
+
+        {"group":"right_lung_g"},
+        ["orl1","orl2","orl4"],
+        ["orl2","orl3","orl4"],
+        ["orl1","orl3","orl4"],
+
+        {"group":"left_lung_g"},
+        ["oll1","oll2","oll4"],
+        ["oll2","oll3","oll4"],
+        ["oll1","oll3","oll4"],
+
+        {"group":"heart_g"},
+        ["oht1","oht2","oht4"],
+        ["oht2","oht3","oht4"],
+        ["oht1","oht3","oht4"],
+
+        {"group":"liver_g"},
+        ["olv1","olv2","olv4"],
+        ["olv2","olv3","olv4"],
+        ["olv1","olv3","olv4"],
+
+        {"group":"stomach_g"},
+        ["ost1","ost2","ost4"],
+        ["ost2","ost3","ost4"],
+        ["ost1","ost3","ost4"],
+
+        {"group":"bladder_g"},
+        ["obd1","obd2","obd4"],
+        ["obd2","obd3","obd4"],
+        ["obd1","obd3","obd4"],
+
+        {"group":"intestine_g"},
+        ["oi1","oi2","oi4"],
+        ["oi2","oi3","oi4"],
+        ["oi1","oi3","oi4"],
+
+        {"group":"intestine_g1"},
+        ["oi1_1","oi2_1","oi4_1"],
+        ["oi2_1","oi3_1","oi4_1"],
+        ["oi1_1","oi3_1","oi4_1"],
+
+        {"group":"intestine_g2"},
+        ["oi1_2","oi2_2","oi4_2"],
+        ["oi2_2","oi3_2","oi4_2"],
+        ["oi1_2","oi3_2","oi4_2"],
+
+        {"group":"intestine_g3"},
+        ["oi1_3","oi2_3","oi4_3"],
+        ["oi2_3","oi3_3","oi4_3"],
+        ["oi1_3","oi3_3","oi4_3"],
+
+        {"group":"intestine_g4"},
+        ["oi1_4","oi2_4","oi4_4"],
+        ["oi2_4","oi3_4","oi4_4"],
+        ["oi1_4","oi3_4","oi4_4"],
+
+        {"group":"intestine_g5"},
+        ["oi1_5","oi2_5","oi4_5"],
+        ["oi2_5","oi3_5","oi4_5"],
+        ["oi1_5","oi3_5","oi4_5"],
+
+        {"group":"intestine_g6"},
+        ["oi1_6","oi2_6","oi4_6"],
+        ["oi2_6","oi3_6","oi4_6"],
+        ["oi1_6","oi3_6","oi4_6"],
+
+        {"group":"intestine_g7"},
+        ["oi1_7","oi2_7","oi4_7"],
+        ["oi2_7","oi3_7","oi4_7"],
+        ["oi1_7","oi3_7","oi4_7"],
+
+        {"group":"intestine_g8"},
+        ["oi1_8","oi2_8","oi4_8"],
+        ["oi2_8","oi3_8","oi4_8"],
+        ["oi1_8","oi3_8","oi4_8"],
+
+        {"group":"intestine_g9"},
+        ["oi1_9","oi2_9","oi4_9"],
+        ["oi2_9","oi3_9","oi4_9"],
+        ["oi1_9","oi3_9","oi4_9"],
+
+        {"triangleType":"NORMALTYPE"},
+        {"groundModel":"plastic"},
         {"group":""}
     ]
 }

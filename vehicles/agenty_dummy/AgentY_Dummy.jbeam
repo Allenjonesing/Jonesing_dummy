@@ -15,6 +15,7 @@
         ["AgentY_Dummy_mod", "", "Additional Modification"],
 	["AgentY_Dummy_stabilizers", "AgentY_Dummy_stabilizers", "Standing Stabilizers"],
 	["AgentY_Dummy_breakable", "Breakable_yes", "Breakable", {"coreSlot":true}],
+	["AgentY_Dummy_npc_behavior", "jonesing_gta_npc_on", "GTA NPC Behavior"],
     ],
     "variables": [
         ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
@@ -31,6 +32,37 @@
         "offset":{"x":-0.07, "y":0, "z":1},
         "fov":65,
     },
+},
+
+// ── GTA NPC Behavior slots ────────────────────────────────────────────────────
+// Enables the jonesingGtaNpc Lua controller.
+// GHOST phase: walks slowly parallel to road (sidewalk-offset from centreline),
+//   phases through everything.
+// Transitions to STANDING only when a physical contact displaces a node ≥ 3 cm
+//   (any vehicle — player car, traffic, etc. — hitting the dummy triggers this).
+// STANDING phase: stabiliser beams hold dummy upright as a solid physics object.
+//   A vehicle hit overwhelms the stabilisers and the dummy tumbles naturally.
+"jonesing_gta_npc_on": {
+    "information":{
+        "name":"GTA NPC Mode (sidewalk ghost walk → tumble on vehicle hit)",
+        "authors":"Jonesing",
+    },
+    "slotType":"AgentY_Dummy_npc_behavior",
+    "controller": [
+        ["fileName"],
+        ["jonesingGtaNpc", {
+            "walkSpeed":       0.008,
+            "walkChangePeriod":5.0,
+            "sidewalkOffset":  5.0
+        }],
+    ],
+},
+"jonesing_gta_npc_off": {
+    "information":{
+        "name":"Normal Physics (no NPC behavior)",
+        "authors":"Jonesing",
+    },
+    "slotType":"AgentY_Dummy_npc_behavior",
 },
 
 //--BASE NODE WEIGHTS--
