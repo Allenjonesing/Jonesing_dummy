@@ -62,11 +62,14 @@ local startupTimer       = 0.0
 -- rawNodeIds: cid list stored during init() before baseline is captured.
 -- (getNodePosition at init() returns wrong positions; we snapshot later.)
 local rawNodeIds         = {}        -- list of cids for all nodes
--- localOffsets: relative XYZ of each node from rawNodeIds[1], captured in
--- jbeam-local space at init() time.  These represent the UPRIGHT body structure
--- and are used at ghost-mode entry to reconstruct the correct pose regardless
--- of any physics drift (falling, tilting) that occurred before placement.
-local localOffsets       = {}        -- {cid, dx, dy, dz} relative to rawNodeIds[1]
+-- localOffsets: XY relative to rawNodeIds[1], Z relative to the LOWEST jbeam node
+-- (foot level), captured in jbeam-local space at init() time.  dz is always >= 0
+-- (feet dz≈0, head dz≈1.8 m).  This ensures reconstruction never places any node
+-- below the terrain surface regardless of which node is rawNodeIds[1].
+local localOffsets       = {}        -- {cid, dx, dy, dz}
+-- lowestCid: the node with the minimum jbeam Z (foot/sole node).  Used as terrain
+-- Z reference at ghost-mode entry so reconstruction always starts from road level.
+local lowestCid          = nil
 -- Track node position each grace frame to detect when the traffic script
 -- teleports the vehicle to its world position (sudden large jump).
 local gracePrevX         = nil
@@ -150,20 +153,32 @@ local function init(jbeamData)
         refCid = rawNodeIds[1]
     end
 
-    -- Record jbeam-local relative positions from the first node.
-    -- These represent the UPRIGHT body structure and will be used at ghost-mode
-    -- entry to reconstruct the correct pose, overriding any fall/tilt that
-    -- occurred while the vehicle was still at origin before traffic placement.
+    -- Record jbeam-local relative positions for upright pose reconstruction.
+    -- XY offsets are relative to rawNodeIds[1] (arbitrary anchor).
+    -- Z offsets are relative to the LOWEST node's Z (foot/sole level) so that
+    -- dz is always >= 0.  This prevents feet from being placed below terrain when
+    -- rawNodeIds[1] is a mid-body node whose jbeam Z > 0.
     localOffsets = {}
+    lowestCid    = nil
     if #rawNodeIds > 0 then
-        local p0 = vec3(obj:getNodePosition(rawNodeIds[1]))
+        -- Pass 1: find minimum jbeam Z (foot level) and XY anchor.
+        local p0      = vec3(obj:getNodePosition(rawNodeIds[1]))
+        local minZ    = math.huge
+        for _, cid in ipairs(rawNodeIds) do
+            local p = vec3(obj:getNodePosition(cid))
+            if p.z < minZ then
+                minZ      = p.z
+                lowestCid = cid
+            end
+        end
+        -- Pass 2: record offsets (dz = height above foot level, always >= 0).
         for _, cid in ipairs(rawNodeIds) do
             local p = vec3(obj:getNodePosition(cid))
             table.insert(localOffsets, {
                 cid = cid,
                 dx  = p.x - p0.x,
                 dy  = p.y - p0.y,
-                dz  = p.z - p0.z,
+                dz  = p.z - minZ,   -- height above foot sole (>= 0)
             })
         end
     end
@@ -276,14 +291,17 @@ local function updateGFX(dt)
                 walkOffsetY = -math.sin(walkDir) * sidewalkOffset * sideSign
             end
 
-            -- Reconstruct the upright body pose using the ref node's actual world
-            -- position plus the jbeam-local relative offsets captured at init().
-            -- This corrects any tilt or fall that occurred during the pre-placement
-            -- grace window, snapping the dummy perfectly upright on entry to ghost.
+            -- Reconstruct the upright body pose.
+            -- XY: use rawNodeIds[1] world XY as the horizontal anchor.
+            -- Z:  use the lowest (foot) node's current world Z as terrain reference,
+            --     then add each node's jbeam height-above-feet (off.dz >= 0).
+            --     This ensures NO node is placed below the road surface regardless
+            --     of which node rawNodeIds[1] is or how the dummy has fallen.
+            local terrainZ = lowestCid and obj:getNodePosition(lowestCid).z or p0.z
             for _, off in ipairs(localOffsets) do
                 local nx = p0.x + off.dx
                 local ny = p0.y + off.dy
-                local nz = p0.z + off.dz
+                local nz = terrainZ + off.dz
                 table.insert(allNodes, {
                     cid    = off.cid,
                     spawnX = nx,
