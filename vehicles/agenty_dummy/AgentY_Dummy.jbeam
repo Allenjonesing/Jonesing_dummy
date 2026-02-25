@@ -16,6 +16,7 @@
 	["AgentY_Dummy_stabilizers", "AgentY_Dummy_stabilizers", "Standing Stabilizers"],
 	["AgentY_Dummy_breakable", "Breakable_yes", "Breakable", {"coreSlot":true}],
 	["AgentY_Dummy_npc_behavior", "jonesing_gta_npc_on", "GTA NPC Behavior"],
+	["AgentY_Dummy_skid_tracker", "jonesing_skid_tracker_on", "Skid Tracker"],
     ],
     "variables": [
         ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
@@ -63,6 +64,39 @@
         "authors":"Jonesing",
     },
     "slotType":"AgentY_Dummy_npc_behavior",
+},
+
+// ── Skid Tracker slots ────────────────────────────────────────────────────────
+// Detects when the dummy is sliding on the ground and draws red streak marks.
+// Marks are drawn each GFX frame via DebugDrawer and fade out over their lifetime.
+// All thresholds are tunable via slot params.
+"jonesing_skid_tracker_on": {
+    "information":{
+        "name":"Skid Tracker (red ground marks while sliding)",
+        "authors":"Jonesing",
+    },
+    "slotType":"AgentY_Dummy_skid_tracker",
+    "controller": [
+        ["fileName"],
+        ["jonesingSkidTracker", {
+            "skidGroundClearance":   0.25,
+            "skidBodyFlatThreshold": 0.80,
+            "skidSpeedThreshold":    0.80,
+            "skidVertVelThreshold":  3.00,
+            "skidSampleInterval":    0.05,
+            "skidMaxSegments":       50,
+            "skidSegmentLifetime":   10.0,
+            "skidMarkWidth":         0.10,
+            "skidDebugMode":         false
+        }],
+    ],
+},
+"jonesing_skid_tracker_off": {
+    "information":{
+        "name":"Skid Tracker disabled",
+        "authors":"Jonesing",
+    },
+    "slotType":"AgentY_Dummy_skid_tracker",
 },
 
 //--BASE NODE WEIGHTS--
