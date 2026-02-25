@@ -25,15 +25,17 @@
 -- GHOST → STANDING transition trigger (chest/thorax reference node):
 --   XY displacement ≥ 6 cm in a single frame  → vehicle/wall physically hit it
 --
--- IMPORTANT — why we wait before teleporting:
+-- IMPORTANT — grace period and upright holding:
 --   Traffic scripts call init() BEFORE placing the vehicle at its spawn world
 --   position.  getNodePosition() at init() time returns jbeam-local coordinates
---   (near the world origin), not the final world location.  Teleporting to those
---   wrong coordinates creates enormous beam-spring forces that send the dummy
---   flying and exploding.  The controller detects the traffic-script placement
---   teleport (a sudden > 2 m position jump in one frame) and immediately locks
---   the dummy in place so it never visibly falls.  A fixed STARTUP_GRACE timeout
---   acts as a fallback for edge cases where the jump is not detected.
+--   (near the world origin), not the final world location.  The controller
+--   teleports ALL nodes every single frame (including during the grace period)
+--   using the jbeam-relative offsets captured at init() time, maintaining the
+--   rigid upright body shape wherever rawNodeIds[1] currently is.  This means
+--   the dummy NEVER falls and NEVER builds up velocity.  When the traffic-script
+--   placement teleport is detected (sudden >2 m jump), the dummy is already
+--   upright at the correct world position, and ghost mode starts cleanly with
+--   zero accumulated velocity — so the impact check cannot spuriously fire.
 --
 -- Reference node: "dummy1_thoraxtfl" (top-left chest node, ~1.45 m above ground).
 --   Using a high chest node as reference avoids false triggers from foot/ground
@@ -224,22 +226,21 @@ local function updateGFX(dt)
     -- STANDING state: all position overrides are OFF.
     if state == "standing" then return end
 
-    -- ── 1. Grace period: physics settles, we do NOTHING ──────────────────────
-    -- Traffic scripts place the vehicle AFTER init().  getNodePosition() at
-    -- init() time returns jbeam-local coords that are wrong for world space.
-    -- If we teleport during this window we create enormous beam spring forces
-    -- (nodes snapped to pre-placement positions) → dummy flies up → explodes.
-    -- Solution: wait until the traffic script teleports the vehicle to its world
-    -- position (detected as a sudden > 2 m jump in one frame), then snapshot
-    -- the real world positions immediately.  If no teleport is detected within
-    -- STARTUP_GRACE seconds, fall back to the original snapshot-at-timeout path.
+    -- ── 1. Grace period: hold upright and wait for world placement ───────────────
+    -- Traffic scripts place the vehicle AFTER init().  We use localOffsets
+    -- (jbeam-relative offsets captured at init) to teleport ALL nodes every frame
+    -- to maintain the rigid upright body shape relative to rawNodeIds[1].
+    -- Before placement rawNodeIds[1] is near jbeam-origin so the dummy stands
+    -- frozen at origin — harmless, invisible.  The moment the traffic script
+    -- teleports the vehicle to its world position (detected as a sudden >2 m jump),
+    -- rawNodeIds[1] jumps to the world location, our per-frame teleport locks the
+    -- upright pose there, and we transition to ghost mode.
+    -- Because we are teleporting every frame, physics velocity NEVER accumulates,
+    -- so the impact check cannot spuriously fire on ghost-mode entry.
     if state == "grace" then
         startupTimer = startupTimer + dt
 
-        -- Detect traffic-script vehicle placement: the script teleports the vehicle
-        -- to its real world position in one frame, causing a sudden large position
-        -- jump.  As soon as we see that, skip remaining grace time and snapshot now
-        -- so the dummy locks in place immediately and never visibly falls over.
+        -- Detect traffic-script vehicle placement: sudden large position jump.
         if rawNodeIds[1] then
             local cp = vec3(obj:getNodePosition(rawNodeIds[1]))
             if gracePrevX ~= nil then
@@ -252,6 +253,22 @@ local function updateGFX(dt)
             end
             gracePrevX = cp.x
             gracePrevY = cp.y
+        end
+
+        -- Hold every node in the upright pose every grace frame.
+        -- Using relative offsets from the CURRENT anchor position means we never
+        -- create large beam-spring forces — we are just re-asserting the jbeam
+        -- body shape wherever rawNodeIds[1] currently is.
+        if #localOffsets > 0 and rawNodeIds[1] then
+            local p0g = vec3(obj:getNodePosition(rawNodeIds[1]))
+            local tzg  = lowestCid and obj:getNodePosition(lowestCid).z or p0g.z
+            for _, off in ipairs(localOffsets) do
+                obj:setNodePosition(off.cid, vec3(
+                    p0g.x + off.dx,
+                    p0g.y + off.dy,
+                    tzg   + off.dz
+                ))
+            end
         end
 
         if startupTimer >= STARTUP_GRACE then
@@ -324,7 +341,7 @@ local function updateGFX(dt)
             end
             state = "ghost"
         end
-        return  -- no teleportation until baseline is captured
+        return  -- walkDir/allNodes not ready yet; ghost teleportation starts next state
     end
 
     -- ── 2. Impact detection (post-grace, chest reference node) ──────────────────
