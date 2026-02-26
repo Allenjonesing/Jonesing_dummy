@@ -104,7 +104,6 @@ local gracePrevX     = nil       -- previous frame grace-period X (jump detectio
 local gracePrevY     = nil
 
 -- Timing
-local startupTimer   = 0.0       -- grace-period accumulator
 local aiTickAccum    = 0.0       -- accumulates dt; AI tick fires at 1/aiTickHz
 local stateTimer     = 0.0       -- time spent in current AI state
 local walkTimer      = 0.0       -- time since last wander direction change
@@ -132,7 +131,6 @@ local aiTickInterval = 1.0 / 15  -- seconds between AI ticks
 -- Immutable physics/safety constants
 local PLACED_DETECTION_SQ  = 2.0  * 2.0    -- m²  (2 m jump → world placement)
 local IMPACT_THRESHOLD_SQ  = 0.06 * 0.06   -- m²  (6 cm XY → vehicle impact)
-local STARTUP_GRACE        = 3.5            -- seconds
 local TWO_PI               = 2 * math.pi
 local REF_NODE_NAME        = "dummy1_thoraxtfl"
 
@@ -192,13 +190,16 @@ end
 
 -- Cast a single obstacle-detection ray against static world geometry.
 -- Returns hit distance in (0, maxDist], or maxDist if clear / API unavailable.
--- Uses pcall so missing API degrades gracefully (no obstacle detected).
+-- The entire body (including Point3F construction) is wrapped in a closure so
+-- that pcall catches any "attempt to call nil" if the API is unavailable.
 local function castObstacleRay(ox, oy, oz, dx, dy, maxDist)
-    local ok, result = pcall(castRayStatic,
-        Point3F(ox, oy, oz),
-        Point3F(dx, dy, 0),
-        maxDist
-    )
+    local ok, result = pcall(function()
+        return castRayStatic(
+            Point3F(ox, oy, oz),
+            Point3F(dx, dy, 0),
+            maxDist
+        )
+    end)
     if ok and type(result) == "number" and result > 0 then
         return math.min(result, maxDist)
     end
@@ -494,7 +495,6 @@ local function init(jbeamData)
     stateTimer     = 0.0
     stuckTimer     = 0.0
     idleTimer      = 0.0
-    startupTimer   = 0.0
     lastRefX       = 0.0
     lastRefY       = 0.0
     gracePrevX     = nil
@@ -514,7 +514,6 @@ local function reset()
     aiTickAccum = 0.0
     stateTimer  = 0.0
     stuckTimer  = 0.0
-    startupTimer = 0.0
     lastRefX    = 0.0
     lastRefY    = 0.0
     gracePrevX  = nil
@@ -537,26 +536,83 @@ local function updateGFX(dt)
     -- STANDING: all position overrides are OFF.
     if physState == "standing" then return end
 
-    -- ── 1. Grace period: hold upright, wait for traffic-script world placement ──
-    -- This section is preserved exactly from the original implementation.
+    -- ── 1. Grace period: hold upright until traffic-script world placement ───────
+    -- No timer.  The dummy stays upright indefinitely (by teleporting all nodes
+    -- every frame) until the traffic script teleports the vehicle to its world
+    -- position — detected as a sudden >2 m XY jump in one frame.  On detection
+    -- we snapshot the settled positions and immediately start the AI walk.
+    -- The ONLY other state transition from active→standing is a physical impact.
     if physState == "grace" then
-        startupTimer = startupTimer + dt
-
-        -- Detect sudden large XY jump → traffic-script placed vehicle at world pos
+        -- Detect sudden large XY jump → traffic-script placed vehicle at world pos.
+        -- Snapshot and transition to active immediately (no countdown timer).
         if rawNodeIds[1] then
             local cp = vec3(obj:getNodePosition(rawNodeIds[1]))
             if gracePrevX ~= nil then
                 local ddx = cp.x - gracePrevX
                 local ddy = cp.y - gracePrevY
                 if (ddx*ddx + ddy*ddy) > PLACED_DETECTION_SQ then
-                    startupTimer = STARTUP_GRACE
+                    -- Vehicle placed — snapshot now and start walking.
+                    allNodes = {}
+                    local p0 = vec3(obj:getNodePosition(rawNodeIds[1]))
+
+                    -- Road direction: player→dummy perpendicular → rotate 90° for walk direction.
+                    local pp = getPlayerPos()
+                    if pp and (math.abs(pp.x - p0.x) > 1.0 or math.abs(pp.y - p0.y) > 1.0) then
+                        local dx   = pp.x - p0.x
+                        local dy   = pp.y - p0.y
+                        local dist = math.sqrt(dx*dx + dy*dy)
+                        if dist > 1.0 then
+                            local nx = -dy / dist
+                            local ny =  dx / dist
+                            currentHeading = math.atan2(nx, ny) + ((math.random() > 0.5) and math.pi or 0.0)
+                            desiredHeading = currentHeading
+                            walkOffsetX    = (-dx / dist) * config.sidewalkOffset
+                            walkOffsetY    = (-dy / dist) * config.sidewalkOffset
+                        end
+                    else
+                        currentHeading = math.random() * TWO_PI
+                        desiredHeading = currentHeading
+                        local sideSign = (math.random() > 0.5) and 1.0 or -1.0
+                        walkOffsetX    = math.cos(currentHeading) * config.sidewalkOffset * sideSign
+                        walkOffsetY    = -math.sin(currentHeading) * config.sidewalkOffset * sideSign
+                    end
+
+                    -- Build allNodes from jbeam-local offsets + world anchor.
+                    local terrainZ = lowestCid and obj:getNodePosition(lowestCid).z or p0.z
+                    for _, off in ipairs(localOffsets) do
+                        local nx = p0.x + off.dx
+                        local ny = p0.y + off.dy
+                        local nz = terrainZ + off.dz
+                        table.insert(allNodes, { cid=off.cid, spawnX=nx, spawnY=ny, spawnZ=nz })
+                        obj:setNodePosition(off.cid, vec3(nx, ny, nz))
+                    end
+
+                    -- Initialise impact-check baseline to the reconstructed position
+                    -- so the very first active frame sees zero displacement.
+                    if refCid then
+                        for _, off in ipairs(localOffsets) do
+                            if off.cid == refCid then
+                                lastRefX = p0.x + off.dx
+                                lastRefY = p0.y + off.dy
+                                break
+                            end
+                        end
+                    end
+
+                    -- Initialise stuck-detection baseline.
+                    stuckPrevX, stuckPrevY = getDummyXY()
+
+                    physState = "active"
+                    aiState   = "wander"
+                    dbg("Placement detected → ACTIVE/WANDER")
+                    return
                 end
             end
             gracePrevX = cp.x
             gracePrevY = cp.y
         end
 
-        -- Hold every node in upright pose each grace frame
+        -- No placement yet — hold every node in the upright pose this frame.
         if #localOffsets > 0 and rawNodeIds[1] then
             local p0g = vec3(obj:getNodePosition(rawNodeIds[1]))
             local tzg = lowestCid and obj:getNodePosition(lowestCid).z or p0g.z
@@ -567,63 +623,6 @@ local function updateGFX(dt)
                     tzg   + off.dz
                 ))
             end
-        end
-
-        if startupTimer >= STARTUP_GRACE then
-            -- Snapshot settled world positions; compute initial walk heading
-            allNodes = {}
-            local p0 = vec3(obj:getNodePosition(rawNodeIds[1]))
-
-            -- Road direction: player→dummy vector is road-perpendicular;
-            -- rotate 90° to get road-parallel walk direction.
-            local pp = getPlayerPos()
-            if pp and (math.abs(pp.x - p0.x) > 1.0 or math.abs(pp.y - p0.y) > 1.0) then
-                local dx   = pp.x - p0.x
-                local dy   = pp.y - p0.y
-                local dist = math.sqrt(dx*dx + dy*dy)
-                if dist > 1.0 then
-                    local nx = -dy / dist
-                    local ny =  dx / dist
-                    currentHeading = math.atan2(nx, ny) + ((math.random() > 0.5) and math.pi or 0.0)
-                    desiredHeading = currentHeading
-                    walkOffsetX    = (-dx / dist) * config.sidewalkOffset
-                    walkOffsetY    = (-dy / dist) * config.sidewalkOffset
-                end
-            else
-                currentHeading = math.random() * TWO_PI
-                desiredHeading = currentHeading
-                local sideSign = (math.random() > 0.5) and 1.0 or -1.0
-                walkOffsetX    = math.cos(currentHeading) * config.sidewalkOffset * sideSign
-                walkOffsetY    = -math.sin(currentHeading) * config.sidewalkOffset * sideSign
-            end
-
-            -- Build allNodes from jbeam-local offsets + world anchor
-            local terrainZ = lowestCid and obj:getNodePosition(lowestCid).z or p0.z
-            for _, off in ipairs(localOffsets) do
-                local nx = p0.x + off.dx
-                local ny = p0.y + off.dy
-                local nz = terrainZ + off.dz
-                table.insert(allNodes, { cid=off.cid, spawnX=nx, spawnY=ny, spawnZ=nz })
-                obj:setNodePosition(off.cid, vec3(nx, ny, nz))
-            end
-
-            -- Initialise impact-check baseline to reconstructed position
-            if refCid then
-                for _, off in ipairs(localOffsets) do
-                    if off.cid == refCid then
-                        lastRefX = p0.x + off.dx
-                        lastRefY = p0.y + off.dy
-                        break
-                    end
-                end
-            end
-
-            -- Initialise stuck-detection position baseline
-            stuckPrevX, stuckPrevY = getDummyXY()
-
-            physState = "active"
-            aiState   = "wander"
-            dbg("Grace → ACTIVE/WANDER")
         end
         return
     end
