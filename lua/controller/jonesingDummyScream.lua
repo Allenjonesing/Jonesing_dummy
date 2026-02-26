@@ -8,10 +8,10 @@
 -- Impact detection: monitors the chest reference node ("dummy1_thoraxtfl").
 -- Each frame the position displacement is divided by dt to estimate instantaneous
 -- impact speed.  When that speed exceeds the threshold and the cooldown has
--- expired, a random sound is selected from the pool and played via
--- Engine.Audio.playOnce.  Because the dummy is itself the vehicle object in
--- BeamNG, audio emitted from vehicle Lua is naturally positioned at the dummy's
--- world location, giving correct 3-D spatialization.
+-- expired, a random sound is selected from the pool and queued for playback via
+-- obj:queueGameEngineLua → Engine.Audio.playOnce.
+-- `Engine` is a Game Engine global not available inside vehicle controller Lua;
+-- queueGameEngineLua bridges the call into the GE context where it IS defined.
 --
 -- ── Configuration ─────────────────────────────────────────────────────────────
 -- All tuneable values live in the `cfg` table below.
@@ -27,8 +27,6 @@
 -- Place 10 .ogg files at:
 --   art/sound/dummy_screams/scream_01.ogg … scream_10.ogg
 -- (relative to the BeamNG user content / mod root).
--- The controller calls Engine.Audio.playOnce inside a pcall so a missing file
--- is silently ignored and does not crash the vehicle simulation.
 
 local M = {}
 
@@ -56,10 +54,6 @@ local cfg = {
     maxDistance     = 60.0,
     -- Base playback volume [0..1].
     volume          = 0.85,
-    -- BeamNG audio channel used for playback.
-    -- "AudioDefault" is the in-world/vehicle sound channel.
-    -- "AudioGui" is for UI/HUD sounds and does not play in-world.
-    channel         = "AudioDefault",
     -- Grace period (seconds) after init() before detection is active.
     -- 1 s is enough for spawn physics to settle without blocking early tosses.
     startupGrace    = 1.0,
@@ -95,23 +89,19 @@ end
 
 
 -- Plays one randomly chosen scream.
--- Engine.Audio.playOnce in vehicle Lua accepts (channel, path) only;
--- the table/Point3F form is not available in the vehicle VM.
--- Spatialization comes naturally because the dummy is itself the vehicle
--- object — BeamNG positions vehicle-originated audio at the vehicle's
--- world location.
+-- `Engine` is a Game Engine (GE) Lua global — it is NOT available in vehicle
+-- controller Lua.  `obj:queueGameEngineLua(code)` queues a string of Lua code
+-- to run in the GE context on the next engine tick, where `Engine` IS defined.
+-- The path is escaped before embedding into the queued code string.
 local function playScream()
     if numSounds < 1 then return end
     local path = cfg.sounds[math.random(1, numSounds)]
     log('I', 'jonesingDummyScream', 'playing scream: ' .. path)
-    -- Wrapped in pcall so a missing/corrupt audio file never crashes the sim;
-    -- errors are still logged so they appear in BeamNG's Lua log.
-    local ok, err = pcall(function()
-        Engine.Audio.playOnce(cfg.channel, path)
-    end)
-    if not ok then
-        log('E', 'jonesingDummyScream', 'Engine.Audio.playOnce failed: ' .. tostring(err))
-    end
+    -- Escape backslashes then double-quotes before embedding into Lua source.
+    local safePath = path:gsub('\\', '\\\\'):gsub('"', '\\"')
+    obj:queueGameEngineLua(
+        string.format('Engine.Audio.playOnce("AudioDefault", "%s")', safePath)
+    )
 end
 
 
