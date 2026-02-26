@@ -57,10 +57,12 @@ local cfg = {
     -- Base playback volume [0..1].
     volume          = 0.85,
     -- BeamNG audio channel used for playback.
-    channel         = "AudioGui",
+    -- "AudioDefault" is the in-world/vehicle sound channel.
+    -- "AudioGui" is for UI/HUD sounds and does not play in-world.
+    channel         = "AudioDefault",
     -- Grace period (seconds) after init() before detection is active.
-    -- Mirrors the GTA-NPC grace period so spawn physics don't false-trigger.
-    startupGrace    = 3.5,
+    -- 1 s is enough for spawn physics to settle without blocking early tosses.
+    startupGrace    = 1.0,
 }
 
 -- ── internal state ─────────────────────────────────────────────────────────────
@@ -101,10 +103,15 @@ end
 local function playScream()
     if numSounds < 1 then return end
     local path = cfg.sounds[math.random(1, numSounds)]
-    -- Wrapped in pcall so a missing/corrupt audio file never crashes the sim.
-    pcall(function()
+    log('I', 'jonesingDummyScream', 'playing scream: ' .. path)
+    -- Wrapped in pcall so a missing/corrupt audio file never crashes the sim;
+    -- errors are still logged so they appear in BeamNG's Lua log.
+    local ok, err = pcall(function()
         Engine.Audio.playOnce(cfg.channel, path)
     end)
+    if not ok then
+        log('E', 'jonesingDummyScream', 'Engine.Audio.playOnce failed: ' .. tostring(err))
+    end
 end
 
 
