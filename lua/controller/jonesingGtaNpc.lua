@@ -39,7 +39,7 @@ local M = {}
 -- ─────────────────────────────────────────────────────────────────────────────
 local config = {
     -- Speeds (m/s)
-    walkSpeed        = 1.2,          -- default wander/pursue speed
+    walkSpeed        = 0.9,          -- default wander/pursue speed
     runSpeed         = 4.0,          -- flee/panic speed
     maxWalkSpeed     = 2.235,        -- absolute per-frame cap (~5 mph)
 
@@ -95,8 +95,8 @@ local aiState        = "wander"  -- "wander" | "idle" | "flee" | "pursue"
 -- Node tables (same mechanism as original implementation)
 local allNodes       = {}        -- {cid, spawnX, spawnY, spawnZ}
 local refCid         = nil       -- cid of chest reference node (impact detection)
-local lastRefX       = 0.0       -- last teleported position of ref node (X)
-local lastRefY       = 0.0       -- last teleported position of ref node (Y)
+local lastWalkOffsetX = 0.0      -- walkOffset used for last teleport (impact baseline X)
+local lastWalkOffsetY = 0.0      -- walkOffset used for last teleport (impact baseline Y)
 local rawNodeIds     = {}        -- all node cids (collected at init)
 local localOffsets   = {}        -- {cid, dx, dy, dz} jbeam-local offsets
 local lowestCid      = nil       -- node with minimum jbeam Z (foot level)
@@ -482,7 +482,7 @@ local function init(jbeamData)
     end
 
     local seed = rawNodeIds[1] or 0
-    math.randomseed(os.time() + seed)
+    math.randomseed(os.time() * 1000 + seed * 7919)
 
     -- Reset all mutable state
     walkOffsetX    = 0.0
@@ -495,8 +495,8 @@ local function init(jbeamData)
     stateTimer     = 0.0
     stuckTimer     = 0.0
     idleTimer      = 0.0
-    lastRefX       = 0.0
-    lastRefY       = 0.0
+    lastWalkOffsetX = 0.0
+    lastWalkOffsetY = 0.0
     gracePrevX     = nil
     gracePrevY     = nil
     threatPos      = nil
@@ -514,14 +514,14 @@ local function reset()
     aiTickAccum = 0.0
     stateTimer  = 0.0
     stuckTimer  = 0.0
-    lastRefX    = 0.0
-    lastRefY    = 0.0
+    lastWalkOffsetX = 0.0
+    lastWalkOffsetY = 0.0
     gracePrevX  = nil
     gracePrevY  = nil
     threatPos   = nil
     targetPos   = nil
     local seed = rawNodeIds[1] or 0
-    math.randomseed(os.time() + seed)
+    math.randomseed(os.time() * 1000 + seed * 7919)
     currentHeading = math.random() * TWO_PI
     desiredHeading = currentHeading
     currentSpeed   = 0.0
@@ -556,6 +556,7 @@ local function updateGFX(dt)
                     local p0 = vec3(obj:getNodePosition(rawNodeIds[1]))
 
                     -- Road direction: player→dummy perpendicular → rotate 90° for walk direction.
+                    -- Add ±90° random spread so dummies near the same spawn go different ways.
                     local pp = getPlayerPos()
                     if pp and (math.abs(pp.x - p0.x) > 1.0 or math.abs(pp.y - p0.y) > 1.0) then
                         local dx   = pp.x - p0.x
@@ -564,7 +565,8 @@ local function updateGFX(dt)
                         if dist > 1.0 then
                             local nx = -dy / dist
                             local ny =  dx / dist
-                            currentHeading = math.atan2(nx, ny) + ((math.random() > 0.5) and math.pi or 0.0)
+                            local baseH = math.atan2(nx, ny) + ((math.random() > 0.5) and math.pi or 0.0)
+                            currentHeading = baseH + (math.random() - 0.5) * math.pi
                             desiredHeading = currentHeading
                             walkOffsetX    = (-dx / dist) * config.sidewalkOffset
                             walkOffsetY    = (-dy / dist) * config.sidewalkOffset
@@ -587,17 +589,9 @@ local function updateGFX(dt)
                         obj:setNodePosition(off.cid, vec3(nx, ny, nz))
                     end
 
-                    -- Initialise impact-check baseline to the reconstructed position
-                    -- so the very first active frame sees zero displacement.
-                    if refCid then
-                        for _, off in ipairs(localOffsets) do
-                            if off.cid == refCid then
-                                lastRefX = p0.x + off.dx
-                                lastRefY = p0.y + off.dy
-                                break
-                            end
-                        end
-                    end
+                    -- Initialise impact-check baseline (walkOffset just set above = 0/0).
+                    lastWalkOffsetX = walkOffsetX
+                    lastWalkOffsetY = walkOffsetY
 
                     -- Initialise stuck-detection baseline.
                     stuckPrevX, stuckPrevY = getDummyXY()
@@ -627,16 +621,37 @@ local function updateGFX(dt)
         return
     end
 
-    -- ── 2. Impact detection (chest node XY displacement) ─────────────────────
-    -- Compares current physics position against WHERE we placed it last frame.
-    -- XY ≥ 6 cm displacement = vehicle/wall impact → switch to physics body.
-    if refCid and #allNodes > 0 then
-        local cur = vec3(obj:getNodePosition(refCid))
-        local ddx = cur.x - lastRefX
-        local ddy = cur.y - lastRefY
-        if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
+    -- ── 2. Impact detection (all nodes, any XY displacement > threshold) ────────
+    -- Compares each node's current physics position against its expected position
+    -- (spawnPos + lastWalkOffset). Any node displaced > 6 cm means something
+    -- physical (a vehicle, wall, etc.) has pushed it. Copy that node's velocity
+    -- to ALL nodes so the whole body ragdolls from the impact, then release to
+    -- full physics by switching to "standing".
+    if #allNodes > 0 then
+        local impactCid = nil
+        for _, rec in ipairs(allNodes) do
+            local cur = vec3(obj:getNodePosition(rec.cid))
+            local ddx = cur.x - (rec.spawnX + lastWalkOffsetX)
+            local ddy = cur.y - (rec.spawnY + lastWalkOffsetY)
+            if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
+                impactCid = rec.cid
+                break
+            end
+        end
+        if impactCid then
+            -- Read the struck node's velocity (given by the colliding vehicle)
+            -- and apply it to every node so the body flies/tumbles on impact.
+            local ok, vel = pcall(function() return obj:getNodeVelocity(impactCid) end)
+            if ok and vel then
+                local vx, vy, vz = vel.x, vel.y, vel.z
+                pcall(function()
+                    for _, rec in ipairs(allNodes) do
+                        obj:setNodeVelocity(rec.cid, vec3(vx, vy, vz))
+                    end
+                end)
+            end
             physState = "standing"
-            dbg("Impact → STANDING")
+            dbg("Impact → STANDING (ragdoll)")
             return
         end
     end
@@ -675,16 +690,10 @@ local function updateGFX(dt)
         ))
     end
 
-    -- Update impact-check baseline to actual placed position
-    if refCid then
-        for _, rec in ipairs(allNodes) do
-            if rec.cid == refCid then
-                lastRefX = rec.spawnX + walkOffsetX
-                lastRefY = rec.spawnY + walkOffsetY
-                break
-            end
-        end
-    end
+    -- Record the walkOffset used for this teleport so impact detection next
+    -- frame knows what each node's expected position is.
+    lastWalkOffsetX = walkOffsetX
+    lastWalkOffsetY = walkOffsetY
 end
 
 
