@@ -1,7 +1,7 @@
 {
   "format":2,
-  "mainPartName":"AgentY_Dummy",
-  "model":"agenty_dummy",
+  "mainPartName":"AgentJ_Dummy",
+  "model":"sgentj_dummy",
   "parts":{},
   "vars":{
     "$adummy1weight":1.3,
