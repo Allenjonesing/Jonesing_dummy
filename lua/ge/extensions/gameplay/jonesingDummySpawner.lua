@@ -7,14 +7,14 @@
 -- "Despawn / Clear Dummies" input actions.
 --
 -- How input registration works:
---   onExtensionLoaded() calls core_input_actionFilter.addAction() for each
---   action.  This is what makes them appear under "Jonesing Dummy Mod" in
---   Options → Controls so the user can bind any key.  The key binding itself
---   is stored by BeamNG in settings/inputmaps/ (seeded by
---   settings/inputmaps/jonesingDummyMod.json which ships with the mod).
---   When the bound key is pressed BeamNG fires onInputAction() on every
---   loaded GE extension; we also wire onDown callbacks in addAction() as
---   a direct path so either route triggers the spawn/despawn logic.
+--   ui/inputActions/jonesingDummyMod.json defines the two actions with
+--   actionMap, name, and description.  BeamNG merges that file into the
+--   Controls UI so the "Jonesing Dummy Mod" category appears in
+--   Options → Controls → Bindings where the user can assign any key.
+--   The binding seeds (unbound by default) live in
+--   settings/inputmaps/jonesingDummyMod.json.
+--   When the bound key is pressed, BeamNG fires onInputAction() on every
+--   loaded GE extension; this module intercepts the two action names.
 --
 -- Spawn behaviour:
 --   • Spawns SPAWN_COUNT standalone agenty_dummy props using the "Normal"
@@ -117,36 +117,8 @@ end
 
 -- ── BeamNG extension hooks ────────────────────────────────────────────────────
 
--- Called once when this GE extension is loaded (at gameplay start).
--- Registers the two custom actions with core_input_actionFilter so that they
--- appear in Options → Controls under the "Jonesing Dummy Mod" category where
--- the user can assign any key.  The onDown callbacks are the primary trigger
--- path; onInputAction below is the complementary/fallback path.
-function M.onExtensionLoaded()
-    log("I", "jonesingDummySpawner", "loaded — registering hotkey input actions")
-    if core_input_actionFilter then
-        core_input_actionFilter.addAction(0, "jonesingDummy_spawnPeds", {
-            displayName     = "Spawn Ped Dummies",
-            displayCategory = "Jonesing Dummy Mod",
-            onDown          = function() spawnDummies() end,
-            onUp            = function() end,
-        })
-        core_input_actionFilter.addAction(0, "jonesingDummy_despawnPeds", {
-            displayName     = "Despawn / Clear Dummies",
-            displayCategory = "Jonesing Dummy Mod",
-            onDown          = function() despawnDummies() end,
-            onUp            = function() end,
-        })
-        log("I", "jonesingDummySpawner",
-            "registered jonesingDummy_spawnPeds + jonesingDummy_despawnPeds with core_input_actionFilter")
-    else
-        log("W", "jonesingDummySpawner",
-            "core_input_actionFilter not available — actions will only trigger via onInputAction")
-    end
-end
-
--- Complementary path: BeamNG calls this on every loaded GE extension whenever
--- a named action fires (val > 0 = key down, val == 0 = key up).
+-- Called by BeamNG whenever a bound input action fires (keyboard, controller, etc.)
+-- The action names match those defined in ui/inputActions/jonesingDummyMod.json.
 function M.onInputAction(actionName, val)
     if actionName == "jonesingDummy_spawnPeds" and val > 0.5 then
         spawnDummies()

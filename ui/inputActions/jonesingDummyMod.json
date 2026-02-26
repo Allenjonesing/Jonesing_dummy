@@ -1,0 +1,12 @@
+[
+  {
+    "actionMap": "jonesingDummyMod",
+    "name": "jonesingDummy_spawnPeds",
+    "description": "Spawn Ped Dummies"
+  },
+  {
+    "actionMap": "jonesingDummyMod",
+    "name": "jonesingDummy_despawnPeds",
+    "description": "Despawn / Clear Dummies"
+  }
+]
