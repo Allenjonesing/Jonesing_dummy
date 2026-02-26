@@ -92,6 +92,8 @@ end
 -- `Engine` is a Game Engine (GE) Lua global — it is NOT available in vehicle
 -- controller Lua.  `obj:queueGameEngineLua(code)` queues a string of Lua code
 -- to run in the GE context on the next engine tick, where `Engine` IS defined.
+-- In GE Lua, Engine.Audio.playOnce(path) takes the sound file path as its
+-- first (and only required) argument — there is no channel-name parameter.
 -- The path is escaped before embedding into the queued code string.
 local function playScream()
     if numSounds < 1 then return end
@@ -100,7 +102,7 @@ local function playScream()
     -- Escape backslashes then double-quotes before embedding into Lua source.
     local safePath = path:gsub('\\', '\\\\'):gsub('"', '\\"')
     obj:queueGameEngineLua(
-        string.format('Engine.Audio.playOnce("AudioDefault", "%s")', safePath)
+        string.format('Engine.Audio.playOnce("%s")', safePath)
     )
 end
 
