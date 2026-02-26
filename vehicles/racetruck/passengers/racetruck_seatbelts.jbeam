@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_racetruck": {
+"agentj_dummy_mod_seatbelts_racetruck": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"4-Point Seatbelts for SP Dunekicker",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
     
     "beams": [
         ["id1:", "id2:"],

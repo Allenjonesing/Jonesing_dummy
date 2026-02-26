@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_midsize": {
+"agentj_dummy_mod_seatbelts_midsize": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"3-Point Seatbelts for Ibishu Pessima",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
     
     "beams": [
         ["id1:", "id2:"],
@@ -83,12 +83,12 @@
     ],
 },
 
-"agenty_dummy_mod_seatbelts_R_midsize": {
+"agentj_dummy_mod_seatbelts_R_midsize": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"3-Point Seatbelts for Ibishu Pessima",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts_R",
+    "slotType" : "agentj_dummy_mod_seatbelts_R",
     
     "beams": [
         ["id1:", "id2:"],

@@ -1,0 +1,56 @@
+{
+"AgentJ_passenger_RL_stuntman": {
+    "information":{
+        "name":"Stuntman Passenger",
+        "authors":"AgentJ",
+    },
+    "slotType":"agentj_dummy_mod_passenger_RL",
+    "slots": [
+  ["type", "default", "description"],
+  ["AgentJ_Stuntman3_torso","AgentJ_Stuntman3_torso", "Body", {"coreSlot":true, "nodeOffset":{"x":0,"y":0,"z":-0.05}}],
+  ["AgentJ_Dummy3_extras", "", "Passenger Accessories"],
+  ["AgentJ_Dummy3_mod", "", "Additional Modification"],
+  ["AgentJ_Dummy3_seatbelt", "", "Seatbelt"],
+  ["AgentJ_Stuntman3_connectors", "AgentJ_Stuntman3_connectors", "Joints", {"coreSlot":true}],
+  ["AgentJ_Dummy3_collision", "AgentJ_Dummy3_collision_complex", "Collision Detection", {"coreSlot":true}],
+    ],
+    "variables": [
+        ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+        //--VALUES MORE TYPICAL FOR A CHILD - ADULT WON'T FIT!--
+        ["$aDummy3scale", "range", "m", "Driver and Passengers", 0.75, 0.85, 1.0, "RL Passenger Size",  "How tall the rear left passenger is",     {"stepDis":0.01, "minDis":1.34, "maxDis":1.79, "subCategory":"Rear Left Passenger"}],
+  ["$aDummy3weight","range", "kg","Driver and Passengers", 0.50, 0.75, 1.0, "RL Passenger Weight","How much the rear left passenger weights",{"stepDis":0.1,  "minDis":27.4, "maxDis":70.1, "subCategory":"Rear Left Passenger"}],
+    ],
+    "nodes": [
+        ["id", "posX", "posY", "posZ"],
+  //disable fire
+  {"chemEnergy":false,"burnRate":false,"flashPoint":false,"specHeat":false,"smokePoint":false,"selfIgnitionCoef":false},
+    ],
+     "beams": [
+        ["id1:", "id2:"],
+  //disable leaking of uncommon beam values
+  {"breakGroupType":0},
+  {"beamLimitSpring":1,"beamLimitDamp":1},
+  {"beamDampRebound":false},
+
+  //--POSITION RESET TRIGGERS--
+  {"beamPrecompression":1,"beamType":"|SUPPORT", "beamLongBound":5},
+  {"beamSpring": 0,"beamDamp":0},
+  {"beamDeform": "FLT_MAX", "beamStrength":"FLT_MAX"},
+  {"breakGroup":"RLpass_sit"},
+  {"optional":true},
+  ["Dummy3_headtip", "sr1l"],
+  ["Dummy3_headtip", "sr1r"],
+  ["Dummy3_headtip", "intcollision_Rseatmr"],
+  ["Dummy3_headtip", "intcollision_Rseatml"],
+
+
+  {"optional":false},
+  {"breakGroup":""},
+  {"beamPrecompression":1},
+  {"beamPrecompressionTime":0},
+
+  {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+   ],
+},
+
+}

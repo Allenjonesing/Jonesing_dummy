@@ -1,0 +1,116 @@
+{
+"AgentJ_Dummy4_collision_complex": {
+    "information":{
+        "name":"Complex (Default)",
+        "authors":"AgentJ",
+    },
+    "slotType":"AgentJ_Dummy4_collision",
+    "triangles": [
+        ["id1:","id2:","id3:"],
+        {"groundModel":"plastic"},
+	{"dragCoef":0},
+	{"group":"agentj_Dummy4_limbs"},
+		
+	//left upperarm
+        {"breakGroup":""},
+	["Dummy4_L_upperarm1", "Dummy4_L_upperarm2", "Dummy4_L_upperarm3"],
+	
+        //left upperarm to forearm
+	{"breakGroup":"Dummy4_L_armforearm"},
+	["Dummy4_L_upperarm1", "Dummy4_L_forearm2", "Dummy4_L_upperarm2"],
+	["Dummy4_L_upperarm2", "Dummy4_L_forearm1", "Dummy4_L_upperarm3"],
+	["Dummy4_L_forearm2", "Dummy4_L_forearm1", "Dummy4_L_upperarm2"],
+	["Dummy4_L_forearm2", "Dummy4_L_upperarm1", "Dummy4_L_forearm1"],
+	["Dummy4_L_forearm1", "Dummy4_L_upperarm1", "Dummy4_L_upperarm3"],
+
+	//left forearm to hand
+	{"breakGroup":"Dummy4_L_forearmhand"},
+	["Dummy4_L_forearm1", "Dummy4_L_hand2", "Dummy4_L_hand1"],
+	["Dummy4_L_forearm1", "Dummy4_L_forearm2", "Dummy4_L_hand2"],
+	["Dummy4_L_hand1", "Dummy4_L_hand2", "Dummy4_L_forearm2"],
+	["Dummy4_L_forearm1", "Dummy4_L_hand1", "Dummy4_L_forearm2"],
+	
+	//left hand
+	{"breakGroup":""},
+  	["Dummy4_L_hand1", "Dummy4_L_hand2", "Dummy4_L_hand3"],
+
+
+	//right upperarm
+        {"breakGroup":""},
+	["Dummy4_R_upperarm1", "Dummy4_R_upperarm3", "Dummy4_R_upperarm2"],
+	
+        //right upperarm to forearm
+	{"breakGroup":"Dummy4_L_armforearm"},
+	["Dummy4_R_upperarm2", "Dummy4_R_forearm2", "Dummy4_R_upperarm1"],
+	["Dummy4_R_upperarm3", "Dummy4_R_forearm1", "Dummy4_R_upperarm2"],
+	["Dummy4_R_forearm1", "Dummy4_R_forearm2", "Dummy4_R_upperarm2"],
+	["Dummy4_R_forearm1", "Dummy4_R_upperarm1", "Dummy4_R_forearm2"],
+	["Dummy4_R_forearm1", "Dummy4_R_upperarm3", "Dummy4_R_upperarm1"],
+
+	//right forearm to hand
+	{"breakGroup":"Dummy4_L_forearmhand"},
+	["Dummy4_R_forearm1", "Dummy4_R_hand1", "Dummy4_R_hand2"],
+	["Dummy4_R_forearm2", "Dummy4_R_forearm1", "Dummy4_R_hand2"],
+	["Dummy4_R_hand2", "Dummy4_R_hand1", "Dummy4_R_forearm2"],
+	["Dummy4_R_forearm2", "Dummy4_R_hand1", "Dummy4_R_forearm1"],
+	
+	//right hand
+	{"breakGroup":""},
+  	["Dummy4_R_hand1", "Dummy4_R_hand3", "Dummy4_R_hand2"],
+
+	
+	//left thigh
+        {"breakGroup":""},
+	["Dummy4_L_thigh1", "Dummy4_L_thigh3", "Dummy4_L_thigh2"],
+
+	//left thigh to legshin
+	{"breakGroup":"Dummy4_L_thighlegshin"},
+	["Dummy4_L_legshin2", "Dummy4_L_legshin1", "Dummy4_L_thigh3"],
+	["Dummy4_L_legshin2", "Dummy4_L_thigh1", "Dummy4_L_thigh2"],
+	["Dummy4_L_legshin1", "Dummy4_L_legshin2", "Dummy4_L_thigh2"],
+	["Dummy4_L_legshin2", "Dummy4_L_thigh3", "Dummy4_L_thigh1"],
+	["Dummy4_L_legshin1", "Dummy4_L_thigh2", "Dummy4_L_thigh3"],
+
+	//left legshin to foot
+	{"breakGroup":"Dummy4_L_legshinfoot"},
+	["Dummy4_L_legshin1", "Dummy4_L_legshin2", "Dummy4_L_foot3"],
+	["Dummy4_L_legshin1", "Dummy4_L_foot3", "Dummy4_L_foot2"],
+	["Dummy4_L_legshin2", "Dummy4_L_foot1", "Dummy4_L_foot3"],
+	["Dummy4_L_foot2", "Dummy4_L_foot1", "Dummy4_L_legshin1"],
+	["Dummy4_L_legshin2", "Dummy4_L_legshin1", "Dummy4_L_foot1"],
+
+	//left foot
+        {"breakGroup":""},
+	["Dummy4_L_foot1", "Dummy4_L_foot2", "Dummy4_L_foot3"],
+
+
+	//right thigh
+	{"breakGroup":""},
+	["Dummy4_R_thigh1", "Dummy4_R_thigh2", "Dummy4_R_thigh3"],
+
+	//right thigh to legshin
+	{"breakGroup":"Dummy4_R_thighlegshin"},
+	["Dummy4_R_legshin1", "Dummy4_R_legshin2", "Dummy4_R_thigh3"],
+	["Dummy4_R_legshin2", "Dummy4_R_thigh2", "Dummy4_R_thigh1"],
+	["Dummy4_R_legshin2", "Dummy4_R_legshin1", "Dummy4_R_thigh2"],
+	["Dummy4_R_legshin2", "Dummy4_R_thigh1", "Dummy4_R_thigh3"],
+	["Dummy4_R_legshin1", "Dummy4_R_thigh3", "Dummy4_R_thigh2"],
+
+	//right legshin to foot
+	{"breakGroup":"Dummy4_R_legshinfoot"},
+	["Dummy4_R_legshin2", "Dummy4_R_legshin1", "Dummy4_R_foot3"],
+	["Dummy4_R_legshin1", "Dummy4_R_foot2", "Dummy4_R_foot3"],
+	["Dummy4_R_legshin2", "Dummy4_R_foot3", "Dummy4_R_foot1"],
+	["Dummy4_R_foot1", "Dummy4_R_foot2", "Dummy4_R_legshin1"],
+	["Dummy4_R_legshin1", "Dummy4_R_legshin2", "Dummy4_R_foot1"],
+
+	//right foot
+        {"breakGroup":""},
+	["Dummy4_R_foot1", "Dummy4_R_foot3", "Dummy4_R_foot2"],
+
+	{"group":""},
+	{"breakGroup":""},
+    ],
+},
+
+}

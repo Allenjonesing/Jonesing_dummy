@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_bx": {
+"agentj_dummy_mod_seatbelts_bx": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"3-Point Seatbelts for Ibishu BX (LHD)",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
 
     "beams": [
         ["id1:", "id2:"],
@@ -83,12 +83,12 @@
     ],
 },
 
-"agenty_dummy_mod_seatbelts_bx_rhd": {
+"agentj_dummy_mod_seatbelts_bx_rhd": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"3-Point Seatbelts for Ibishu BX (RHD)",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
 
     "beams": [
         ["id1:", "id2:"],
@@ -167,12 +167,12 @@
     ],
 },
 
-"agenty_dummy_mod_seatbelts_R_bx": {
+"agentj_dummy_mod_seatbelts_R_bx": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"3-Point Seatbelts for Ibishu BX",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts_R",
+    "slotType" : "agentj_dummy_mod_seatbelts_R",
 
     "beams": [
         ["id1:", "id2:"],

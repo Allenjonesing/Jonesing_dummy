@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_pickup": {
+"agentj_dummy_mod_seatbelts_pickup": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"2-Point Seatbelts for Gavril D-Series (Bucket Seats)",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
     
     "beams": [
         ["id1:", "id2:"],
@@ -53,12 +53,12 @@
 	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
     ],
 },
-"agenty_dummy_mod_seatbelts_pickup_alt": {
+"agentj_dummy_mod_seatbelts_pickup_alt": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"2-Point Seatbelts for Gavril D-Series (Bench Seat)",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
     
     "beams": [
         ["id1:", "id2:"],
@@ -108,12 +108,12 @@
     ],
 },
 
-"agenty_dummy_mod_seatbelts_R_pickup": {
+"agentj_dummy_mod_seatbelts_R_pickup": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"2-Point Seatbelts for Gavril D-Series",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts_R",
+    "slotType" : "agentj_dummy_mod_seatbelts_R",
     
     "beams": [
         ["id1:", "id2:"],

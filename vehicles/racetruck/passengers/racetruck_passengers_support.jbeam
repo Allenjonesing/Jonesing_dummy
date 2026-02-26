@@ -1,21 +1,21 @@
 {
-"racetruck_agenty_dummy_mod_support": {
+"racetruck_agentj_dummy_mod_support": {
     "information":{
-        "authors":"AgentY",
-        "name":"AgentY Universal Dummy Mod",
+        "authors":"AgentJ",
+        "name":"AgentJ Universal Dummy Mod",
     },
     "slotType" : "racetruck_mod",
     "slots": [
 	["type", "default", "description"],
 
-	["agenty_dummy_mod_driver","agenty_dummy_mod_driver_dummy","Driver", {"nodeMove":{"x":"$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX or $cbpdriverOffsetX_setup",   "y":"$=case($cbpdriverOffsetY_setup == nil, $cbpdriverOffsetY, $cbpdriverOffsetY_setup)", "z":"$=case($cbpdriverOffsetZ_setup == nil, $cbpdriverOffsetZ, $cbpdriverOffsetZ_setup)"}}],
-	["agenty_dummy_mod_passenger_F","","Front Passenger",      {"nodeMove":{"x":"$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX or -$cbpdriverOffsetX_setup", "y":"$=case($cbpdriverOffsetY_setup == nil, $cbpdriverOffsetY, $cbpdriverOffsetY_setup)", "z":"$=case($cbpdriverOffsetZ_setup == nil, $cbpdriverOffsetZ, $cbpdriverOffsetZ_setup)"}}],
+	["agentj_dummy_mod_driver","agentj_dummy_mod_driver_dummy","Driver", {"nodeMove":{"x":"$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX or $cbpdriverOffsetX_setup",   "y":"$=case($cbpdriverOffsetY_setup == nil, $cbpdriverOffsetY, $cbpdriverOffsetY_setup)", "z":"$=case($cbpdriverOffsetZ_setup == nil, $cbpdriverOffsetZ, $cbpdriverOffsetZ_setup)"}}],
+	["agentj_dummy_mod_passenger_F","","Front Passenger",      {"nodeMove":{"x":"$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX or -$cbpdriverOffsetX_setup", "y":"$=case($cbpdriverOffsetY_setup == nil, $cbpdriverOffsetY, $cbpdriverOffsetY_setup)", "z":"$=case($cbpdriverOffsetZ_setup == nil, $cbpdriverOffsetZ, $cbpdriverOffsetZ_setup)"}}],
 
-	["agenty_dummy_mod_passengers_setup","agenty_dummy_mod_passengers_setup","Positioning Setup - LEAVE DEFAULT FOR VANILLA CARS"],
-	["agenty_dummy_mod_interior_setup","agenty_dummy_mod_interior_setup_lhd_alt","Interior Collision Setup"],
-	["agenty_dummy_mod_seatbelts","","Seatbelts"],
-	["agenty_dummy_mod_driver_hands_move","agenty_dummy_mod_driver_hands_move","Animated Hands"],
-	["agenty_dummy_mod_passengers_mod","","Additional Modifications"],
+	["agentj_dummy_mod_passengers_setup","agentj_dummy_mod_passengers_setup","Positioning Setup - LEAVE DEFAULT FOR VANILLA CARS"],
+	["agentj_dummy_mod_interior_setup","agentj_dummy_mod_interior_setup_lhd_alt","Interior Collision Setup"],
+	["agentj_dummy_mod_seatbelts","","Seatbelts"],
+	["agentj_dummy_mod_driver_hands_move","agentj_dummy_mod_driver_hands_move","Animated Hands"],
+	["agentj_dummy_mod_passengers_mod","","Additional Modifications"],
 
 	["skin_dummy","","Dummy Skin"],
 	["skin_dummyhead","","Dummy Head Skin"],

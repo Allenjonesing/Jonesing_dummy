@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_md_series": {
+"agentj_dummy_mod_seatbelts_md_series": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"2-Point Seatbelts for Gavril MD-Series (Bench Seat)",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
 
     "beams": [
         ["id1:", "id2:"],
@@ -54,12 +54,12 @@
     ],
 },
 
-"agenty_dummy_mod_seatbelts_R_md_series": {
+"agentj_dummy_mod_seatbelts_R_md_series": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"2-Point Seatbelts for Gavril MD-Series",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts_R",
+    "slotType" : "agentj_dummy_mod_seatbelts_R",
 
     "beams": [
         ["id1:", "id2:"],

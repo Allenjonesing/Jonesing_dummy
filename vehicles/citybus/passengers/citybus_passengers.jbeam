@@ -1,21 +1,21 @@
 {
-"agenty_dummy_mod_passengers_citybus": {
+"agentj_dummy_mod_passengers_citybus": {
     "information":{
-        "authors":"AgentY",
-        "name":"AgentY Universal Dummy Mod (BUS)",
+        "authors":"AgentJ",
+        "name":"AgentJ Universal Dummy Mod (BUS)",
     },
     "slotType" : "licenseplate_design_2_1",
     "slots": [
 	["type", "default", "description"],
 
-	["agenty_dummy_mod_driver","agenty_dummy_mod_driver_dummy","Driver", {"nodeMove":{"x":0.74, "y":-4.97, "z":0.35}}],
-	["agenty_dummy_mod_citybus_passengers","agenty_dummy_mod_citybus_passengers","Passengers"],
+	["agentj_dummy_mod_driver","agentj_dummy_mod_driver_dummy","Driver", {"nodeMove":{"x":0.74, "y":-4.97, "z":0.35}}],
+	["agentj_dummy_mod_citybus_passengers","agentj_dummy_mod_citybus_passengers","Passengers"],
 
-	["agenty_dummy_mod_citybus_seatbelts","","Driver Seatbelt"],
-	["agenty_dummy_mod_citybus_steer","agenty_dummy_mod_citybus_steer","Animated Hands", {"nodeMove":{"x":0.74, "y":-4.97, "z":0.35}}],
-	["agenty_dummy_mod_passengers_mod","","Additional Modifications"],
+	["agentj_dummy_mod_citybus_seatbelts","","Driver Seatbelt"],
+	["agentj_dummy_mod_citybus_steer","agentj_dummy_mod_citybus_steer","Animated Hands", {"nodeMove":{"x":0.74, "y":-4.97, "z":0.35}}],
+	["agentj_dummy_mod_passengers_mod","","Additional Modifications"],
 
-	["agenty_dummy_mod_car_strength_setting","","Car Strength Settings"],
+	["agentj_dummy_mod_car_strength_setting","","Car Strength Settings"],
 
 	["skin_dummy","","Dummy Skin"],
 	["skin_dummyhead","","Dummy Head Skin"],
@@ -61,48 +61,48 @@
    ],
 },
 
-"agenty_dummy_mod_citybus_passengers": {
+"agentj_dummy_mod_citybus_passengers": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Passengers",
     },
-    "slotType" : "agenty_dummy_mod_citybus_passengers",
+    "slotType" : "agentj_dummy_mod_citybus_passengers",
     "slots": [
 	["type", "default", "description"],
 	
-	["agenty_dummy_mod_citybus_passenger01","agenty_dummy_mod_citybus_passenger01","Passenger 01", {"nodeMove":{"x": 0.50, "y":-1.70, "z":-0.15}}],
-	["agenty_dummy_mod_citybus_passenger02","agenty_dummy_mod_citybus_passenger02","Passenger 02", {"nodeMove":{"x": 1.00, "y":-1.70, "z":-0.15}}],
-	["agenty_dummy_mod_citybus_passenger03","agenty_dummy_mod_citybus_passenger03","Passenger 03", {"nodeMove":{"x":-0.50, "y":-1.70, "z":-0.15}}],
-	["agenty_dummy_mod_citybus_passenger04","agenty_dummy_mod_citybus_passenger04","Passenger 04", {"nodeMove":{"x":-1.00, "y":-1.70, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger01","agentj_dummy_mod_citybus_passenger01","Passenger 01", {"nodeMove":{"x": 0.50, "y":-1.70, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger02","agentj_dummy_mod_citybus_passenger02","Passenger 02", {"nodeMove":{"x": 1.00, "y":-1.70, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger03","agentj_dummy_mod_citybus_passenger03","Passenger 03", {"nodeMove":{"x":-0.50, "y":-1.70, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger04","agentj_dummy_mod_citybus_passenger04","Passenger 04", {"nodeMove":{"x":-1.00, "y":-1.70, "z":-0.15}}],
 
-	["agenty_dummy_mod_citybus_passenger05","agenty_dummy_mod_citybus_passenger05","Passenger 05", {"nodeMove":{"x": 0.50, "y":-0.85, "z":-0.15}}],
-	["agenty_dummy_mod_citybus_passenger06","agenty_dummy_mod_citybus_passenger06","Passenger 06", {"nodeMove":{"x": 1.00, "y":-0.85, "z":-0.15}}],
-	["agenty_dummy_mod_citybus_passenger07","agenty_dummy_mod_citybus_passenger07","Passenger 07", {"nodeMove":{"x":-0.50, "y":-0.85, "z":-0.15}}],
-	["agenty_dummy_mod_citybus_passenger08","agenty_dummy_mod_citybus_passenger08","Passenger 08", {"nodeMove":{"x":-1.00, "y":-0.85, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger05","agentj_dummy_mod_citybus_passenger05","Passenger 05", {"nodeMove":{"x": 0.50, "y":-0.85, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger06","agentj_dummy_mod_citybus_passenger06","Passenger 06", {"nodeMove":{"x": 1.00, "y":-0.85, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger07","agentj_dummy_mod_citybus_passenger07","Passenger 07", {"nodeMove":{"x":-0.50, "y":-0.85, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger08","agentj_dummy_mod_citybus_passenger08","Passenger 08", {"nodeMove":{"x":-1.00, "y":-0.85, "z":-0.15}}],
 
-	["agenty_dummy_mod_citybus_passenger09","agenty_dummy_mod_citybus_passenger09","Passenger 09", {"nodeMove":{"x": 0.50, "y": 0.00, "z":-0.15}}],
-	["agenty_dummy_mod_citybus_passenger10","agenty_dummy_mod_citybus_passenger10","Passenger 10", {"nodeMove":{"x": 1.00, "y": 0.00, "z":-0.15}}],
-	["agenty_dummy_mod_citybus_passenger11","agenty_dummy_mod_citybus_passenger11","Passenger 11", {"nodeMove":{"x":-0.50, "y": 0.00, "z":-0.15}}],
-	["agenty_dummy_mod_citybus_passenger12","agenty_dummy_mod_citybus_passenger12","Passenger 12", {"nodeMove":{"x":-1.00, "y": 0.00, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger09","agentj_dummy_mod_citybus_passenger09","Passenger 09", {"nodeMove":{"x": 0.50, "y": 0.00, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger10","agentj_dummy_mod_citybus_passenger10","Passenger 10", {"nodeMove":{"x": 1.00, "y": 0.00, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger11","agentj_dummy_mod_citybus_passenger11","Passenger 11", {"nodeMove":{"x":-0.50, "y": 0.00, "z":-0.15}}],
+	["agentj_dummy_mod_citybus_passenger12","agentj_dummy_mod_citybus_passenger12","Passenger 12", {"nodeMove":{"x":-1.00, "y": 0.00, "z":-0.15}}],
 
-	["agenty_dummy_mod_citybus_passenger13","agenty_dummy_mod_citybus_passenger13","Passenger 13", {"nodeMove":{"x": 0.50, "y": 2.45, "z": 0.30}}],
-	["agenty_dummy_mod_citybus_passenger14","agenty_dummy_mod_citybus_passenger14","Passenger 14", {"nodeMove":{"x": 1.00, "y": 2.45, "z": 0.30}}],
-	["agenty_dummy_mod_citybus_passenger15","agenty_dummy_mod_citybus_passenger15","Passenger 15", {"nodeMove":{"x":-0.50, "y": 2.45, "z": 0.30}}],
-	["agenty_dummy_mod_citybus_passenger16","agenty_dummy_mod_citybus_passenger16","Passenger 16", {"nodeMove":{"x":-1.00, "y": 2.45, "z": 0.30}}],
+	["agentj_dummy_mod_citybus_passenger13","agentj_dummy_mod_citybus_passenger13","Passenger 13", {"nodeMove":{"x": 0.50, "y": 2.45, "z": 0.30}}],
+	["agentj_dummy_mod_citybus_passenger14","agentj_dummy_mod_citybus_passenger14","Passenger 14", {"nodeMove":{"x": 1.00, "y": 2.45, "z": 0.30}}],
+	["agentj_dummy_mod_citybus_passenger15","agentj_dummy_mod_citybus_passenger15","Passenger 15", {"nodeMove":{"x":-0.50, "y": 2.45, "z": 0.30}}],
+	["agentj_dummy_mod_citybus_passenger16","agentj_dummy_mod_citybus_passenger16","Passenger 16", {"nodeMove":{"x":-1.00, "y": 2.45, "z": 0.30}}],
 	
-	["agenty_dummy_mod_citybus_passenger17","agenty_dummy_mod_citybus_passenger17","Passenger 17", {"nodeMove":{"x": 0.40, "y": 4.98, "z": 0.33}}],
-	["agenty_dummy_mod_citybus_passenger18","agenty_dummy_mod_citybus_passenger18","Passenger 18", {"nodeMove":{"x": 0.95, "y": 4.98, "z": 0.33}}],
-	["agenty_dummy_mod_citybus_passenger19","agenty_dummy_mod_citybus_passenger19","Passenger 19", {"nodeMove":{"x":-0.40, "y": 4.98, "z": 0.33}}],
-	["agenty_dummy_mod_citybus_passenger20","agenty_dummy_mod_citybus_passenger20","Passenger 20", {"nodeMove":{"x":-0.95, "y": 4.98, "z": 0.33}}],
+	["agentj_dummy_mod_citybus_passenger17","agentj_dummy_mod_citybus_passenger17","Passenger 17", {"nodeMove":{"x": 0.40, "y": 4.98, "z": 0.33}}],
+	["agentj_dummy_mod_citybus_passenger18","agentj_dummy_mod_citybus_passenger18","Passenger 18", {"nodeMove":{"x": 0.95, "y": 4.98, "z": 0.33}}],
+	["agentj_dummy_mod_citybus_passenger19","agentj_dummy_mod_citybus_passenger19","Passenger 19", {"nodeMove":{"x":-0.40, "y": 4.98, "z": 0.33}}],
+	["agentj_dummy_mod_citybus_passenger20","agentj_dummy_mod_citybus_passenger20","Passenger 20", {"nodeMove":{"x":-0.95, "y": 4.98, "z": 0.33}}],
     ],	
 },
 
-"agenty_dummy_mod_citybus_steer": {
+"agentj_dummy_mod_citybus_steer": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Animated Hands",
     },
-    "slotType" : "agenty_dummy_mod_citybus_steer",
+    "slotType" : "agentj_dummy_mod_citybus_steer",
     "nodes": [
         ["id", "posX", "posY", "posZ"],
         {"collision":false},

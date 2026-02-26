@@ -31,10 +31,10 @@
     "tag_line": "Please read the description before using! The spiritual successor to 'Drivers, Passengers and Loads'",
     "update_count": 1,
     "path": "M39ZALH8G\/48051\/",
-    "filename": "agenty_universal_dummy.zip",
+    "filename": "agentj_universal_dummy.zip",
     "title": "Universal Dummy\/Stuntman Driver & Passengers + Loads (Read description for instructions!)",
     "user_id": 390433,
-    "username": "Agent_Y",
+    "username": "Agent_J",
     "tagid": "M39ZALH8G",
     "message": "[CENTER][B]The Universal Dummy Mod[\/B]\nThe spiritual successor to 'Drivers, Passengers and Loads' by Synsol!\n[ATTACH]999016[\/ATTACH]\n\nThis mod gives you the ability to add crash test dummies or stunt drivers to any car, supporting all vanilla vehicles and theoretically most mods! Additionally it includes a standalone dummy as a prop, and dummy character for walking mode which is an improved version of one of my old mods.\nWarning, some things might be a bit jank, since I initially started this mod over 2 years ago when I had zero experience, I have remade most things from scratch since then but I don't have the time to redo literally everything in it.\n\n[B]It is important to read the instruction manual below to use the mod correctly. [\/B]Due to various game limitations it is not as straightforward as other mods.\n\nThe first step if you want to put the dummy in your car is selecting a special part in the license plate design slot in the parts selector, like with my other mods.\n[ATTACH]999017[\/ATTACH]\n\nAt this point there already 2 exceptions though. The SP Dunekicker doesn't have this slot, so the required part is under the Additional Modification slot. The Wentward bus is very different from other vehicles in terms of interior, so I have made a separate dedicated part for the dummies in its parts selector, the normal one will not work. These are the only exceptions at this point, but more will appear later.\n[ATTACH]999018[\/ATTACH]  [ATTACH]999019[\/ATTACH]\n\n Already after this step, a dummy driver should appear inside of the car.[B] If you are using a base game vehicle, it should already be sitting in the correct position, but on mod cars it might be off.[\/B] It might result with clipping with the seat or other parts of the vehicle, or even sitting on the wrong side. That is because the seats are all in slightly different positions between vehicles.\n[ATTACH]999020[\/ATTACH]  [ATTACH]999021[\/ATTACH]\n\n[B]To fix this, I have added a \"Positioning Setup\" slot with 2 options. You should only use it on mod cars. [\/B]Base game cars additionally have a default option that manually defines the position. If for some reason the position is wrong on a vanilla vehicle (for example an RHD variant of the Covet), there will be another dedicated option there to fix it.\n[ATTACH]999022[\/ATTACH]\n\n[B]If you choose the first option, the position of the dummy will update automatically, BUT IT FORCES YOU TO RESET THE CAR AFTERWARDS because the dummy 'explodes' on first spawn! [\/B]Believe me I tried everything I could to fix this but I have no idea why it hasn't worked. [B]Resetting should be done via the 'reset physics' option (I key on default settings) or 'recover vehicle' option (Insert key on default settings). 'Reload vehicle' (ctrl+R by default) will not work![\/B]\nThis option works by changing the position of the dummy to where the mod thinks it should be based on the position of the driver camera in the car. If the camera is set up wrong in the mod, the position will be wrong and you can't change it afterwards. For cases like this the second option is preferable.\n[ATTACH]999023[\/ATTACH]\n\n[B]The second option will show you a message on the UI in the top left corner, giving you values to set in the Tuning tab. Using these values you can position the dummy manually, you can tweak them like you want. [\/B]The values are in the 'Driver and Passengers' category, in a 'Manual Offset Setup' sub-category. For base game vehicles, there is a similar set of values called 'Automatic Offset Setup' that you can use to similarly tweak the position in them. [B]If the dummy starts shaking, tweak the position by 1 - 3 cm forward or back, that should fix it.[\/B]\n[ATTACH]999026[\/ATTACH]  [ATTACH]999027[\/ATTACH]\n\nAfter finishing this step, you already have the correct position for the driver, as well as the front passenger which uses the same values but mirrored. If you add back seat passengers in the parts selector, [B]on mod cars you will have to tweak their position manually, as there is no reference point such as the camera to be used for them.[\/B] For most cars this is already the complete setup and you can enjoy using the dummies, [B]but there are some notable exceptions so don't stop reading!\n[\/B]\nThe mod includes simulated interior collision for the dummies, so they will hit the dashboard and steering wheel on impact. [B]The default behavior is set for LHD vehicles (steering wheel on the left side), so when the steering wheel is on the right you will have to change the behavior in parts selector, EVEN FOR BASE GAME VEHICLES! [\/B]Additionally some vehicles already have dashboard collision, and duplicating it will lead to issues, visible by the dummy shaking a lot. And on top of that some vehicles have a tilted steering wheel too.[B] There are options in the mod to deal with all of this.\n[ATTACH]999031[\/ATTACH]  [ATTACH]999032[\/ATTACH] \n\nTo check the collision setup on a vehicle, use the Triangle Visualization (Ctrl+T). If you see a green layer over the dashboard before adding the dummies, it means there is default collision there.[\/B] You might have to move your camera partially inside of the dash to see it. Use Ctrl+T again to disable the visualization.\n[ATTACH]999033[\/ATTACH]\n\nTo make it easier for you, here's a list of base game vehicles that need changes in this slot (but I can't possibly check every single mod in existence so mod cars are up to you):[\/CENTER]\n[LIST]\n[*]Autobello Stambecco: LHD interior setup (no collision), tilted steering wheel physics\n[*]FPU Wydra: You should remove interior collision completely, there is nothing to collide with, and the handlebar has collision by default\n[*]Gavril T-Series: tilted steering wheel physics\n\n[*]Ibishu Covet: interior setup without collision, which one you choose obviously depends on where the steering wheel is\n[*]Ibishu Miramar, Ibishu Pigeon, Ibishu Wigeon: RHD interior setup\n[*]SP Dunekicker, SP Rockbasher: LHD interior setup (no collision)\n[\/LIST]\n[CENTER][B]Another thing that can go wrong after placing the dummy is falling through seats, it happens if the seats have no collision at all. There is a special option to fix it.[\/B] Don't use it on base game vehicles. There is a similar option for the back seat passengers, that you will also have to use for most vanilla cars though, it's on by default.\n[ATTACH]999034[\/ATTACH]  [ATTACH]999035[\/ATTACH]\n\n\nNow with the tutorial out of the way, I will briefly explain what the other slots in the mod do. They mostly provide some extra customization.[\/CENTER]\n[LIST]\n[*]Car Strength Settings - Copied straight from my other mods, so you can have a rusty or armored car with a dummy.\n[*]Animated Hands - Dummy will use the steering wheel, there is more angle than in Synsol's Driver and Passengers mod.\n[*]Front passenger, Back seat passengers - self-explanatory.\n[*]Seatbelts - will prevent the dummies from falling over and out of the car by attaching them to the interior. Each base game vehicle has its own dedicated seatbelt options that are realistic for this kind of vehicle, additionally there are universal seatbelts available for mod cars that just attach the dummy to the seat.\n[*]Trunk Load - Only supported for base game vehicles (only the ones where you can fit anything in cargo area), will add cardoard boxes to the trunk. There are sometimes various options per vehicle, you can remove any box, in the Tuning tab you can adjust the weight of each one.\n[ATTACH]999046[\/ATTACH]  [ATTACH]999047[\/ATTACH]  [ATTACH]999048[\/ATTACH]  [ATTACH]999049[\/ATTACH]  [ATTACH]999050[\/ATTACH]  [ATTACH]999051[\/ATTACH]  [ATTACH]999052[\/ATTACH] \n\n\n[*]License Plate Design - a slot with duplicates of vanilla license plate design options. Also includes 'Uncanny Valley Plate Design' made by my friend Felipe who also worked a lot on this mod, these plates can be seen in almost all of CrashBoomPunk's videos nowadays and on many of my screenshots too.\n[ATTACH]999056[\/ATTACH]  [ATTACH]999057[\/ATTACH]\n\n\n[*][CENTER]Then there are various skins for the dummy and the stuntman clothes.\n[ATTACH]999058[\/ATTACH]  [ATTACH]999059[\/ATTACH]  [ATTACH]999060[\/ATTACH]  [ATTACH]999061[\/ATTACH] \n\nThe dummy itself also has some options in its own sub-slots, most of them are also a thing for the stunt driver. You can change the driver type in the main slot, same with the passengers.\n[ATTACH]999064[\/ATTACH][\/CENTER]\n[\/LIST]\n[CENTER]Changing the Collision Detection mode will make it more likely to fall out of some cars, but will also make it more prone to clipping and getting stuck. You can add some accessories such as a beret, mustache and spike mohawk, more coming later hopefully. You can make it breakable (default option) or not, if yes then you can change the force it takes to break it apart in the Tuning menu, along with the size and weight of the dummy. Obviously the stuntman is never breakable. For the dummy you can also switch from the male to female body model, and remove any body part. For the dummy driver you can select between full head model and an outer model only variant which looks a bit weird but gives better visibility in the driver camera. (Speaking of which, there are cameras for every driver and passenger that follow the head movement!)\n\nSome other things included in this mod:[\/CENTER]\n[LIST]\n[*]Armchair dummy, taken from my Mr. Beam mod, merged with this so I don't have duplicated assets between mods.\n[ATTACH]999065[\/ATTACH]\n\n\n[*]Walking mode dummy, similarly taken from my other mod. Improved significantly, includes the better materials that all the other dummies have, improved stability, and much lower weight so it doesn't reduce the player's jump height. But sitll as janky and weird as ever lol\n[ATTACH]999066[\/ATTACH] \n\n\n[*]Standalone dummy, with customization and various configurations. Male and female body model, skins, accessories, standing or sitting position, adjustable weight, size and strength!\n[ATTACH]999067[\/ATTACH]\n\n\n[*]There are ambulance patients in an extra passengers slot when you spawn a vehicle that has an ambulance version.\n[*]The bus has support for 20 passengers with no lag! I made very simplified physics inspired by the dummies in the Capsule mod, but more complex to allow the movement of arms and legs so it feels more natural.\n[\/LIST]\n[CENTER]Credits:\nB25Mitch - 3D models for the dummy and stunt driver, and the original dummy textures. As you may know I received permission to use them back in 2021.\n[ATTACH]999068[\/ATTACH]\nFelipe Maciel - basically half of this mod is by him. All of the stuntman textures and skins (they took MONTHS to make), designing references for the dummy accessories, teaching me about the importance of good UV maps, very thorough beta testing of every base game vehicle with this mod and all mod cars he could find, making the Uncanny Valley license plates, lots of ideas, suggestions, etc.\nCrashBoomPunk - Way over a year of beta testing and including early versions of the mod in his videos, finding the biggest issues in the initial versions, giving helpful feedback and suggestions, and also a lot of inspiration with his Crazy Police Chases series.\nSynsol - the original 'Driver, Passengers and Loads' mod that inspired me to make this one, and gave me a push of motivation to finish mine after it broke and there was no free working dummy mod left.\nCrashHard - also inspiration, in form of the CrashHard Dummy mod and its 2.0 version. Made me realise how important it is to make the mod's setup as simple as possible lol.\nBeamNG - models and textures for the cardboard boxes. Also fixing countless game bugs and improving the game in general over the years to make modding easier.\nMe -The rest. (Jbeam, Lua, materials and all)\n\nHave fun![\/CENTER]",
     "category_title": "",
@@ -42,7 +42,7 @@
     "via": "packed by repo on Mon, 25 Nov 2024 02:09:40 GMT",
     "hashes": [
         [
-            "lua\/controller\/agentyDummyPositioner.lua",
+            "lua\/controller\/agentjDummyPositioner.lua",
             "4afb284c395b7dc3"
         ],
         [
@@ -110,663 +110,663 @@
             "7f2a233560be98f3"
         ],
         [
-            "vehicles\/common\/licenseplates\/UncannyValley\/agenty_dummy_mod_licenseplates.jbeam",
+            "vehicles\/common\/licenseplates\/UncannyValley\/agentj_dummy_mod_licenseplates.jbeam",
             "c534e7b155a42ee5"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/AgentY_Driver_extras_n.normal.dds",
+            "vehicles\/common\/AgentJ_Dummy\/AgentJ_Driver_extras_n.normal.dds",
             "159c15216457df8c"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR.jbeam",
             "8318441c31aba16d"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_head_fullmodel_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_head_fullmodel_female.jbeam",
             "926a4f841034d464"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_head.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_head.jbeam",
             "6efce5ffcc260322"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_torso.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_torso.jbeam",
             "6242004667742cfa"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_connectors.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_connectors.jbeam",
             "92a09d9f0e4e0470"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_arm_L_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_arm_L_sit.jbeam",
             "cb61357c228274e6"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_legs_sit_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_legs_sit_female.jbeam",
             "429ec13637545d51"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_collision_basic.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_collision_basic.jbeam",
             "e6d09251365f6a84"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_legs_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_legs_sit.jbeam",
             "d598ac028c8721da"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_head_fullmodel.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_head_fullmodel.jbeam",
             "1995f09848dc9f77"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_torso_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_torso_female.jbeam",
             "5267889d9633ef0c"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_collision_complex.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_collision_complex.jbeam",
             "f074be64789629d6"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_head_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_head_female.jbeam",
             "b84f2733a7019086"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_accessories.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_accessories.jbeam",
             "a218458ab28146fa"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_arm_R_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_arm_R_sit.jbeam",
             "ec28fad879f3e271"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RR\/AgentY_Dummy_passenger_RR_camera.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RR\/AgentJ_Dummy_passenger_RR_camera.jbeam",
             "cd4e18ae9fe14dd5"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_roofchair\/AgentY_Dummy_passenger_roofchair_torso_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_roofchair\/AgentJ_Dummy_passenger_roofchair_torso_sit.jbeam",
             "b630b3ee71098f3d"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_roofchair\/AgentY_Dummy_passenger_roofchair.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_roofchair\/AgentJ_Dummy_passenger_roofchair.jbeam",
             "9f3b594a0c2f6a5c"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_roofchair\/AgentY_Dummy_passenger_roofchair_legs_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_roofchair\/AgentJ_Dummy_passenger_roofchair_legs_sit.jbeam",
             "8a5b5bad62a62e9e"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_roofchair\/AgentY_Dummy_passenger_roofchair_connectorbeams.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_roofchair\/AgentJ_Dummy_passenger_roofchair_connectorbeams.jbeam",
             "9494db3e32827993"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_roofchair\/AgentY_Dummy_passenger_roofchair_arm_R_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_roofchair\/AgentJ_Dummy_passenger_roofchair_arm_R_sit.jbeam",
             "37d90f4131e098b7"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_roofchair\/AgentY_Dummy_passenger_roofchair_head_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_roofchair\/AgentJ_Dummy_passenger_roofchair_head_sit.jbeam",
             "7f40dec45be8e17a"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_roofchair\/AgentY_Dummy_passenger_roofchair_arm_L_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_roofchair\/AgentJ_Dummy_passenger_roofchair_arm_L_sit.jbeam",
             "eba485c773431a9d"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/AgentY_Dummy_d.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/AgentJ_Dummy_d.color.dds",
             "8e3326819a11ab6a"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_accessories.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_accessories.jbeam",
             "121990fd546a63c4"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_head_fullmodel.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_head_fullmodel.jbeam",
             "19af209d430bca5e"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_legs_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_legs_sit.jbeam",
             "1c6576f155093c9f"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_legs_sit_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_legs_sit_female.jbeam",
             "bf56188e32db4f43"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_head.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_head.jbeam",
             "6742596e14710f09"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_head_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_head_female.jbeam",
             "c15d468e042b387e"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_collision_complex.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_collision_complex.jbeam",
             "d3318c5b3db149aa"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_camera.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_camera.jbeam",
             "36fe9ca6eba6e9f2"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_head_fullmodel_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_head_fullmodel_female.jbeam",
             "a5a2ed65c1c4ab8f"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_connectors.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_connectors.jbeam",
             "eba4e37608c296dc"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_arm_L_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_arm_L_sit.jbeam",
             "52651f318c979a65"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_torso_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_torso_female.jbeam",
             "cad29232ceea5551"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_collision_basic.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_collision_basic.jbeam",
             "08e9eef2d2f29a9a"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_torso.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_torso.jbeam",
             "129f49e05af71634"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F_arm_R_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F_arm_R_sit.jbeam",
             "bd0b37b5063a9c2f"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_F\/AgentY_Dummy_passenger_F.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_F\/AgentJ_Dummy_passenger_F.jbeam",
             "0518dd247e83406c"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/AgentY_Dummy.dae",
+            "vehicles\/common\/AgentJ_Dummy\/AgentJ_Dummy.dae",
             "4f38a38a0c1f60ff"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/AgentY_Dummy_decals_b.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/AgentJ_Dummy_decals_b.color.dds",
             "c089d249691dfee8"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_F\/AgentY_Stuntman_passenger_F_legs_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_F\/AgentJ_Stuntman_passenger_F_legs_sit.jbeam",
             "d2846d9dff849d2a"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_F\/AgentY_Stuntman_passenger_F_arm_R_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_F\/AgentJ_Stuntman_passenger_F_arm_R_sit.jbeam",
             "4ee4bf4358a9c060"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_F\/AgentY_Stuntman_passenger_F_connectors.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_F\/AgentJ_Stuntman_passenger_F_connectors.jbeam",
             "8352255f9683ebc0"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_F\/AgentY_Stuntman_passenger_F_arm_L_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_F\/AgentJ_Stuntman_passenger_F_arm_L_sit.jbeam",
             "dc9ac6f981061a90"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_F\/AgentY_Stuntman_passenger_F.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_F\/AgentJ_Stuntman_passenger_F.jbeam",
             "d722e45b5e1aa68f"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_F\/AgentY_Stuntman_passenger_F_head.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_F\/AgentJ_Stuntman_passenger_F_head.jbeam",
             "f502ba1de2cc0cc6"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_F\/AgentY_Stuntman_passenger_F_torso.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_F\/AgentJ_Stuntman_passenger_F_torso.jbeam",
             "f646461873ac3694"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/AgentY_Driver_shirt_n.normal.dds",
+            "vehicles\/common\/AgentJ_Dummy\/AgentJ_Driver_shirt_n.normal.dds",
             "9efb1855451d897e"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/AgentY_Driver_trousers_n.normal.dds",
+            "vehicles\/common\/AgentJ_Dummy\/AgentJ_Driver_trousers_n.normal.dds",
             "ff7e3599e2517f7e"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_head_fullmodel_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_head_fullmodel_female.jbeam",
             "dd39180f887d88e5"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_legs_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_legs_sit.jbeam",
             "57eac93f93bbe0d1"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_torso.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_torso.jbeam",
             "13d6c4389e8ad25e"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_collision_complex.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_collision_complex.jbeam",
             "848fadc289fce3c2"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL.jbeam",
             "3ea6d641c7cbac42"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_arm_L_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_arm_L_sit.jbeam",
             "ca949c4f56caf7b0"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_head.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_head.jbeam",
             "2cd72d7f060cfffd"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_head_fullmodel.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_head_fullmodel.jbeam",
             "4c01c1df5098388a"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_arm_R_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_arm_R_sit.jbeam",
             "62833be523d053c5"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_legs_sit_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_legs_sit_female.jbeam",
             "d835afe74cb35841"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_head_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_head_female.jbeam",
             "0f0a9cbd5afde5ab"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_collision_basic.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_collision_basic.jbeam",
             "6cc4f08c38f547e5"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_torso_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_torso_female.jbeam",
             "6ab088b9f7a692d7"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_camera.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_camera.jbeam",
             "a9ae2c7614227a72"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_connectors.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_connectors.jbeam",
             "4b6bf92899c19b8e"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_passenger_RL\/AgentY_Dummy_passenger_RL_accessories.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_passenger_RL\/AgentJ_Dummy_passenger_RL_accessories.jbeam",
             "0f668016dbaae985"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/AgentY_Dummy_beret_b.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/AgentJ_Dummy_beret_b.color.dds",
             "ed93bfef3d03f373"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_arm_L_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_arm_L_sit.jbeam",
             "c29bf17415369ac0"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_arm_R_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_arm_R_sit.jbeam",
             "d6d91bb59f88d8f8"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_torso_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_torso_female.jbeam",
             "44b2e0f25c26950b"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_legs_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_legs_sit.jbeam",
             "7af084c30e85d50e"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_accessories.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_accessories.jbeam",
             "5a4618d822aaa926"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_torso.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_torso.jbeam",
             "1f495da5b6be89ac"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_head_fullmodel_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_head_fullmodel_female.jbeam",
             "466c44e819577788"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_head.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_head.jbeam",
             "1cb2da85a4d0da75"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver.jbeam",
             "3e4c6670944db9c0"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_connectors.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_connectors.jbeam",
             "9d229666e8d45e3b"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_head_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_head_female.jbeam",
             "b5db1a7073cd2f5b"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_legs_sit_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_legs_sit_female.jbeam",
             "533ad625433bc6d2"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_head_fullmodel.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_head_fullmodel.jbeam",
             "8a7e9822fbe7be9a"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_collision_basic.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_collision_basic.jbeam",
             "6fa6f27947b8b6d2"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_collision_complex.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_collision_complex.jbeam",
             "4404bacc5124ed38"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_driver\/AgentY_Dummy_driver_camera.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_driver\/AgentJ_Dummy_driver_camera.jbeam",
             "e81a6833144c9a86"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_driver\/AgentY_Stuntman_driver.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_driver\/AgentJ_Stuntman_driver.jbeam",
             "c45dcccb180b6067"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_driver\/AgentY_Stuntman_driver_head.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_driver\/AgentJ_Stuntman_driver_head.jbeam",
             "bb34bfaf7298eaac"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_driver\/AgentY_Stuntman_driver_legs_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_driver\/AgentJ_Stuntman_driver_legs_sit.jbeam",
             "7e0134455d14a2b8"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_driver\/AgentY_Stuntman_driver_arm_L_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_driver\/AgentJ_Stuntman_driver_arm_L_sit.jbeam",
             "b14e054a6c115609"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_driver\/AgentY_Stuntman_driver_torso.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_driver\/AgentJ_Stuntman_driver_torso.jbeam",
             "33129d8807845872"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_driver\/AgentY_Stuntman_driver_connectors.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_driver\/AgentJ_Stuntman_driver_connectors.jbeam",
             "d92605801268131d"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_driver\/AgentY_Stuntman_driver_arm_R_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_driver\/AgentJ_Stuntman_driver_arm_R_sit.jbeam",
             "bcf4b3c0335d4dd1"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/agenty_universal_dummy.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/agentj_universal_dummy.jbeam",
             "364dec67e5777fcb"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RR\/AgentY_Stuntman_passenger_RR_torso.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RR\/AgentJ_Stuntman_passenger_RR_torso.jbeam",
             "75183c23ccf82ff5"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RR\/AgentY_Stuntman_passenger_RR.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RR\/AgentJ_Stuntman_passenger_RR.jbeam",
             "ce828ac3fc13212a"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RR\/AgentY_Stuntman_passenger_RR_arm_R_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RR\/AgentJ_Stuntman_passenger_RR_arm_R_sit.jbeam",
             "fffd3e38a8a4273c"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RR\/AgentY_Stuntman_passenger_RR_connectors.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RR\/AgentJ_Stuntman_passenger_RR_connectors.jbeam",
             "0f2522a311f08945"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RR\/AgentY_Stuntman_passenger_RR_arm_L_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RR\/AgentJ_Stuntman_passenger_RR_arm_L_sit.jbeam",
             "b25b61b8263bbc6b"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RR\/AgentY_Stuntman_passenger_RR_head.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RR\/AgentJ_Stuntman_passenger_RR_head.jbeam",
             "5d64c6c97e0fe485"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RR\/AgentY_Stuntman_passenger_RR_legs_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RR\/AgentJ_Stuntman_passenger_RR_legs_sit.jbeam",
             "4e87e0a3f5459347"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/AgentY_Driver_trousers_d.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/AgentJ_Driver_trousers_d.color.dds",
             "74b8fb80e462d6b5"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Dummy_col1_palette_uv0.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Dummy_col1_palette_uv0.color.dds",
             "35c6cb4bc46e4801"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Driver_extras_cargo_d.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Driver_extras_cargo_d.color.dds",
             "fb9478ba04134b06"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Dummy_col3_palette_uv0.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Dummy_col3_palette_uv0.color.dds",
             "a17c3bab80296843"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Driver_extras_cargo_n.normal.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Driver_extras_cargo_n.normal.dds",
             "3de1d24d7967e641"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/agenty_passengers_skins.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/agentj_passengers_skins.jbeam",
             "e3df572fcf909215"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/dummy_skin.materials.json",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/dummy_skin.materials.json",
             "6c212e74cb76a86e"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Dummy_b.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Dummy_b.color.dds",
             "9f78dee49cc0702f"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Driver_trousers_deputy_n.normal.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Driver_trousers_deputy_n.normal.dds",
             "506e285f9a7a5f02"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Driver_extras_deputy_d.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Driver_extras_deputy_d.color.dds",
             "a1fb7fead24015c5"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/stuntman_skin.materials.json",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/stuntman_skin.materials.json",
             "f057d2b87746d463"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Driver_trousers_deputy_d.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Driver_trousers_deputy_d.color.dds",
             "540a25c96591ea9c"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Driver_extras_deputy_n.normal.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Driver_extras_deputy_n.normal.dds",
             "3712222efd11d9ff"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Dummy_col2_palette_uv0.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Dummy_col2_palette_uv0.color.dds",
             "90238ffa70609736"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Driver_shirt_deputy_d.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Driver_shirt_deputy_d.color.dds",
             "d93aa5f6b54f5031"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Driver_head_cargo_d.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Driver_head_cargo_d.color.dds",
             "ce7bddce565380e7"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/skins\/AgentY_Driver_shirt_deputy_n.normal.dds",
+            "vehicles\/common\/AgentJ_Dummy\/skins\/AgentJ_Driver_shirt_deputy_n.normal.dds",
             "d8278915cdd55509"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/AgentY_Driver_shirt_d.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/AgentJ_Driver_shirt_d.color.dds",
             "3f514b67b4cdad57"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/agenty_universal_dummy_seatbelts.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/agentj_universal_dummy_seatbelts.jbeam",
             "b697d612468d6fa9"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/interior_collision\/agenty_dummy_mod_intcollision_dash.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/interior_collision\/agentj_dummy_mod_intcollision_dash.jbeam",
             "65db6ce359599e92"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/interior_collision\/agenty_dummy_mod_intcollision_seats_F-automation.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/interior_collision\/agentj_dummy_mod_intcollision_seats_F-automation.jbeam",
             "d74744e9f2bae85a"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/interior_collision\/agenty_dummy_mod_intcollision_beams.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/interior_collision\/agentj_dummy_mod_intcollision_beams.jbeam",
             "7f0cce248ed51f95"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/interior_collision\/agenty_dummy_mod_intcollision_seats_R-automation.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/interior_collision\/agentj_dummy_mod_intcollision_seats_R-automation.jbeam",
             "bf9ed641992a1c3d"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/interior_collision\/agenty_dummy_mod_intcollision_steeringwheel.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/interior_collision\/agentj_dummy_mod_intcollision_steeringwheel.jbeam",
             "9fce96913ebf629d"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/interior_collision\/agenty_dummy_mod_intcollision_seats_F.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/interior_collision\/agentj_dummy_mod_intcollision_seats_F.jbeam",
             "0f8c8bc6fa8550d0"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/interior_collision\/agenty_dummy_mod_intcollision_steeringwheel_semi.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/interior_collision\/agentj_dummy_mod_intcollision_steeringwheel_semi.jbeam",
             "56c3e0db07c3e2f4"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/interior_collision\/agenty_dummy_mod_intcollision_seats_R.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/interior_collision\/agentj_dummy_mod_intcollision_seats_R.jbeam",
             "e4117c43966be93b"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_legs.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_legs.jbeam",
             "54a55ad81081eac3"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_head_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_head_sit.jbeam",
             "e01881f4ddd6a4df"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_arm_L.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_arm_L.jbeam",
             "a697e4ebb365cbd9"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_arm_R_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_arm_R_sit.jbeam",
             "d262e0bf135f5bdc"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_head_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_head_female.jbeam",
             "f4f379f3d58be2ce"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_torso_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_torso_female.jbeam",
             "f988a5188515ebca"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_accessories.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_accessories.jbeam",
             "d61b490daaf7f359"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_torso.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_torso.jbeam",
             "357797556174fd24"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_arm_L_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_arm_L_sit.jbeam",
             "ede47c5d58b699d9"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_connectorbeams.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_connectorbeams.jbeam",
             "4b873e2180799763"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_head.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_head.jbeam",
             "e47d4080a42cbe77"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_stabilizers.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_stabilizers.jbeam",
             "6467c8b67f8ee77b"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_legs_female_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_legs_female_sit.jbeam",
             "52b61f51355b9678"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_legs_female.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_legs_female.jbeam",
             "f17abaf2029be5b4"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_legs_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_legs_sit.jbeam",
             "73f790f90f157c27"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentY_Dummy_torso_lying.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentJ_Dummy_torso_lying.jbeam",
             "aaa22ef2f2e0bae6"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentY_Dummy_legs_female_lying.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentJ_Dummy_legs_female_lying.jbeam",
             "8d7369f900ddca78"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentY_Dummy_torso_female_lying.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentJ_Dummy_torso_female_lying.jbeam",
             "e5cdbaa2f740d4b9"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentY_Dummy_head_lying.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentJ_Dummy_head_lying.jbeam",
             "7fbce7120f3b9d4b"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentY_Dummy_legs_lying.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentJ_Dummy_legs_lying.jbeam",
             "143b10e0201a8e88"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentY_Dummy_arm_L_lying.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentJ_Dummy_arm_L_lying.jbeam",
             "4bf89bb3b2b28195"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentY_Dummy_head_female_lying.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentJ_Dummy_head_female_lying.jbeam",
             "b7d44b0b34e95456"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentY_Dummy_arm_R_lying.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/ambulance_passenger_lying\/AgentJ_Dummy_arm_R_lying.jbeam",
             "20a730d935a78a4b"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_arm_R.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_arm_R.jbeam",
             "e0e384a7add2ae99"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_head_female_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_head_female_sit.jbeam",
             "a00175650ea6e581"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_torso_female_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_torso_female_sit.jbeam",
             "103a7b05a7d9a7fc"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/Dummy_standing\/AgentY_Dummy_torso_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/Dummy_standing\/AgentJ_Dummy_torso_sit.jbeam",
             "e07e03ea9a4e848a"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/dummy.materials.json",
+            "vehicles\/common\/AgentJ_Dummy\/dummy.materials.json",
             "fc9c241a758ea25c"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RL\/AgentY_Stuntman_passenger_RL_torso.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RL\/AgentJ_Stuntman_passenger_RL_torso.jbeam",
             "955f91c5d1877844"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RL\/AgentY_Stuntman_passenger_RL_arm_R_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RL\/AgentJ_Stuntman_passenger_RL_arm_R_sit.jbeam",
             "317302f4163db89a"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RL\/AgentY_Stuntman_passenger_RL_head.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RL\/AgentJ_Stuntman_passenger_RL_head.jbeam",
             "c9e6cb13beb638df"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RL\/AgentY_Stuntman_passenger_RL.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RL\/AgentJ_Stuntman_passenger_RL.jbeam",
             "047064424801fe47"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RL\/AgentY_Stuntman_passenger_RL_legs_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RL\/AgentJ_Stuntman_passenger_RL_legs_sit.jbeam",
             "8be2647d9d2c9d6f"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RL\/AgentY_Stuntman_passenger_RL_connectors.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RL\/AgentJ_Stuntman_passenger_RL_connectors.jbeam",
             "bee3ed83d32fae89"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/stuntman_passenger_RL\/AgentY_Stuntman_passenger_RL_arm_L_sit.jbeam",
+            "vehicles\/common\/AgentJ_Dummy\/stuntman_passenger_RL\/AgentJ_Stuntman_passenger_RL_arm_L_sit.jbeam",
             "fc238a20cb4e2e5c"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/AgentY_Driver_extras_d.color.dds",
+            "vehicles\/common\/AgentJ_Dummy\/AgentJ_Driver_extras_d.color.dds",
             "ae501e336c839f0b"
         ],
         [
-            "vehicles\/common\/AgentY_Dummy\/AgentY_Driver.dae",
+            "vehicles\/common\/AgentJ_Dummy\/AgentJ_Driver.dae",
             "c534b8cbfec5376d"
         ],
         [
@@ -806,231 +806,231 @@
             "a462a941f0732cd5"
         ],
         [
-            "vehicles\/agenty_dummy\/Sitting.pc",
+            "vehicles\/agentj_dummy\/Sitting.pc",
             "58a9aec694c93933"
         ],
         [
-            "vehicles\/agenty_dummy\/big.jpg",
+            "vehicles\/agentj_dummy\/big.jpg",
             "833a01624895c803"
         ],
         [
-            "vehicles\/agenty_dummy\/Small_sitting.jpg",
+            "vehicles\/agentj_dummy\/Small_sitting.jpg",
             "3219df3cb8bfc0f7"
         ],
         [
-            "vehicles\/agenty_dummy\/deputy.pc",
+            "vehicles\/agentj_dummy\/deputy.pc",
             "cf4d72b09f379141"
         ],
         [
-            "vehicles\/agenty_dummy\/Small.jpg",
+            "vehicles\/agentj_dummy\/Small.jpg",
             "dabe648ad9889c2a"
         ],
         [
-            "vehicles\/agenty_dummy\/Ragdoll.pc",
+            "vehicles\/agentj_dummy\/Ragdoll.pc",
             "ef377843c0962096"
         ],
         [
-            "vehicles\/agenty_dummy\/Small_sitting_female.pc",
+            "vehicles\/agentj_dummy\/Small_sitting_female.pc",
             "b921ff04d3bcbd8a"
         ],
         [
-            "vehicles\/agenty_dummy\/Small_female.pc",
+            "vehicles\/agentj_dummy\/Small_female.pc",
             "99eb56e36761d86d"
         ],
         [
-            "vehicles\/agenty_dummy\/big.pc",
+            "vehicles\/agentj_dummy\/big.pc",
             "06c1697acb1cb9ec"
         ],
         [
-            "vehicles\/agenty_dummy\/info_Small_sitting_female.json",
+            "vehicles\/agentj_dummy\/info_Small_sitting_female.json",
             "38b985d87ada34b2"
         ],
         [
-            "vehicles\/agenty_dummy\/Ragdoll_female.pc",
+            "vehicles\/agentj_dummy\/Ragdoll_female.pc",
             "8b7c7726c377108f"
         ],
         [
-            "vehicles\/agenty_dummy\/Unbreakable.pc",
+            "vehicles\/agentj_dummy\/Unbreakable.pc",
             "0b3d81a2ea5abbfa"
         ],
         [
-            "vehicles\/agenty_dummy\/Small_female.jpg",
+            "vehicles\/agentj_dummy\/Small_female.jpg",
             "cd55b1c6ded09c81"
         ],
         [
-            "vehicles\/agenty_dummy\/info_big_sitting.json",
+            "vehicles\/agentj_dummy\/info_big_sitting.json",
             "aab4dc35215cba23"
         ],
         [
-            "vehicles\/agenty_dummy\/Small_sitting.pc",
+            "vehicles\/agentj_dummy\/Small_sitting.pc",
             "aa8ee4fb4ad6467f"
         ],
         [
-            "vehicles\/agenty_dummy\/colorable.jpg",
+            "vehicles\/agentj_dummy\/colorable.jpg",
             "eb5a7d9cd958e54a"
         ],
         [
-            "vehicles\/agenty_dummy\/info_Dummieson.json",
+            "vehicles\/agentj_dummy\/info_Dummieson.json",
             "e33be063762cce4a"
         ],
         [
-            "vehicles\/agenty_dummy\/dr-spiky.jpg",
+            "vehicles\/agentj_dummy\/dr-spiky.jpg",
             "c22fc533a6717ce0"
         ],
         [
-            "vehicles\/agenty_dummy\/Normal.jpg",
+            "vehicles\/agentj_dummy\/Normal.jpg",
             "694ee44d5e46e7a7"
         ],
         [
-            "vehicles\/agenty_dummy\/info_Unbreakable.json",
+            "vehicles\/agentj_dummy\/info_Unbreakable.json",
             "9c8480f9eecdbad5"
         ],
         [
-            "vehicles\/agenty_dummy\/info_Normal.json",
+            "vehicles\/agentj_dummy\/info_Normal.json",
             "833d45a9d53a7832"
         ],
         [
-            "vehicles\/agenty_dummy\/Small_sitting_female.jpg",
+            "vehicles\/agentj_dummy\/Small_sitting_female.jpg",
             "1a8fe5cc5d789776"
         ],
         [
-            "vehicles\/agenty_dummy\/big_sitting.jpg",
+            "vehicles\/agentj_dummy\/big_sitting.jpg",
             "a0c8d15786889cd3"
         ],
         [
-            "vehicles\/agenty_dummy\/default.jpg",
+            "vehicles\/agentj_dummy\/default.jpg",
             "694ee44d5e46e7a7"
         ],
         [
-            "vehicles\/agenty_dummy\/Normal.pc",
+            "vehicles\/agentj_dummy\/Normal.pc",
             "be9a0ac37ae14661"
         ],
         [
-            "vehicles\/agenty_dummy\/Small.pc",
+            "vehicles\/agentj_dummy\/Small.pc",
             "f4cfe48ae95b21b2"
         ],
         [
-            "vehicles\/agenty_dummy\/colorable_female.pc",
+            "vehicles\/agentj_dummy\/colorable_female.pc",
             "84f88acf980e9308"
         ],
         [
-            "vehicles\/agenty_dummy\/female_sitting.pc",
+            "vehicles\/agentj_dummy\/female_sitting.pc",
             "a1b04ae285b3183a"
         ],
         [
-            "vehicles\/agenty_dummy\/Dummieson.jpg",
+            "vehicles\/agentj_dummy\/Dummieson.jpg",
             "0db7f19b9bf541d5"
         ],
         [
-            "vehicles\/agenty_dummy\/colorable.pc",
+            "vehicles\/agentj_dummy\/colorable.pc",
             "0d59b41f645f7b30"
         ],
         [
-            "vehicles\/agenty_dummy\/AgentY_Dummy.jbeam",
+            "vehicles\/agentj_dummy\/AgentJ_Dummy.jbeam",
             "f379580b841f12bc"
         ],
         [
-            "vehicles\/agenty_dummy\/info_Ragdoll.json",
+            "vehicles\/agentj_dummy\/info_Ragdoll.json",
             "df7eee6a72bfed48"
         ],
         [
-            "vehicles\/agenty_dummy\/info_colorable_female.json",
+            "vehicles\/agentj_dummy\/info_colorable_female.json",
             "c70e8d659de900a1"
         ],
         [
-            "vehicles\/agenty_dummy\/female.jpg",
+            "vehicles\/agentj_dummy\/female.jpg",
             "2c10f1eb84929686"
         ],
         [
-            "vehicles\/agenty_dummy\/info_dr-spiky.json",
+            "vehicles\/agentj_dummy\/info_dr-spiky.json",
             "8dcfbb1e1501550e"
         ],
         [
-            "vehicles\/agenty_dummy\/info.json",
+            "vehicles\/agentj_dummy\/info.json",
             "2a604cab47db4171"
         ],
         [
-            "vehicles\/agenty_dummy\/Sitting.jpg",
+            "vehicles\/agentj_dummy\/Sitting.jpg",
             "9621817cf3c5bfb4"
         ],
         [
-            "vehicles\/agenty_dummy\/info_Sitting.json",
+            "vehicles\/agentj_dummy\/info_Sitting.json",
             "afe1a9d32beb7608"
         ],
         [
-            "vehicles\/agenty_dummy\/Ragdoll.jpg",
+            "vehicles\/agentj_dummy\/Ragdoll.jpg",
             "849469ac1bd61741"
         ],
         [
-            "vehicles\/agenty_dummy\/Ragdoll_female.jpg",
+            "vehicles\/agentj_dummy\/Ragdoll_female.jpg",
             "6469223dae41a87d"
         ],
         [
-            "vehicles\/agenty_dummy\/colorable_female.jpg",
+            "vehicles\/agentj_dummy\/colorable_female.jpg",
             "c915fa87913b75db"
         ],
         [
-            "vehicles\/agenty_dummy\/female_sitting.jpg",
+            "vehicles\/agentj_dummy\/female_sitting.jpg",
             "d716db5687ebdb8d"
         ],
         [
-            "vehicles\/agenty_dummy\/info_big.json",
+            "vehicles\/agentj_dummy\/info_big.json",
             "63ab875da613f280"
         ],
         [
-            "vehicles\/agenty_dummy\/info_female_sitting.json",
+            "vehicles\/agentj_dummy\/info_female_sitting.json",
             "87cb0070eea94258"
         ],
         [
-            "vehicles\/agenty_dummy\/dr-spiky.pc",
+            "vehicles\/agentj_dummy\/dr-spiky.pc",
             "54fdaebe5aab840f"
         ],
         [
-            "vehicles\/agenty_dummy\/info_Small_sitting.json",
+            "vehicles\/agentj_dummy\/info_Small_sitting.json",
             "e795a85489ebf94b"
         ],
         [
-            "vehicles\/agenty_dummy\/female.pc",
+            "vehicles\/agentj_dummy\/female.pc",
             "19b708616b7ba139"
         ],
         [
-            "vehicles\/agenty_dummy\/info_Small.json",
+            "vehicles\/agentj_dummy\/info_Small.json",
             "342980a4e3471bce"
         ],
         [
-            "vehicles\/agenty_dummy\/deputy.jpg",
+            "vehicles\/agentj_dummy\/deputy.jpg",
             "e9020e54b159afd4"
         ],
         [
-            "vehicles\/agenty_dummy\/info_colorable.json",
+            "vehicles\/agentj_dummy\/info_colorable.json",
             "e7d319ce09f1d4d8"
         ],
         [
-            "vehicles\/agenty_dummy\/big_sitting.pc",
+            "vehicles\/agentj_dummy\/big_sitting.pc",
             "fa5df4e00e929e00"
         ],
         [
-            "vehicles\/agenty_dummy\/Dummieson.pc",
+            "vehicles\/agentj_dummy\/Dummieson.pc",
             "d323c78ddb0de815"
         ],
         [
-            "vehicles\/agenty_dummy\/Unbreakable.jpg",
+            "vehicles\/agentj_dummy\/Unbreakable.jpg",
             "0ec60a611de2f259"
         ],
         [
-            "vehicles\/agenty_dummy\/info_Ragdoll_female.json",
+            "vehicles\/agentj_dummy\/info_Ragdoll_female.json",
             "e9cc62a8378b5aee"
         ],
         [
-            "vehicles\/agenty_dummy\/info_female.json",
+            "vehicles\/agentj_dummy\/info_female.json",
             "a9fa3d7fed3a9738"
         ],
         [
-            "vehicles\/agenty_dummy\/info_Small_female.json",
+            "vehicles\/agentj_dummy\/info_Small_female.json",
             "5d2a1457a3f146fa"
         ],
         [
-            "vehicles\/agenty_dummy\/info_deputy.json",
+            "vehicles\/agentj_dummy\/info_deputy.json",
             "d75e390321ce6d62"
         ],
         [
@@ -1054,31 +1054,31 @@
             "50aaed1c02f564ae"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger04.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger04.jbeam",
             "f3c1d38020e76e68"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger11.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger11.jbeam",
             "5df0587c7d10acc4"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger16.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger16.jbeam",
             "43f4e72b9d9902d8"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger17.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger17.jbeam",
             "2dbf07ace8180e30"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger18.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger18.jbeam",
             "3886ca9e2842ec83"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger07.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger07.jbeam",
             "b37bed80890adcf6"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger12.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger12.jbeam",
             "5e00ac51324e9dfd"
         ],
         [
@@ -1086,55 +1086,55 @@
             "31aa6363734fbd6d"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger05.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger05.jbeam",
             "51810df8cdba0aa6"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger06.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger06.jbeam",
             "723f78cca1a1394d"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger15.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger15.jbeam",
             "ad29afeb44a5c4cf"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger14.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger14.jbeam",
             "961cd157ad7c74bc"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger08.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger08.jbeam",
             "4ef6a4d23ed301f8"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger20.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger20.jbeam",
             "093a8d23cee94872"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger09.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger09.jbeam",
             "b0648a9b275e4172"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger03.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger03.jbeam",
             "7fda13ed5fea4803"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger01.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger01.jbeam",
             "77186fc5c3006683"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger10.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger10.jbeam",
             "1c47299b1ab4108e"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger13.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger13.jbeam",
             "4b87394cd8577ac3"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger02.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger02.jbeam",
             "288210005f41fe08"
         ],
         [
-            "vehicles\/citybus\/passengers\/agenty_citybus_passenger19.jbeam",
+            "vehicles\/citybus\/passengers\/agentj_citybus_passenger19.jbeam",
             "a5cfe8a60daa1d66"
         ],
         [

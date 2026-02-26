@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_hopper": {
+"agentj_dummy_mod_seatbelts_hopper": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"2-Point Seatbelts for Ibishu Hopper",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
     
     "beams": [
         ["id1:", "id2:"],
@@ -53,12 +53,12 @@
     ],
 },
 
-"agenty_dummy_mod_seatbelts_R_hopper": {
+"agentj_dummy_mod_seatbelts_R_hopper": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"2-Point Seatbelts for Ibishu Hopper",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts_R",
+    "slotType" : "agentj_dummy_mod_seatbelts_R",
     
     "beams": [
         ["id1:", "id2:"],

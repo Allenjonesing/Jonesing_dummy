@@ -1,0 +1,54 @@
+{
+"agentj_dummy_mod_passenger_RR_dummy": {
+    "information":{
+        "name":"Dummy Passenger",
+        "authors":"AgentJ",
+    },
+    "slotType":"agentj_dummy_mod_passenger_RR",
+    "slots": [
+  ["type", "default", "description"],
+  ["AgentJ_Dummy4_torso","AgentJ_Dummy4_torso", "Body", {"coreSlot":true}],
+  ["AgentJ_Dummy4_extras", "", "Passenger Accessories"],
+  ["AgentJ_Dummy4_breakable", "AgentJ_Dummy4_breakable_yes", "Breakable", {"coreSlot":true}],
+  ["AgentJ_Dummy4_collision", "AgentJ_Dummy4_collision_complex", "Collision Detection", {"coreSlot":true}],
+  ["AgentJ_Dummy4_mod", "", "Additional Modification"],
+    ],
+    "variables": [
+        ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+        ["$aDummy4scale", "range", "m", "Driver and Passengers", 0.90, 0.75, 1.1, "Rear Right Passenger Size",  "How tall the RR passenger is",     {"stepDis":0.01, "minDis":1.34, "maxDis":1.96, "subCategory":"RR Passenger"}],
+  ["$aDummy4weight","range", "kg","Driver and Passengers", 1.21, 1.00, 1.3, "Rear Right Passenger Weight","How much the RR passenger weights",{"stepDis":0.1,  "minDis":62,   "maxDis":80.6, "subCategory":"RR Passenger"}],
+    ],
+    "nodes": [
+        ["id", "posX", "posY", "posZ"],
+  //disable fire
+  {"chemEnergy":false,"burnRate":false,"flashPoint":false,"specHeat":false,"smokePoint":false,"selfIgnitionCoef":false},
+    ],
+     "beams": [
+        ["id1:", "id2:"],
+  //disable leaking of uncommon beam values
+  {"breakGroupType":0},
+  {"beamLimitSpring":1,"beamLimitDamp":1},
+  {"beamDampRebound":false},
+
+  //--POSITION RESET TRIGGERS--
+  {"beamPrecompression":1,"beamType":"|SUPPORT", "beamLongBound":5},
+  {"beamSpring": 0,"beamDamp":0},
+  {"beamDeform": "FLT_MAX", "beamStrength":"FLT_MAX"},
+  {"breakGroup":"RRpass_sit"},
+  {"optional":true},
+  ["Dummy4_headtip", "sr1l"],
+  ["Dummy4_headtip", "sr1r"],
+  ["Dummy4_headtip", "intcollision_Rseatmr"],
+  ["Dummy4_headtip", "intcollision_Rseatml"],
+
+
+  {"optional":false},
+  {"breakGroup":""},
+  {"beamPrecompression":1},
+  {"beamPrecompressionTime":0},
+
+  {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+   ],
+},
+
+}

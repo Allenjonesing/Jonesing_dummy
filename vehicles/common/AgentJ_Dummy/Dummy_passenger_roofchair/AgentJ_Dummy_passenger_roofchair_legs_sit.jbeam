@@ -1,0 +1,949 @@
+{
+"AgentJ_Dummy_passenger_roofchair_legs_sit": {
+    "information":{
+        "name":"Legs (Sitting Position)",
+        "authors":"AgentJ",
+    },
+    "slotType":"AgentJ_Dummy_passenger_roofchair_legs_sit",
+    
+    
+
+    "flexbodies": [
+        ["mesh", "[group]:", "nonFlexMaterials"],
+        ["AgentJ_Dummy_thigh_l", 		["agentj_Dummy_passenger_roofchair_thigh_L"], []{"pos":{"x":0,"y":"$=$aDummy_passenger_roofchairscale*-0.97","z":"$=$aDummy_passenger_roofchairscale*0.96"},"rot":{"x":-95,"y":0,"z":0},"scale":{"x":"$aDummy_passenger_roofchairscale", "y":"$aDummy_passenger_roofchairscale", "z":"$aDummy_passenger_roofchairscale"}}],
+		["AgentJ_Dummy_legconnector_l", ["agentj_Dummy_passenger_roofchair_thigh_L"], []{"pos":{"x":0,"y":"$=$aDummy_passenger_roofchairscale*-0.97","z":"$=$aDummy_passenger_roofchairscale*0.96"},"rot":{"x":-95,"y":0,"z":0},"scale":{"x":"$aDummy_passenger_roofchairscale", "y":"$aDummy_passenger_roofchairscale", "z":"$aDummy_passenger_roofchairscale"}}],
+		["AgentJ_Dummy_thigh_r", 		["agentj_Dummy_passenger_roofchair_thigh_R"], []{"pos":{"x":0,"y":"$=$aDummy_passenger_roofchairscale*-0.97","z":"$=$aDummy_passenger_roofchairscale*0.96"},"rot":{"x":-95,"y":0,"z":0},"scale":{"x":"$aDummy_passenger_roofchairscale", "y":"$aDummy_passenger_roofchairscale", "z":"$aDummy_passenger_roofchairscale"}}],
+		["AgentJ_Dummy_legconnector_r", ["agentj_Dummy_passenger_roofchair_thigh_R"], []{"pos":{"x":0,"y":"$=$aDummy_passenger_roofchairscale*-0.97","z":"$=$aDummy_passenger_roofchairscale*0.96"},"rot":{"x":-95,"y":0,"z":0},"scale":{"x":"$aDummy_passenger_roofchairscale", "y":"$aDummy_passenger_roofchairscale", "z":"$aDummy_passenger_roofchairscale"}}],
+		
+		["AgentJ_Dummy_legshin_l",		["agentj_Dummy_passenger_roofchair_legshin_L"],[]{"pos":{"x":0,"y":"$=$aDummy_passenger_roofchairscale*-0.86","z":"$=$aDummy_passenger_roofchairscale*0.62"},"rot":{"x":-55,"y":0,"z":0},"scale":{"x":"$aDummy_passenger_roofchairscale","y":"$aDummy_passenger_roofchairscale","z":"$aDummy_passenger_roofchairscale"}}],
+		["AgentJ_Dummy_footconnector_l",["agentj_Dummy_passenger_roofchair_legshin_L"],[]{"pos":{"x":0,"y":"$=$aDummy_passenger_roofchairscale*-0.86","z":"$=$aDummy_passenger_roofchairscale*0.62"},"rot":{"x":-55,"y":0,"z":0},"scale":{"x":"$aDummy_passenger_roofchairscale","y":"$aDummy_passenger_roofchairscale","z":"$aDummy_passenger_roofchairscale"}}],
+		["AgentJ_Dummy_legshin_r",		["agentj_Dummy_passenger_roofchair_legshin_R"],[]{"pos":{"x":0,"y":"$=$aDummy_passenger_roofchairscale*-0.86","z":"$=$aDummy_passenger_roofchairscale*0.62"},"rot":{"x":-55,"y":0,"z":0},"scale":{"x":"$aDummy_passenger_roofchairscale","y":"$aDummy_passenger_roofchairscale","z":"$aDummy_passenger_roofchairscale"}}],
+		["AgentJ_Dummy_footconnector_r",["agentj_Dummy_passenger_roofchair_legshin_R"],[]{"pos":{"x":0,"y":"$=$aDummy_passenger_roofchairscale*-0.86","z":"$=$aDummy_passenger_roofchairscale*0.62"},"rot":{"x":-55,"y":0,"z":0},"scale":{"x":"$aDummy_passenger_roofchairscale","y":"$aDummy_passenger_roofchairscale","z":"$aDummy_passenger_roofchairscale"}}],
+		
+		["AgentJ_Dummy_foot_l",  ["agentj_Dummy_passenger_roofchair_foot_L"],  []  {"pos":{"x":0,"y":"$=$aDummy_passenger_roofchairscale*-0.86","z":"$=$aDummy_passenger_roofchairscale*0.62"},"rot":{"x":-55,"y":0,"z":0},"scale":{"x":"$aDummy_passenger_roofchairscale","y":"$aDummy_passenger_roofchairscale","z":"$aDummy_passenger_roofchairscale"}}],
+		["AgentJ_Dummy_foot_r",  ["agentj_Dummy_passenger_roofchair_foot_R"],  []  {"pos":{"x":0,"y":"$=$aDummy_passenger_roofchairscale*-0.86","z":"$=$aDummy_passenger_roofchairscale*0.62"},"rot":{"x":-55,"y":0,"z":0},"scale":{"x":"$aDummy_passenger_roofchairscale","y":"$aDummy_passenger_roofchairscale","z":"$aDummy_passenger_roofchairscale"}}],
+    ],
+    "nodes": [
+        ["id", "posX", "posY", "posZ"],
+		{"nodeMaterial":"|NM_PLASTIC"},
+        {"frictionCoef":0.5},
+        {"collision":true},
+
+
+		//--LEFT THIGH--
+        {"group":"agentj_Dummy_passenger_roofchair_thigh_L"},
+		{"nodeWeight":"$=$aDummy_passenger_roofchairweight*0.465"},
+		
+		{"selfCollision":false},
+		["Dummy_passenger_roofchair_L_thighpelvis","$=$aDummy_passenger_roofchairscale*0.02", "$=$aDummy_passenger_roofchairscale*-0.05", "$=$aDummy_passenger_roofchairscale*0.92"],
+		["Dummy_passenger_roofchair_L_thighmid",   "$=$aDummy_passenger_roofchairscale*0.12", "$=$aDummy_passenger_roofchairscale*-0.12", "$=$aDummy_passenger_roofchairscale*0.92"],
+		
+		["Dummy_passenger_roofchair_L_thightrl", "$=$aDummy_passenger_roofchairscale*0.19", "$=$aDummy_passenger_roofchairscale*-0.03", "$=$aDummy_passenger_roofchairscale*0.86"],
+		["Dummy_passenger_roofchair_L_thightfl", "$=$aDummy_passenger_roofchairscale*0.19", "$=$aDummy_passenger_roofchairscale*-0.03", "$=$aDummy_passenger_roofchairscale*1.01"],
+		["Dummy_passenger_roofchair_L_thightrr", "$=$aDummy_passenger_roofchairscale*0.05", "$=$aDummy_passenger_roofchairscale*-0.14", "$=$aDummy_passenger_roofchairscale*0.86"],
+		["Dummy_passenger_roofchair_L_thightfr", "$=$aDummy_passenger_roofchairscale*0.05", "$=$aDummy_passenger_roofchairscale*-0.14", "$=$aDummy_passenger_roofchairscale*1.01"],
+	
+		{"selfCollision":true},
+	
+		["Dummy_passenger_roofchair_L_thighmrl", "$=$aDummy_passenger_roofchairscale*0.19", "$=$aDummy_passenger_roofchairscale*-0.42", "$=$aDummy_passenger_roofchairscale*0.90"],
+		["Dummy_passenger_roofchair_L_thighmfl", "$=$aDummy_passenger_roofchairscale*0.19", "$=$aDummy_passenger_roofchairscale*-0.42", "$=$aDummy_passenger_roofchairscale*1.03"],
+		["Dummy_passenger_roofchair_L_thighmrr", "$=$aDummy_passenger_roofchairscale*0.09", "$=$aDummy_passenger_roofchairscale*-0.42", "$=$aDummy_passenger_roofchairscale*0.90"],
+		["Dummy_passenger_roofchair_L_thighmfr", "$=$aDummy_passenger_roofchairscale*0.09", "$=$aDummy_passenger_roofchairscale*-0.42", "$=$aDummy_passenger_roofchairscale*1.03"],
+		
+		["Dummy_passenger_roofchair_L_thighbrl", "$=$aDummy_passenger_roofchairscale*0.17","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*0.97"],
+		["Dummy_passenger_roofchair_L_thighbfl", "$=$aDummy_passenger_roofchairscale*0.17","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*1.01"],
+		["Dummy_passenger_roofchair_L_thighbrr", "$=$aDummy_passenger_roofchairscale*0.11","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*0.97"],
+		["Dummy_passenger_roofchair_L_thighbfr", "$=$aDummy_passenger_roofchairscale*0.11","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*1.01"],
+		
+		
+		//--RIGHT THIGH--
+        {"group":"agentj_Dummy_passenger_roofchair_thigh_R"},
+		{"nodeWeight":"$=$aDummy_passenger_roofchairweight*0.465"},
+
+		{"selfCollision":false},
+		
+		["Dummy_passenger_roofchair_R_thighpelvis","$=$aDummy_passenger_roofchairscale*-0.02", "$=$aDummy_passenger_roofchairscale*-0.05", "$=$aDummy_passenger_roofchairscale*0.92"],
+		["Dummy_passenger_roofchair_R_thighmid",   "$=$aDummy_passenger_roofchairscale*-0.12", "$=$aDummy_passenger_roofchairscale*-0.12", "$=$aDummy_passenger_roofchairscale*0.92"],
+		
+		["Dummy_passenger_roofchair_R_thightrr", "$=$aDummy_passenger_roofchairscale*-0.19", "$=$aDummy_passenger_roofchairscale*-0.03", "$=$aDummy_passenger_roofchairscale*0.86"],
+		["Dummy_passenger_roofchair_R_thightfr", "$=$aDummy_passenger_roofchairscale*-0.19", "$=$aDummy_passenger_roofchairscale*-0.03", "$=$aDummy_passenger_roofchairscale*1.01"],
+		["Dummy_passenger_roofchair_R_thightrl", "$=$aDummy_passenger_roofchairscale*-0.05", "$=$aDummy_passenger_roofchairscale*-0.14", "$=$aDummy_passenger_roofchairscale*0.86"],
+		["Dummy_passenger_roofchair_R_thightfl", "$=$aDummy_passenger_roofchairscale*-0.05", "$=$aDummy_passenger_roofchairscale*-0.14", "$=$aDummy_passenger_roofchairscale*1.01"],
+	
+		{"selfCollision":true},
+	
+		["Dummy_passenger_roofchair_R_thighmrr", "$=$aDummy_passenger_roofchairscale*-0.19", "$=$aDummy_passenger_roofchairscale*-0.42", "$=$aDummy_passenger_roofchairscale*0.90"],
+		["Dummy_passenger_roofchair_R_thighmfr", "$=$aDummy_passenger_roofchairscale*-0.19", "$=$aDummy_passenger_roofchairscale*-0.42", "$=$aDummy_passenger_roofchairscale*1.03"],
+		["Dummy_passenger_roofchair_R_thighmrl", "$=$aDummy_passenger_roofchairscale*-0.09", "$=$aDummy_passenger_roofchairscale*-0.42", "$=$aDummy_passenger_roofchairscale*0.90"],
+		["Dummy_passenger_roofchair_R_thighmfl", "$=$aDummy_passenger_roofchairscale*-0.09", "$=$aDummy_passenger_roofchairscale*-0.42", "$=$aDummy_passenger_roofchairscale*1.03"],
+		
+		["Dummy_passenger_roofchair_R_thighbrr", "$=$aDummy_passenger_roofchairscale*-0.17","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*0.97"],
+		["Dummy_passenger_roofchair_R_thighbfr", "$=$aDummy_passenger_roofchairscale*-0.17","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*1.01"],
+		["Dummy_passenger_roofchair_R_thighbrl", "$=$aDummy_passenger_roofchairscale*-0.11","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*0.97"],
+		["Dummy_passenger_roofchair_R_thighbfl", "$=$aDummy_passenger_roofchairscale*-0.11","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*1.01"],
+		
+		
+		//--LEFT LEGSHIN--
+        {"group":"agentj_Dummy_passenger_roofchair_legshin_L"},
+		{"nodeWeight":"$=$aDummy_passenger_roofchairweight*0.24542"},
+		
+		["Dummy_passenger_roofchair_L_legshintipl","$=$aDummy_passenger_roofchairscale*0.20","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*0.97"],
+		["Dummy_passenger_roofchair_L_legshintipr","$=$aDummy_passenger_roofchairscale*0.08","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*0.97"],
+		
+		["Dummy_passenger_roofchair_L_legshinmfl", "$=$aDummy_passenger_roofchairscale*0.20","$=$aDummy_passenger_roofchairscale*-0.50", "$=$aDummy_passenger_roofchairscale*1.00"],
+		["Dummy_passenger_roofchair_L_legshinmfr", "$=$aDummy_passenger_roofchairscale*0.08","$=$aDummy_passenger_roofchairscale*-0.50", "$=$aDummy_passenger_roofchairscale*1.00"],
+		["Dummy_passenger_roofchair_L_legshinmrl", "$=$aDummy_passenger_roofchairscale*0.20","$=$aDummy_passenger_roofchairscale*-0.43", "$=$aDummy_passenger_roofchairscale*0.89"],
+		["Dummy_passenger_roofchair_L_legshinmrr", "$=$aDummy_passenger_roofchairscale*0.08","$=$aDummy_passenger_roofchairscale*-0.43", "$=$aDummy_passenger_roofchairscale*0.89"],
+		
+		["Dummy_passenger_roofchair_L_legshinbfl", "$=$aDummy_passenger_roofchairscale*0.18", "$=$aDummy_passenger_roofchairscale*-0.80", "$=$aDummy_passenger_roofchairscale*0.79"],
+		["Dummy_passenger_roofchair_L_legshinbfr", "$=$aDummy_passenger_roofchairscale*0.11", "$=$aDummy_passenger_roofchairscale*-0.80", "$=$aDummy_passenger_roofchairscale*0.79"],
+		["Dummy_passenger_roofchair_L_legshinbrl", "$=$aDummy_passenger_roofchairscale*0.18", "$=$aDummy_passenger_roofchairscale*-0.72", "$=$aDummy_passenger_roofchairscale*0.69"],
+		["Dummy_passenger_roofchair_L_legshinbrr", "$=$aDummy_passenger_roofchairscale*0.11", "$=$aDummy_passenger_roofchairscale*-0.72", "$=$aDummy_passenger_roofchairscale*0.69"],
+		
+		{"selfCollision":false},
+		["Dummy_passenger_roofchair_L_legshinmid", "$=$aDummy_passenger_roofchairscale*0.147", "$=$aDummy_passenger_roofchairscale*-0.63", "$=$aDummy_passenger_roofchairscale*0.85"],
+		["Dummy_passenger_roofchair_L_legshinfoot","$=$aDummy_passenger_roofchairscale*0.147", "$=$aDummy_passenger_roofchairscale*-0.82", "$=$aDummy_passenger_roofchairscale*0.69"],
+		{"selfCollision":true},
+		
+		
+		//--RIGHT LEGSHIN--
+        {"group":"agentj_Dummy_passenger_roofchair_legshin_R"},
+		{"nodeWeight":"$=$aDummy_passenger_roofchairweight*0.24542"},
+
+		["Dummy_passenger_roofchair_R_legshintipr","$=$aDummy_passenger_roofchairscale*-0.20","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*0.97"],
+		["Dummy_passenger_roofchair_R_legshintipl","$=$aDummy_passenger_roofchairscale*-0.08","$=$aDummy_passenger_roofchairscale*-0.46", "$=$aDummy_passenger_roofchairscale*0.97"],
+		
+		["Dummy_passenger_roofchair_R_legshinmfr", "$=$aDummy_passenger_roofchairscale*-0.20","$=$aDummy_passenger_roofchairscale*-0.50", "$=$aDummy_passenger_roofchairscale*1.00"],
+		["Dummy_passenger_roofchair_R_legshinmfl", "$=$aDummy_passenger_roofchairscale*-0.08","$=$aDummy_passenger_roofchairscale*-0.50", "$=$aDummy_passenger_roofchairscale*1.00"],
+		["Dummy_passenger_roofchair_R_legshinmrr", "$=$aDummy_passenger_roofchairscale*-0.20","$=$aDummy_passenger_roofchairscale*-0.43", "$=$aDummy_passenger_roofchairscale*0.89"],
+		["Dummy_passenger_roofchair_R_legshinmrl", "$=$aDummy_passenger_roofchairscale*-0.08","$=$aDummy_passenger_roofchairscale*-0.43", "$=$aDummy_passenger_roofchairscale*0.89"],
+		
+		["Dummy_passenger_roofchair_R_legshinbfr", "$=$aDummy_passenger_roofchairscale*-0.18", "$=$aDummy_passenger_roofchairscale*-0.80", "$=$aDummy_passenger_roofchairscale*0.79"],
+		["Dummy_passenger_roofchair_R_legshinbfl", "$=$aDummy_passenger_roofchairscale*-0.11", "$=$aDummy_passenger_roofchairscale*-0.80", "$=$aDummy_passenger_roofchairscale*0.79"],
+		["Dummy_passenger_roofchair_R_legshinbrr", "$=$aDummy_passenger_roofchairscale*-0.18", "$=$aDummy_passenger_roofchairscale*-0.72", "$=$aDummy_passenger_roofchairscale*0.69"],
+		["Dummy_passenger_roofchair_R_legshinbrl", "$=$aDummy_passenger_roofchairscale*-0.11", "$=$aDummy_passenger_roofchairscale*-0.72", "$=$aDummy_passenger_roofchairscale*0.69"],
+		
+		{"selfCollision":false},
+		["Dummy_passenger_roofchair_R_legshinmid", "$=$aDummy_passenger_roofchairscale*-0.147", "$=$aDummy_passenger_roofchairscale*-0.63", "$=$aDummy_passenger_roofchairscale*0.85"],
+		["Dummy_passenger_roofchair_R_legshinfoot","$=$aDummy_passenger_roofchairscale*-0.147", "$=$aDummy_passenger_roofchairscale*-0.82", "$=$aDummy_passenger_roofchairscale*0.69"],
+		{"selfCollision":true},
+		
+		//--LEFT FOOT--
+        {"group":"agentj_Dummy_passenger_roofchair_foot_L"},
+		{"nodeWeight":"$=$aDummy_passenger_roofchairweight*0.07388"},
+		{"frictionCoef":0.8},
+		
+		["Dummy_passenger_roofchair_L_foottfr", "$=$aDummy_passenger_roofchairscale*0.09","$=$aDummy_passenger_roofchairscale*-0.80", "$=$aDummy_passenger_roofchairscale*0.76"],
+		["Dummy_passenger_roofchair_L_foottfl", "$=$aDummy_passenger_roofchairscale*0.21","$=$aDummy_passenger_roofchairscale*-0.80", "$=$aDummy_passenger_roofchairscale*0.76"],
+		["Dummy_passenger_roofchair_L_foottrr", "$=$aDummy_passenger_roofchairscale*0.09","$=$aDummy_passenger_roofchairscale*-0.75", "$=$aDummy_passenger_roofchairscale*0.68"],
+		["Dummy_passenger_roofchair_L_foottrl", "$=$aDummy_passenger_roofchairscale*0.21","$=$aDummy_passenger_roofchairscale*-0.75", "$=$aDummy_passenger_roofchairscale*0.68"],
+		
+		["Dummy_passenger_roofchair_L_footbfr", "$=$aDummy_passenger_roofchairscale*0.09","$=$aDummy_passenger_roofchairscale*-0.90", "$=$aDummy_passenger_roofchairscale*0.70"],
+		["Dummy_passenger_roofchair_L_footbfl", "$=$aDummy_passenger_roofchairscale*0.21","$=$aDummy_passenger_roofchairscale*-0.90", "$=$aDummy_passenger_roofchairscale*0.70"],
+		["Dummy_passenger_roofchair_L_footbmr", "$=$aDummy_passenger_roofchairscale*0.09","$=$aDummy_passenger_roofchairscale*-0.85", "$=$aDummy_passenger_roofchairscale*0.62"],
+		["Dummy_passenger_roofchair_L_footbml", "$=$aDummy_passenger_roofchairscale*0.21","$=$aDummy_passenger_roofchairscale*-0.85", "$=$aDummy_passenger_roofchairscale*0.62"],
+		
+		["Dummy_passenger_roofchair_L_footbrr", "$=$aDummy_passenger_roofchairscale*0.09", "$=$aDummy_passenger_roofchairscale*-0.83", "$=$aDummy_passenger_roofchairscale*0.59"],
+		["Dummy_passenger_roofchair_L_footbrl", "$=$aDummy_passenger_roofchairscale*0.21", "$=$aDummy_passenger_roofchairscale*-0.83", "$=$aDummy_passenger_roofchairscale*0.59"],	
+		["Dummy_passenger_roofchair_L_foottipr","$=$aDummy_passenger_roofchairscale*0.09", "$=$aDummy_passenger_roofchairscale*-1.01", "$=$aDummy_passenger_roofchairscale*0.85"],
+		["Dummy_passenger_roofchair_L_foottipl","$=$aDummy_passenger_roofchairscale*0.21", "$=$aDummy_passenger_roofchairscale*-1.01", "$=$aDummy_passenger_roofchairscale*0.85"],
+		
+		
+		//--RIGHT FOOT--
+        {"group":"agentj_Dummy_passenger_roofchair_foot_R"},
+		{"nodeWeight":"$=$aDummy_passenger_roofchairweight*0.07388"},
+		{"frictionCoef":0.8},
+		
+		["Dummy_passenger_roofchair_R_foottfl", "$=$aDummy_passenger_roofchairscale*-0.09","$=$aDummy_passenger_roofchairscale*-0.80", "$=$aDummy_passenger_roofchairscale*0.76"],
+		["Dummy_passenger_roofchair_R_foottfr", "$=$aDummy_passenger_roofchairscale*-0.21","$=$aDummy_passenger_roofchairscale*-0.80", "$=$aDummy_passenger_roofchairscale*0.76"],
+		["Dummy_passenger_roofchair_R_foottrl", "$=$aDummy_passenger_roofchairscale*-0.09","$=$aDummy_passenger_roofchairscale*-0.75", "$=$aDummy_passenger_roofchairscale*0.68"],
+		["Dummy_passenger_roofchair_R_foottrr", "$=$aDummy_passenger_roofchairscale*-0.21","$=$aDummy_passenger_roofchairscale*-0.75", "$=$aDummy_passenger_roofchairscale*0.68"],
+		
+		["Dummy_passenger_roofchair_R_footbfl", "$=$aDummy_passenger_roofchairscale*-0.09","$=$aDummy_passenger_roofchairscale*-0.90", "$=$aDummy_passenger_roofchairscale*0.70"],
+		["Dummy_passenger_roofchair_R_footbfr", "$=$aDummy_passenger_roofchairscale*-0.21","$=$aDummy_passenger_roofchairscale*-0.90", "$=$aDummy_passenger_roofchairscale*0.70"],
+		["Dummy_passenger_roofchair_R_footbml", "$=$aDummy_passenger_roofchairscale*-0.09","$=$aDummy_passenger_roofchairscale*-0.85", "$=$aDummy_passenger_roofchairscale*0.62"],
+		["Dummy_passenger_roofchair_R_footbmr", "$=$aDummy_passenger_roofchairscale*-0.21","$=$aDummy_passenger_roofchairscale*-0.85", "$=$aDummy_passenger_roofchairscale*0.62"],
+		
+		["Dummy_passenger_roofchair_R_footbrl", "$=$aDummy_passenger_roofchairscale*-0.09", "$=$aDummy_passenger_roofchairscale*-0.83", "$=$aDummy_passenger_roofchairscale*0.59"],
+		["Dummy_passenger_roofchair_R_footbrr", "$=$aDummy_passenger_roofchairscale*-0.21", "$=$aDummy_passenger_roofchairscale*-0.83", "$=$aDummy_passenger_roofchairscale*0.59"],	
+		["Dummy_passenger_roofchair_R_foottipl","$=$aDummy_passenger_roofchairscale*-0.09", "$=$aDummy_passenger_roofchairscale*-1.01", "$=$aDummy_passenger_roofchairscale*0.85"],
+		["Dummy_passenger_roofchair_R_foottipr","$=$aDummy_passenger_roofchairscale*-0.21", "$=$aDummy_passenger_roofchairscale*-1.01", "$=$aDummy_passenger_roofchairscale*0.85"],
+		
+		{"group":""},
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+     	{"beamDeform": 500000, "beamStrength":"FLT_MAX"}, 
+        {"breakGroup":""},
+		
+		//--LEFT THIGH--
+		{"beamSpring": 215000,"beamDamp":65},
+		{"deformLimitExpansion":1.05}, 
+		
+		//main shape		
+		["Dummy_passenger_roofchair_L_thighbfl", "Dummy_passenger_roofchair_L_thighbfr"],
+		["Dummy_passenger_roofchair_L_thighbfr", "Dummy_passenger_roofchair_L_thighbrr"],
+		["Dummy_passenger_roofchair_L_thighbrr", "Dummy_passenger_roofchair_L_thighbrl"],
+		["Dummy_passenger_roofchair_L_thighbrl", "Dummy_passenger_roofchair_L_thighbfl"],
+		
+		["Dummy_passenger_roofchair_L_thighbfl", "Dummy_passenger_roofchair_L_thighmfl"],
+		["Dummy_passenger_roofchair_L_thighbfr", "Dummy_passenger_roofchair_L_thighmfr"],
+		["Dummy_passenger_roofchair_L_thighbrl", "Dummy_passenger_roofchair_L_thighmrl"],
+		["Dummy_passenger_roofchair_L_thighbrr", "Dummy_passenger_roofchair_L_thighmrr"],
+		
+        ["Dummy_passenger_roofchair_L_thighmfl", "Dummy_passenger_roofchair_L_thighmfr"],
+		["Dummy_passenger_roofchair_L_thighmfr", "Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_thighmrr", "Dummy_passenger_roofchair_L_thighmrl"],
+		["Dummy_passenger_roofchair_L_thighmrl", "Dummy_passenger_roofchair_L_thighmfl"],
+
+		["Dummy_passenger_roofchair_L_thighmfl", "Dummy_passenger_roofchair_L_thightfl"],
+		["Dummy_passenger_roofchair_L_thighmfr", "Dummy_passenger_roofchair_L_thightfr"],
+		["Dummy_passenger_roofchair_L_thighmrl", "Dummy_passenger_roofchair_L_thightrl"],
+		["Dummy_passenger_roofchair_L_thighmrr", "Dummy_passenger_roofchair_L_thightrr"],
+
+		["Dummy_passenger_roofchair_L_thightfl", "Dummy_passenger_roofchair_L_thightfr"],
+		["Dummy_passenger_roofchair_L_thightfr", "Dummy_passenger_roofchair_L_thightrr"],
+		["Dummy_passenger_roofchair_L_thightrr", "Dummy_passenger_roofchair_L_thightrl"],
+		["Dummy_passenger_roofchair_L_thightrl", "Dummy_passenger_roofchair_L_thightfl"],
+		
+		//cross		
+		["Dummy_passenger_roofchair_L_thightfl", "Dummy_passenger_roofchair_L_thightrr"],
+		["Dummy_passenger_roofchair_L_thightfr", "Dummy_passenger_roofchair_L_thightrl"],
+
+		["Dummy_passenger_roofchair_L_thighmfr", "Dummy_passenger_roofchair_L_thightrr"],
+		["Dummy_passenger_roofchair_L_thighmrr", "Dummy_passenger_roofchair_L_thightfr"],
+		["Dummy_passenger_roofchair_L_thighmfl", "Dummy_passenger_roofchair_L_thightrl"],
+		["Dummy_passenger_roofchair_L_thighmrl", "Dummy_passenger_roofchair_L_thightfl"],
+
+		["Dummy_passenger_roofchair_L_thighmrr", "Dummy_passenger_roofchair_L_thightrl"],
+		["Dummy_passenger_roofchair_L_thighmrl", "Dummy_passenger_roofchair_L_thightrr"],
+		["Dummy_passenger_roofchair_L_thighmfr", "Dummy_passenger_roofchair_L_thightfl"],
+		["Dummy_passenger_roofchair_L_thighmfl", "Dummy_passenger_roofchair_L_thightfr"],
+
+		["Dummy_passenger_roofchair_L_thighmrr", "Dummy_passenger_roofchair_L_thightfl"],
+		["Dummy_passenger_roofchair_L_thighmrl", "Dummy_passenger_roofchair_L_thightfr"],
+		["Dummy_passenger_roofchair_L_thighmfr", "Dummy_passenger_roofchair_L_thightrl"],
+		["Dummy_passenger_roofchair_L_thighmfl", "Dummy_passenger_roofchair_L_thightrr"],
+		
+		["Dummy_passenger_roofchair_L_thighbfl", "Dummy_passenger_roofchair_L_thighbrr"],
+		["Dummy_passenger_roofchair_L_thighbfr", "Dummy_passenger_roofchair_L_thighbrl"],
+		["Dummy_passenger_roofchair_L_thighmfl", "Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_thighmfr", "Dummy_passenger_roofchair_L_thighmrl"],
+
+		["Dummy_passenger_roofchair_L_thighbfr", "Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_thighbrr", "Dummy_passenger_roofchair_L_thighmfr"],
+		["Dummy_passenger_roofchair_L_thighbfl", "Dummy_passenger_roofchair_L_thighmrl"],
+		["Dummy_passenger_roofchair_L_thighbrl", "Dummy_passenger_roofchair_L_thighmfl"],
+
+		["Dummy_passenger_roofchair_L_thighbrr", "Dummy_passenger_roofchair_L_thighmrl"],
+		["Dummy_passenger_roofchair_L_thighbrl", "Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_thighbfr", "Dummy_passenger_roofchair_L_thighmfl"],
+		["Dummy_passenger_roofchair_L_thighbfl", "Dummy_passenger_roofchair_L_thighmfr"],
+
+		["Dummy_passenger_roofchair_L_thighbrr", "Dummy_passenger_roofchair_L_thighmfl"],
+		["Dummy_passenger_roofchair_L_thighbrl", "Dummy_passenger_roofchair_L_thighmfr"],
+		["Dummy_passenger_roofchair_L_thighbfr", "Dummy_passenger_roofchair_L_thighmrl"],
+		["Dummy_passenger_roofchair_L_thighbfl", "Dummy_passenger_roofchair_L_thighmrr"],
+		
+		["Dummy_passenger_roofchair_L_thighbrr", "Dummy_passenger_roofchair_L_thightfl"],
+		["Dummy_passenger_roofchair_L_thighbrl", "Dummy_passenger_roofchair_L_thightfr"],
+		["Dummy_passenger_roofchair_L_thighbfr", "Dummy_passenger_roofchair_L_thightrl"],
+		["Dummy_passenger_roofchair_L_thighbfl", "Dummy_passenger_roofchair_L_thightrr"],
+		
+		//rigidifier
+		{"beamSpring": 100000,"beamDamp":50},
+		
+		["Dummy_passenger_roofchair_L_thighbfl", "Dummy_passenger_roofchair_L_thighmid"],
+		["Dummy_passenger_roofchair_L_thighbfr", "Dummy_passenger_roofchair_L_thighmid"],
+		["Dummy_passenger_roofchair_L_thighbrr", "Dummy_passenger_roofchair_L_thighmid"],
+		["Dummy_passenger_roofchair_L_thighbrl", "Dummy_passenger_roofchair_L_thighmid"],
+		
+		["Dummy_passenger_roofchair_L_thighmfl", "Dummy_passenger_roofchair_L_thighmid"],
+		["Dummy_passenger_roofchair_L_thighmfr", "Dummy_passenger_roofchair_L_thighmid"],
+		["Dummy_passenger_roofchair_L_thighmrr", "Dummy_passenger_roofchair_L_thighmid"],
+		["Dummy_passenger_roofchair_L_thighmrl", "Dummy_passenger_roofchair_L_thighmid"],
+		
+		["Dummy_passenger_roofchair_L_thightfl", "Dummy_passenger_roofchair_L_thighmid"],
+		["Dummy_passenger_roofchair_L_thightfr", "Dummy_passenger_roofchair_L_thighmid"],
+		["Dummy_passenger_roofchair_L_thightrr", "Dummy_passenger_roofchair_L_thighmid"],
+		["Dummy_passenger_roofchair_L_thightrl", "Dummy_passenger_roofchair_L_thighmid"],
+		
+		["Dummy_passenger_roofchair_L_thighpelvis","Dummy_passenger_roofchair_L_thighmid"],
+		
+		//pelvis attach	
+		{"beamSpring": 50000,"beamDamp":50},
+		
+		["Dummy_passenger_roofchair_L_thighpelvis","Dummy_passenger_roofchair_L_thightrr"],
+		["Dummy_passenger_roofchair_L_thighpelvis","Dummy_passenger_roofchair_L_thightfr"],
+		["Dummy_passenger_roofchair_L_thighpelvis","Dummy_passenger_roofchair_L_thightrl"],
+		["Dummy_passenger_roofchair_L_thighpelvis","Dummy_passenger_roofchair_L_thightfl"],
+		
+		["Dummy_passenger_roofchair_L_thighpelvis","Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_thighpelvis","Dummy_passenger_roofchair_L_thighmfr"],
+		["Dummy_passenger_roofchair_L_thighpelvis","Dummy_passenger_roofchair_L_thighmrl"],
+		["Dummy_passenger_roofchair_L_thighpelvis","Dummy_passenger_roofchair_L_thighmfl"],
+
+		
+		//--RIGHT THIGH--
+		{"beamSpring": 215000,"beamDamp":65},
+		{"deformLimitExpansion":1.05}, 
+		
+		//main shape		
+		["Dummy_passenger_roofchair_R_thighbfl", "Dummy_passenger_roofchair_R_thighbfr"],
+		["Dummy_passenger_roofchair_R_thighbfr", "Dummy_passenger_roofchair_R_thighbrr"],
+		["Dummy_passenger_roofchair_R_thighbrr", "Dummy_passenger_roofchair_R_thighbrl"],
+		["Dummy_passenger_roofchair_R_thighbrl", "Dummy_passenger_roofchair_R_thighbfl"],
+		
+		["Dummy_passenger_roofchair_R_thighbfl", "Dummy_passenger_roofchair_R_thighmfl"],
+		["Dummy_passenger_roofchair_R_thighbfr", "Dummy_passenger_roofchair_R_thighmfr"],
+		["Dummy_passenger_roofchair_R_thighbrl", "Dummy_passenger_roofchair_R_thighmrl"],
+		["Dummy_passenger_roofchair_R_thighbrr", "Dummy_passenger_roofchair_R_thighmrr"],
+		
+        ["Dummy_passenger_roofchair_R_thighmfl", "Dummy_passenger_roofchair_R_thighmfr"],
+		["Dummy_passenger_roofchair_R_thighmfr", "Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_thighmrr", "Dummy_passenger_roofchair_R_thighmrl"],
+		["Dummy_passenger_roofchair_R_thighmrl", "Dummy_passenger_roofchair_R_thighmfl"],
+
+		["Dummy_passenger_roofchair_R_thighmfl", "Dummy_passenger_roofchair_R_thightfl"],
+		["Dummy_passenger_roofchair_R_thighmfr", "Dummy_passenger_roofchair_R_thightfr"],
+		["Dummy_passenger_roofchair_R_thighmrl", "Dummy_passenger_roofchair_R_thightrl"],
+		["Dummy_passenger_roofchair_R_thighmrr", "Dummy_passenger_roofchair_R_thightrr"],
+
+		["Dummy_passenger_roofchair_R_thightfl", "Dummy_passenger_roofchair_R_thightfr"],
+		["Dummy_passenger_roofchair_R_thightfr", "Dummy_passenger_roofchair_R_thightrr"],
+		["Dummy_passenger_roofchair_R_thightrr", "Dummy_passenger_roofchair_R_thightrl"],
+		["Dummy_passenger_roofchair_R_thightrl", "Dummy_passenger_roofchair_R_thightfl"],
+		
+		//cross		
+		["Dummy_passenger_roofchair_R_thightfl", "Dummy_passenger_roofchair_R_thightrr"],
+		["Dummy_passenger_roofchair_R_thightfr", "Dummy_passenger_roofchair_R_thightrl"],
+
+		["Dummy_passenger_roofchair_R_thighmfr", "Dummy_passenger_roofchair_R_thightrr"],
+		["Dummy_passenger_roofchair_R_thighmrr", "Dummy_passenger_roofchair_R_thightfr"],
+		["Dummy_passenger_roofchair_R_thighmfl", "Dummy_passenger_roofchair_R_thightrl"],
+		["Dummy_passenger_roofchair_R_thighmrl", "Dummy_passenger_roofchair_R_thightfl"],
+
+		["Dummy_passenger_roofchair_R_thighmrr", "Dummy_passenger_roofchair_R_thightrl"],
+		["Dummy_passenger_roofchair_R_thighmrl", "Dummy_passenger_roofchair_R_thightrr"],
+		["Dummy_passenger_roofchair_R_thighmfr", "Dummy_passenger_roofchair_R_thightfl"],
+		["Dummy_passenger_roofchair_R_thighmfl", "Dummy_passenger_roofchair_R_thightfr"],
+
+		["Dummy_passenger_roofchair_R_thighmrr", "Dummy_passenger_roofchair_R_thightfl"],
+		["Dummy_passenger_roofchair_R_thighmrl", "Dummy_passenger_roofchair_R_thightfr"],
+		["Dummy_passenger_roofchair_R_thighmfr", "Dummy_passenger_roofchair_R_thightrl"],
+		["Dummy_passenger_roofchair_R_thighmfl", "Dummy_passenger_roofchair_R_thightrr"],
+		
+		["Dummy_passenger_roofchair_R_thighbfl", "Dummy_passenger_roofchair_R_thighbrr"],
+		["Dummy_passenger_roofchair_R_thighbfr", "Dummy_passenger_roofchair_R_thighbrl"],
+		["Dummy_passenger_roofchair_R_thighmfl", "Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_thighmfr", "Dummy_passenger_roofchair_R_thighmrl"],
+
+		["Dummy_passenger_roofchair_R_thighbfr", "Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_thighbrr", "Dummy_passenger_roofchair_R_thighmfr"],
+		["Dummy_passenger_roofchair_R_thighbfl", "Dummy_passenger_roofchair_R_thighmrl"],
+		["Dummy_passenger_roofchair_R_thighbrl", "Dummy_passenger_roofchair_R_thighmfl"],
+
+		["Dummy_passenger_roofchair_R_thighbrr", "Dummy_passenger_roofchair_R_thighmrl"],
+		["Dummy_passenger_roofchair_R_thighbrl", "Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_thighbfr", "Dummy_passenger_roofchair_R_thighmfl"],
+		["Dummy_passenger_roofchair_R_thighbfl", "Dummy_passenger_roofchair_R_thighmfr"],
+
+		["Dummy_passenger_roofchair_R_thighbrr", "Dummy_passenger_roofchair_R_thighmfl"],
+		["Dummy_passenger_roofchair_R_thighbrl", "Dummy_passenger_roofchair_R_thighmfr"],
+		["Dummy_passenger_roofchair_R_thighbfr", "Dummy_passenger_roofchair_R_thighmrl"],
+		["Dummy_passenger_roofchair_R_thighbfl", "Dummy_passenger_roofchair_R_thighmrr"],
+		
+		["Dummy_passenger_roofchair_R_thighbrr", "Dummy_passenger_roofchair_R_thightfl"],
+		["Dummy_passenger_roofchair_R_thighbrl", "Dummy_passenger_roofchair_R_thightfr"],
+		["Dummy_passenger_roofchair_R_thighbfr", "Dummy_passenger_roofchair_R_thightrl"],
+		["Dummy_passenger_roofchair_R_thighbfl", "Dummy_passenger_roofchair_R_thightrr"],
+		
+		//rigidifier
+		{"beamSpring": 100000,"beamDamp":50},
+		
+		["Dummy_passenger_roofchair_R_thighbfl", "Dummy_passenger_roofchair_R_thighmid"],
+		["Dummy_passenger_roofchair_R_thighbfr", "Dummy_passenger_roofchair_R_thighmid"],
+		["Dummy_passenger_roofchair_R_thighbrr", "Dummy_passenger_roofchair_R_thighmid"],
+		["Dummy_passenger_roofchair_R_thighbrl", "Dummy_passenger_roofchair_R_thighmid"],
+		
+		["Dummy_passenger_roofchair_R_thighmfl", "Dummy_passenger_roofchair_R_thighmid"],
+		["Dummy_passenger_roofchair_R_thighmfr", "Dummy_passenger_roofchair_R_thighmid"],
+		["Dummy_passenger_roofchair_R_thighmrr", "Dummy_passenger_roofchair_R_thighmid"],
+		["Dummy_passenger_roofchair_R_thighmrl", "Dummy_passenger_roofchair_R_thighmid"],
+		
+		["Dummy_passenger_roofchair_R_thightfl", "Dummy_passenger_roofchair_R_thighmid"],
+		["Dummy_passenger_roofchair_R_thightfr", "Dummy_passenger_roofchair_R_thighmid"],
+		["Dummy_passenger_roofchair_R_thightrr", "Dummy_passenger_roofchair_R_thighmid"],
+		["Dummy_passenger_roofchair_R_thightrl", "Dummy_passenger_roofchair_R_thighmid"],
+		
+		["Dummy_passenger_roofchair_R_thighpelvis","Dummy_passenger_roofchair_R_thighmid"],
+		
+		//pelvis attach	
+		{"beamSpring": 50000,"beamDamp":50},
+		
+		["Dummy_passenger_roofchair_R_thighpelvis","Dummy_passenger_roofchair_R_thightrr"],
+		["Dummy_passenger_roofchair_R_thighpelvis","Dummy_passenger_roofchair_R_thightfr"],
+		["Dummy_passenger_roofchair_R_thighpelvis","Dummy_passenger_roofchair_R_thightrl"],
+		["Dummy_passenger_roofchair_R_thighpelvis","Dummy_passenger_roofchair_R_thightfl"],
+		
+		["Dummy_passenger_roofchair_R_thighpelvis","Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_thighpelvis","Dummy_passenger_roofchair_R_thighmfr"],
+		["Dummy_passenger_roofchair_R_thighpelvis","Dummy_passenger_roofchair_R_thighmrl"],
+		["Dummy_passenger_roofchair_R_thighpelvis","Dummy_passenger_roofchair_R_thighmfl"],
+		
+		
+		//--LEFT LEGSHIN--
+		{"beamSpring": 95000,"beamDamp":45},
+		{"deformLimitExpansion":1.005}, 
+		
+		//main shape
+		["Dummy_passenger_roofchair_L_legshinbfl","Dummy_passenger_roofchair_L_legshinfoot"],
+		["Dummy_passenger_roofchair_L_legshinbfr","Dummy_passenger_roofchair_L_legshinfoot"],
+		["Dummy_passenger_roofchair_L_legshinbrr","Dummy_passenger_roofchair_L_legshinfoot"],
+		["Dummy_passenger_roofchair_L_legshinbrl","Dummy_passenger_roofchair_L_legshinfoot"],
+		
+		["Dummy_passenger_roofchair_L_legshinbfl", "Dummy_passenger_roofchair_L_legshinbfr"],
+		["Dummy_passenger_roofchair_L_legshinbfr", "Dummy_passenger_roofchair_L_legshinbrr"],
+		["Dummy_passenger_roofchair_L_legshinbrr", "Dummy_passenger_roofchair_L_legshinbrl"],
+		["Dummy_passenger_roofchair_L_legshinbrl", "Dummy_passenger_roofchair_L_legshinbfl"],
+		
+		["Dummy_passenger_roofchair_L_legshinbfl", "Dummy_passenger_roofchair_L_legshinmfl"],
+		["Dummy_passenger_roofchair_L_legshinbfr", "Dummy_passenger_roofchair_L_legshinmfr"],
+		["Dummy_passenger_roofchair_L_legshinbrl", "Dummy_passenger_roofchair_L_legshinmrl"],
+		["Dummy_passenger_roofchair_L_legshinbrr", "Dummy_passenger_roofchair_L_legshinmrr"],
+		
+        ["Dummy_passenger_roofchair_L_legshinmfl", "Dummy_passenger_roofchair_L_legshinmfr"],
+		["Dummy_passenger_roofchair_L_legshinmfr", "Dummy_passenger_roofchair_L_legshinmrr"],
+		["Dummy_passenger_roofchair_L_legshinmrr", "Dummy_passenger_roofchair_L_legshinmrl"],
+		["Dummy_passenger_roofchair_L_legshinmrl", "Dummy_passenger_roofchair_L_legshinmfl"],
+		
+		["Dummy_passenger_roofchair_L_legshinmfl","Dummy_passenger_roofchair_L_legshintipl"],
+		["Dummy_passenger_roofchair_L_legshinmfr","Dummy_passenger_roofchair_L_legshintipr"],
+		["Dummy_passenger_roofchair_L_legshinmrr","Dummy_passenger_roofchair_L_legshintipr"],
+		["Dummy_passenger_roofchair_L_legshinmrl","Dummy_passenger_roofchair_L_legshintipl"],
+		
+		["Dummy_passenger_roofchair_L_legshintipr", "Dummy_passenger_roofchair_L_legshintipl"],
+		
+		//cross
+		["Dummy_passenger_roofchair_L_legshinbfl", "Dummy_passenger_roofchair_L_legshinbrr"],
+		["Dummy_passenger_roofchair_L_legshinbfr", "Dummy_passenger_roofchair_L_legshinbrl"],
+		["Dummy_passenger_roofchair_L_legshinmfl", "Dummy_passenger_roofchair_L_legshinmrr"],
+		["Dummy_passenger_roofchair_L_legshinmfr", "Dummy_passenger_roofchair_L_legshinmrl"],
+
+		["Dummy_passenger_roofchair_L_legshinbfr", "Dummy_passenger_roofchair_L_legshinmrr"],
+		["Dummy_passenger_roofchair_L_legshinbrr", "Dummy_passenger_roofchair_L_legshinmfr"],
+		["Dummy_passenger_roofchair_L_legshinbfl", "Dummy_passenger_roofchair_L_legshinmrl"],
+		["Dummy_passenger_roofchair_L_legshinbrl", "Dummy_passenger_roofchair_L_legshinmfl"],
+
+		["Dummy_passenger_roofchair_L_legshinbrr", "Dummy_passenger_roofchair_L_legshinmrl"],
+		["Dummy_passenger_roofchair_L_legshinbrl", "Dummy_passenger_roofchair_L_legshinmrr"],
+		["Dummy_passenger_roofchair_L_legshinbfr", "Dummy_passenger_roofchair_L_legshinmfl"],
+		["Dummy_passenger_roofchair_L_legshinbfl", "Dummy_passenger_roofchair_L_legshinmfr"],
+
+		["Dummy_passenger_roofchair_L_legshinbrr", "Dummy_passenger_roofchair_L_legshinmfl"],
+		["Dummy_passenger_roofchair_L_legshinbrl", "Dummy_passenger_roofchair_L_legshinmfr"],
+		["Dummy_passenger_roofchair_L_legshinbfr", "Dummy_passenger_roofchair_L_legshinmrl"],
+		["Dummy_passenger_roofchair_L_legshinbfl", "Dummy_passenger_roofchair_L_legshinmrr"],
+		
+		["Dummy_passenger_roofchair_L_legshinmfl","Dummy_passenger_roofchair_L_legshintipr"],
+		["Dummy_passenger_roofchair_L_legshinmfr","Dummy_passenger_roofchair_L_legshintipl"],
+		["Dummy_passenger_roofchair_L_legshinmrr","Dummy_passenger_roofchair_L_legshintipl"],
+		["Dummy_passenger_roofchair_L_legshinmrl","Dummy_passenger_roofchair_L_legshintipr"],
+		
+		["Dummy_passenger_roofchair_L_legshinbfl","Dummy_passenger_roofchair_L_legshintipr"],
+		["Dummy_passenger_roofchair_L_legshinbfr","Dummy_passenger_roofchair_L_legshintipl"],
+		["Dummy_passenger_roofchair_L_legshinbrr","Dummy_passenger_roofchair_L_legshintipl"],
+		["Dummy_passenger_roofchair_L_legshinbrl","Dummy_passenger_roofchair_L_legshintipr"],
+		
+		["Dummy_passenger_roofchair_L_legshinbfl","Dummy_passenger_roofchair_L_legshintipl"],
+		["Dummy_passenger_roofchair_L_legshinbfr","Dummy_passenger_roofchair_L_legshintipr"],
+		["Dummy_passenger_roofchair_L_legshinbrr","Dummy_passenger_roofchair_L_legshintipr"],
+		["Dummy_passenger_roofchair_L_legshinbrl","Dummy_passenger_roofchair_L_legshintipl"],
+		
+		["Dummy_passenger_roofchair_L_legshinmfl","Dummy_passenger_roofchair_L_legshinfoot"],
+		["Dummy_passenger_roofchair_L_legshinmfr","Dummy_passenger_roofchair_L_legshinfoot"],
+		["Dummy_passenger_roofchair_L_legshinmrr","Dummy_passenger_roofchair_L_legshinfoot"],
+		["Dummy_passenger_roofchair_L_legshinmrl","Dummy_passenger_roofchair_L_legshinfoot"],
+		
+		["Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_legshinfoot"],
+		["Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_legshinfoot"],
+		
+		//rigidifier
+		["Dummy_passenger_roofchair_L_legshinbfl", "Dummy_passenger_roofchair_L_legshinmid"],
+		["Dummy_passenger_roofchair_L_legshinbfr", "Dummy_passenger_roofchair_L_legshinmid"],
+		["Dummy_passenger_roofchair_L_legshinbrr", "Dummy_passenger_roofchair_L_legshinmid"],
+		["Dummy_passenger_roofchair_L_legshinbrl", "Dummy_passenger_roofchair_L_legshinmid"],
+		
+		["Dummy_passenger_roofchair_L_legshinmfl","Dummy_passenger_roofchair_L_legshinmid"],
+		["Dummy_passenger_roofchair_L_legshinmfr", "Dummy_passenger_roofchair_L_legshinmid"],
+		["Dummy_passenger_roofchair_L_legshinmrr", "Dummy_passenger_roofchair_L_legshinmid"],
+		["Dummy_passenger_roofchair_L_legshinmrl", "Dummy_passenger_roofchair_L_legshinmid"],
+		
+		["Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_legshinmid"],
+		["Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_legshinmid"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_legshinmid"],
+		
+		
+		//--RIGHT LEGSHIN--
+		{"beamSpring": 95000,"beamDamp":45},
+		{"deformLimitExpansion":1.005}, 
+		
+		//main shape
+		["Dummy_passenger_roofchair_R_legshinbfl","Dummy_passenger_roofchair_R_legshinfoot"],
+		["Dummy_passenger_roofchair_R_legshinbfr","Dummy_passenger_roofchair_R_legshinfoot"],
+		["Dummy_passenger_roofchair_R_legshinbrr","Dummy_passenger_roofchair_R_legshinfoot"],
+		["Dummy_passenger_roofchair_R_legshinbrl","Dummy_passenger_roofchair_R_legshinfoot"],
+		
+		["Dummy_passenger_roofchair_R_legshinbfl", "Dummy_passenger_roofchair_R_legshinbfr"],
+		["Dummy_passenger_roofchair_R_legshinbfr", "Dummy_passenger_roofchair_R_legshinbrr"],
+		["Dummy_passenger_roofchair_R_legshinbrr", "Dummy_passenger_roofchair_R_legshinbrl"],
+		["Dummy_passenger_roofchair_R_legshinbrl", "Dummy_passenger_roofchair_R_legshinbfl"],
+		
+		["Dummy_passenger_roofchair_R_legshinbfl", "Dummy_passenger_roofchair_R_legshinmfl"],
+		["Dummy_passenger_roofchair_R_legshinbfr", "Dummy_passenger_roofchair_R_legshinmfr"],
+		["Dummy_passenger_roofchair_R_legshinbrl", "Dummy_passenger_roofchair_R_legshinmrl"],
+		["Dummy_passenger_roofchair_R_legshinbrr", "Dummy_passenger_roofchair_R_legshinmrr"],
+		
+        ["Dummy_passenger_roofchair_R_legshinmfl", "Dummy_passenger_roofchair_R_legshinmfr"],
+		["Dummy_passenger_roofchair_R_legshinmfr", "Dummy_passenger_roofchair_R_legshinmrr"],
+		["Dummy_passenger_roofchair_R_legshinmrr", "Dummy_passenger_roofchair_R_legshinmrl"],
+		["Dummy_passenger_roofchair_R_legshinmrl", "Dummy_passenger_roofchair_R_legshinmfl"],
+		
+		["Dummy_passenger_roofchair_R_legshinmfl","Dummy_passenger_roofchair_R_legshintipl"],
+		["Dummy_passenger_roofchair_R_legshinmfr","Dummy_passenger_roofchair_R_legshintipr"],
+		["Dummy_passenger_roofchair_R_legshinmrr","Dummy_passenger_roofchair_R_legshintipr"],
+		["Dummy_passenger_roofchair_R_legshinmrl","Dummy_passenger_roofchair_R_legshintipl"],
+		
+		["Dummy_passenger_roofchair_R_legshintipr", "Dummy_passenger_roofchair_R_legshintipl"],
+		
+		//cross
+		["Dummy_passenger_roofchair_R_legshinbfl", "Dummy_passenger_roofchair_R_legshinbrr"],
+		["Dummy_passenger_roofchair_R_legshinbfr", "Dummy_passenger_roofchair_R_legshinbrl"],
+		["Dummy_passenger_roofchair_R_legshinmfl", "Dummy_passenger_roofchair_R_legshinmrr"],
+		["Dummy_passenger_roofchair_R_legshinmfr", "Dummy_passenger_roofchair_R_legshinmrl"],
+
+		["Dummy_passenger_roofchair_R_legshinbfr", "Dummy_passenger_roofchair_R_legshinmrr"],
+		["Dummy_passenger_roofchair_R_legshinbrr", "Dummy_passenger_roofchair_R_legshinmfr"],
+		["Dummy_passenger_roofchair_R_legshinbfl", "Dummy_passenger_roofchair_R_legshinmrl"],
+		["Dummy_passenger_roofchair_R_legshinbrl", "Dummy_passenger_roofchair_R_legshinmfl"],
+
+		["Dummy_passenger_roofchair_R_legshinbrr", "Dummy_passenger_roofchair_R_legshinmrl"],
+		["Dummy_passenger_roofchair_R_legshinbrl", "Dummy_passenger_roofchair_R_legshinmrr"],
+		["Dummy_passenger_roofchair_R_legshinbfr", "Dummy_passenger_roofchair_R_legshinmfl"],
+		["Dummy_passenger_roofchair_R_legshinbfl", "Dummy_passenger_roofchair_R_legshinmfr"],
+
+		["Dummy_passenger_roofchair_R_legshinbrr", "Dummy_passenger_roofchair_R_legshinmfl"],
+		["Dummy_passenger_roofchair_R_legshinbrl", "Dummy_passenger_roofchair_R_legshinmfr"],
+		["Dummy_passenger_roofchair_R_legshinbfr", "Dummy_passenger_roofchair_R_legshinmrl"],
+		["Dummy_passenger_roofchair_R_legshinbfl", "Dummy_passenger_roofchair_R_legshinmrr"],
+		
+		["Dummy_passenger_roofchair_R_legshinmfl","Dummy_passenger_roofchair_R_legshintipr"],
+		["Dummy_passenger_roofchair_R_legshinmfr","Dummy_passenger_roofchair_R_legshintipl"],
+		["Dummy_passenger_roofchair_R_legshinmrr","Dummy_passenger_roofchair_R_legshintipl"],
+		["Dummy_passenger_roofchair_R_legshinmrl","Dummy_passenger_roofchair_R_legshintipr"],
+		
+		["Dummy_passenger_roofchair_R_legshinbfl","Dummy_passenger_roofchair_R_legshintipr"],
+		["Dummy_passenger_roofchair_R_legshinbfr","Dummy_passenger_roofchair_R_legshintipl"],
+		["Dummy_passenger_roofchair_R_legshinbrr","Dummy_passenger_roofchair_R_legshintipl"],
+		["Dummy_passenger_roofchair_R_legshinbrl","Dummy_passenger_roofchair_R_legshintipr"],
+		
+		["Dummy_passenger_roofchair_R_legshinbfl","Dummy_passenger_roofchair_R_legshintipl"],
+		["Dummy_passenger_roofchair_R_legshinbfr","Dummy_passenger_roofchair_R_legshintipr"],
+		["Dummy_passenger_roofchair_R_legshinbrr","Dummy_passenger_roofchair_R_legshintipr"],
+		["Dummy_passenger_roofchair_R_legshinbrl","Dummy_passenger_roofchair_R_legshintipl"],
+		
+		["Dummy_passenger_roofchair_R_legshinmfl","Dummy_passenger_roofchair_R_legshinfoot"],
+		["Dummy_passenger_roofchair_R_legshinmfr","Dummy_passenger_roofchair_R_legshinfoot"],
+		["Dummy_passenger_roofchair_R_legshinmrr","Dummy_passenger_roofchair_R_legshinfoot"],
+		["Dummy_passenger_roofchair_R_legshinmrl","Dummy_passenger_roofchair_R_legshinfoot"],
+		
+		["Dummy_passenger_roofchair_R_legshintipl","Dummy_passenger_roofchair_R_legshinfoot"],
+		["Dummy_passenger_roofchair_R_legshintipr","Dummy_passenger_roofchair_R_legshinfoot"],
+		
+		//rigidifier
+		["Dummy_passenger_roofchair_R_legshinbfl", "Dummy_passenger_roofchair_R_legshinmid"],
+		["Dummy_passenger_roofchair_R_legshinbfr", "Dummy_passenger_roofchair_R_legshinmid"],
+		["Dummy_passenger_roofchair_R_legshinbrr", "Dummy_passenger_roofchair_R_legshinmid"],
+		["Dummy_passenger_roofchair_R_legshinbrl", "Dummy_passenger_roofchair_R_legshinmid"],
+		
+		["Dummy_passenger_roofchair_R_legshinmfl","Dummy_passenger_roofchair_R_legshinmid"],
+		["Dummy_passenger_roofchair_R_legshinmfr", "Dummy_passenger_roofchair_R_legshinmid"],
+		["Dummy_passenger_roofchair_R_legshinmrr", "Dummy_passenger_roofchair_R_legshinmid"],
+		["Dummy_passenger_roofchair_R_legshinmrl", "Dummy_passenger_roofchair_R_legshinmid"],
+		
+		["Dummy_passenger_roofchair_R_legshintipr","Dummy_passenger_roofchair_R_legshinmid"],
+		["Dummy_passenger_roofchair_R_legshintipl","Dummy_passenger_roofchair_R_legshinmid"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_legshinmid"],
+		
+		
+		//--LEFT FOOT--
+		{"beamSpring": 25000,"beamDamp":10},
+		{"deformLimitExpansion":1.01}, 
+		
+		//main shape
+		["Dummy_passenger_roofchair_L_footbfl", "Dummy_passenger_roofchair_L_footbfr"],
+		["Dummy_passenger_roofchair_L_footbfr", "Dummy_passenger_roofchair_L_footbmr"],
+		["Dummy_passenger_roofchair_L_footbmr", "Dummy_passenger_roofchair_L_footbml"],
+		["Dummy_passenger_roofchair_L_footbml", "Dummy_passenger_roofchair_L_footbfl"],
+		
+		["Dummy_passenger_roofchair_L_footbfl", "Dummy_passenger_roofchair_L_foottfl"],
+		["Dummy_passenger_roofchair_L_footbfr", "Dummy_passenger_roofchair_L_foottfr"],
+		["Dummy_passenger_roofchair_L_footbml", "Dummy_passenger_roofchair_L_foottrl"],
+		["Dummy_passenger_roofchair_L_footbmr", "Dummy_passenger_roofchair_L_foottrr"],
+		
+        ["Dummy_passenger_roofchair_L_foottfl", "Dummy_passenger_roofchair_L_foottfr"],
+		["Dummy_passenger_roofchair_L_foottfr", "Dummy_passenger_roofchair_L_foottrr"],
+		["Dummy_passenger_roofchair_L_foottrr", "Dummy_passenger_roofchair_L_foottrl"],
+		["Dummy_passenger_roofchair_L_foottrl", "Dummy_passenger_roofchair_L_foottfl"],
+		
+		["Dummy_passenger_roofchair_L_foottrr", "Dummy_passenger_roofchair_L_footbrr"],
+		["Dummy_passenger_roofchair_L_foottrl", "Dummy_passenger_roofchair_L_footbrl"],		
+		["Dummy_passenger_roofchair_L_footbmr", "Dummy_passenger_roofchair_L_footbrr"],
+		["Dummy_passenger_roofchair_L_footbml", "Dummy_passenger_roofchair_L_footbrl"],
+		
+		["Dummy_passenger_roofchair_L_foottfr","Dummy_passenger_roofchair_L_foottipr"],
+		["Dummy_passenger_roofchair_L_foottfl","Dummy_passenger_roofchair_L_foottipl"],		
+		["Dummy_passenger_roofchair_L_footbfr","Dummy_passenger_roofchair_L_foottipr"],
+		["Dummy_passenger_roofchair_L_footbfl","Dummy_passenger_roofchair_L_foottipl"],
+		
+		["Dummy_passenger_roofchair_L_footbrl", "Dummy_passenger_roofchair_L_footbrr"],
+		["Dummy_passenger_roofchair_L_foottipr", "Dummy_passenger_roofchair_L_foottipl"],
+		
+		//cross
+		["Dummy_passenger_roofchair_L_footbfl", "Dummy_passenger_roofchair_L_footbmr"],
+		["Dummy_passenger_roofchair_L_footbfr", "Dummy_passenger_roofchair_L_footbml"],
+		["Dummy_passenger_roofchair_L_foottfl", "Dummy_passenger_roofchair_L_foottrr"],
+		["Dummy_passenger_roofchair_L_foottfr", "Dummy_passenger_roofchair_L_foottrl"],
+
+		["Dummy_passenger_roofchair_L_footbfr", "Dummy_passenger_roofchair_L_foottrr"],
+		["Dummy_passenger_roofchair_L_footbmr", "Dummy_passenger_roofchair_L_foottfr"],
+		["Dummy_passenger_roofchair_L_footbfl", "Dummy_passenger_roofchair_L_foottrl"],
+		["Dummy_passenger_roofchair_L_footbml", "Dummy_passenger_roofchair_L_foottfl"],
+
+		["Dummy_passenger_roofchair_L_footbmr", "Dummy_passenger_roofchair_L_foottrl"],
+		["Dummy_passenger_roofchair_L_footbml", "Dummy_passenger_roofchair_L_foottrr"],
+		["Dummy_passenger_roofchair_L_footbfr", "Dummy_passenger_roofchair_L_foottfl"],
+		["Dummy_passenger_roofchair_L_footbfl", "Dummy_passenger_roofchair_L_foottfr"],
+
+		["Dummy_passenger_roofchair_L_footbmr", "Dummy_passenger_roofchair_L_foottfl"],
+		["Dummy_passenger_roofchair_L_footbml", "Dummy_passenger_roofchair_L_foottfr"],
+		["Dummy_passenger_roofchair_L_footbfr", "Dummy_passenger_roofchair_L_foottrl"],
+		["Dummy_passenger_roofchair_L_footbfl", "Dummy_passenger_roofchair_L_foottrr"],
+		
+		["Dummy_passenger_roofchair_L_footbml", "Dummy_passenger_roofchair_L_footbrr"],
+		["Dummy_passenger_roofchair_L_footbmr", "Dummy_passenger_roofchair_L_footbrl"],
+		["Dummy_passenger_roofchair_L_footbfl","Dummy_passenger_roofchair_L_foottipr"],
+		["Dummy_passenger_roofchair_L_footbfr","Dummy_passenger_roofchair_L_foottipl"],
+		
+		["Dummy_passenger_roofchair_L_foottrr", "Dummy_passenger_roofchair_L_footbrl"],
+		["Dummy_passenger_roofchair_L_foottrl", "Dummy_passenger_roofchair_L_footbrr"],			
+		["Dummy_passenger_roofchair_L_foottfl","Dummy_passenger_roofchair_L_foottipr"],
+		["Dummy_passenger_roofchair_L_foottfr","Dummy_passenger_roofchair_L_foottipl"],
+		
+		["Dummy_passenger_roofchair_L_foottfr", "Dummy_passenger_roofchair_L_footbrr"],
+		["Dummy_passenger_roofchair_L_foottfl", "Dummy_passenger_roofchair_L_footbrl"],		
+		["Dummy_passenger_roofchair_L_foottfl", "Dummy_passenger_roofchair_L_footbrr"],
+		["Dummy_passenger_roofchair_L_foottfr", "Dummy_passenger_roofchair_L_footbrl"],
+		
+		["Dummy_passenger_roofchair_L_foottrr","Dummy_passenger_roofchair_L_foottipr"],
+		["Dummy_passenger_roofchair_L_foottrl","Dummy_passenger_roofchair_L_foottipl"],		
+		["Dummy_passenger_roofchair_L_foottrl","Dummy_passenger_roofchair_L_foottipr"],
+		["Dummy_passenger_roofchair_L_foottrr","Dummy_passenger_roofchair_L_foottipl"],
+		
+		["Dummy_passenger_roofchair_L_footbrr","Dummy_passenger_roofchair_L_foottipr"],
+		["Dummy_passenger_roofchair_L_footbrl","Dummy_passenger_roofchair_L_foottipl"],		
+		["Dummy_passenger_roofchair_L_footbrl","Dummy_passenger_roofchair_L_foottipr"],
+		["Dummy_passenger_roofchair_L_footbrr","Dummy_passenger_roofchair_L_foottipl"],
+		
+		["Dummy_passenger_roofchair_L_footbmr","Dummy_passenger_roofchair_L_foottipr"],
+		["Dummy_passenger_roofchair_L_footbml","Dummy_passenger_roofchair_L_foottipl"],		
+		["Dummy_passenger_roofchair_L_footbml","Dummy_passenger_roofchair_L_foottipr"],
+		["Dummy_passenger_roofchair_L_footbmr","Dummy_passenger_roofchair_L_foottipl"],
+		
+		
+		//--RIGHT FOOT--
+		{"beamSpring": 25000,"beamDamp":10},
+		{"deformLimitExpansion":1.01}, 
+		
+		//main shape
+		["Dummy_passenger_roofchair_R_footbfl", "Dummy_passenger_roofchair_R_footbfr"],
+		["Dummy_passenger_roofchair_R_footbfr", "Dummy_passenger_roofchair_R_footbmr"],
+		["Dummy_passenger_roofchair_R_footbmr", "Dummy_passenger_roofchair_R_footbml"],
+		["Dummy_passenger_roofchair_R_footbml", "Dummy_passenger_roofchair_R_footbfl"],
+		
+		["Dummy_passenger_roofchair_R_footbfl", "Dummy_passenger_roofchair_R_foottfl"],
+		["Dummy_passenger_roofchair_R_footbfr", "Dummy_passenger_roofchair_R_foottfr"],
+		["Dummy_passenger_roofchair_R_footbml", "Dummy_passenger_roofchair_R_foottrl"],
+		["Dummy_passenger_roofchair_R_footbmr", "Dummy_passenger_roofchair_R_foottrr"],
+		
+        ["Dummy_passenger_roofchair_R_foottfl", "Dummy_passenger_roofchair_R_foottfr"],
+		["Dummy_passenger_roofchair_R_foottfr", "Dummy_passenger_roofchair_R_foottrr"],
+		["Dummy_passenger_roofchair_R_foottrr", "Dummy_passenger_roofchair_R_foottrl"],
+		["Dummy_passenger_roofchair_R_foottrl", "Dummy_passenger_roofchair_R_foottfl"],
+		
+		["Dummy_passenger_roofchair_R_foottrr", "Dummy_passenger_roofchair_R_footbrr"],
+		["Dummy_passenger_roofchair_R_foottrl", "Dummy_passenger_roofchair_R_footbrl"],		
+		["Dummy_passenger_roofchair_R_footbmr", "Dummy_passenger_roofchair_R_footbrr"],
+		["Dummy_passenger_roofchair_R_footbml", "Dummy_passenger_roofchair_R_footbrl"],
+		
+		["Dummy_passenger_roofchair_R_foottfr","Dummy_passenger_roofchair_R_foottipr"],
+		["Dummy_passenger_roofchair_R_foottfl","Dummy_passenger_roofchair_R_foottipl"],		
+		["Dummy_passenger_roofchair_R_footbfr","Dummy_passenger_roofchair_R_foottipr"],
+		["Dummy_passenger_roofchair_R_footbfl","Dummy_passenger_roofchair_R_foottipl"],
+		
+		["Dummy_passenger_roofchair_R_footbrl", "Dummy_passenger_roofchair_R_footbrr"],
+		["Dummy_passenger_roofchair_R_foottipr", "Dummy_passenger_roofchair_R_foottipl"],
+		
+		//cross
+		["Dummy_passenger_roofchair_R_footbfl", "Dummy_passenger_roofchair_R_footbmr"],
+		["Dummy_passenger_roofchair_R_footbfr", "Dummy_passenger_roofchair_R_footbml"],
+		["Dummy_passenger_roofchair_R_foottfl", "Dummy_passenger_roofchair_R_foottrr"],
+		["Dummy_passenger_roofchair_R_foottfr", "Dummy_passenger_roofchair_R_foottrl"],
+
+		["Dummy_passenger_roofchair_R_footbfr", "Dummy_passenger_roofchair_R_foottrr"],
+		["Dummy_passenger_roofchair_R_footbmr", "Dummy_passenger_roofchair_R_foottfr"],
+		["Dummy_passenger_roofchair_R_footbfl", "Dummy_passenger_roofchair_R_foottrl"],
+		["Dummy_passenger_roofchair_R_footbml", "Dummy_passenger_roofchair_R_foottfl"],
+
+		["Dummy_passenger_roofchair_R_footbmr", "Dummy_passenger_roofchair_R_foottrl"],
+		["Dummy_passenger_roofchair_R_footbml", "Dummy_passenger_roofchair_R_foottrr"],
+		["Dummy_passenger_roofchair_R_footbfr", "Dummy_passenger_roofchair_R_foottfl"],
+		["Dummy_passenger_roofchair_R_footbfl", "Dummy_passenger_roofchair_R_foottfr"],
+
+		["Dummy_passenger_roofchair_R_footbmr", "Dummy_passenger_roofchair_R_foottfl"],
+		["Dummy_passenger_roofchair_R_footbml", "Dummy_passenger_roofchair_R_foottfr"],
+		["Dummy_passenger_roofchair_R_footbfr", "Dummy_passenger_roofchair_R_foottrl"],
+		["Dummy_passenger_roofchair_R_footbfl", "Dummy_passenger_roofchair_R_foottrr"],
+		
+		["Dummy_passenger_roofchair_R_footbml", "Dummy_passenger_roofchair_R_footbrr"],
+		["Dummy_passenger_roofchair_R_footbmr", "Dummy_passenger_roofchair_R_footbrl"],
+		["Dummy_passenger_roofchair_R_footbfl","Dummy_passenger_roofchair_R_foottipr"],
+		["Dummy_passenger_roofchair_R_footbfr","Dummy_passenger_roofchair_R_foottipl"],
+		
+		["Dummy_passenger_roofchair_R_foottrr", "Dummy_passenger_roofchair_R_footbrl"],
+		["Dummy_passenger_roofchair_R_foottrl", "Dummy_passenger_roofchair_R_footbrr"],			
+		["Dummy_passenger_roofchair_R_foottfl","Dummy_passenger_roofchair_R_foottipr"],
+		["Dummy_passenger_roofchair_R_foottfr","Dummy_passenger_roofchair_R_foottipl"],
+		
+		["Dummy_passenger_roofchair_R_foottfr", "Dummy_passenger_roofchair_R_footbrr"],
+		["Dummy_passenger_roofchair_R_foottfl", "Dummy_passenger_roofchair_R_footbrl"],		
+		["Dummy_passenger_roofchair_R_foottfl", "Dummy_passenger_roofchair_R_footbrr"],
+		["Dummy_passenger_roofchair_R_foottfr", "Dummy_passenger_roofchair_R_footbrl"],
+		
+		["Dummy_passenger_roofchair_R_foottrr","Dummy_passenger_roofchair_R_foottipr"],
+		["Dummy_passenger_roofchair_R_foottrl","Dummy_passenger_roofchair_R_foottipl"],		
+		["Dummy_passenger_roofchair_R_foottrl","Dummy_passenger_roofchair_R_foottipr"],
+		["Dummy_passenger_roofchair_R_foottrr","Dummy_passenger_roofchair_R_foottipl"],
+		
+		["Dummy_passenger_roofchair_R_footbrr","Dummy_passenger_roofchair_R_foottipr"],
+		["Dummy_passenger_roofchair_R_footbrl","Dummy_passenger_roofchair_R_foottipl"],		
+		["Dummy_passenger_roofchair_R_footbrl","Dummy_passenger_roofchair_R_foottipr"],
+		["Dummy_passenger_roofchair_R_footbrr","Dummy_passenger_roofchair_R_foottipl"],
+		
+		["Dummy_passenger_roofchair_R_footbmr","Dummy_passenger_roofchair_R_foottipr"],
+		["Dummy_passenger_roofchair_R_footbml","Dummy_passenger_roofchair_R_foottipl"],		
+		["Dummy_passenger_roofchair_R_footbml","Dummy_passenger_roofchair_R_foottipr"],
+		["Dummy_passenger_roofchair_R_footbmr","Dummy_passenger_roofchair_R_foottipl"],
+		
+		{"breakGroup":""},
+    ],
+    "triangles": [
+        ["id1:","id2:","id3:"],
+        {"groundModel":"plastic"},
+		{"dragCoef":4},
+		
+		//left thigh
+        {"group":"agentj_Dummy_passenger_roofchair_thigh_L"},
+		
+        ["Dummy_passenger_roofchair_L_thighmfr","Dummy_passenger_roofchair_L_thighmfl","Dummy_passenger_roofchair_L_thightfr"],
+        ["Dummy_passenger_roofchair_L_thightfl","Dummy_passenger_roofchair_L_thightfr","Dummy_passenger_roofchair_L_thighmfl"],
+		["Dummy_passenger_roofchair_L_thighmrl","Dummy_passenger_roofchair_L_thighmrr","Dummy_passenger_roofchair_L_thightrl"],
+        ["Dummy_passenger_roofchair_L_thightrr","Dummy_passenger_roofchair_L_thightrl","Dummy_passenger_roofchair_L_thighmrr"],
+
+		["Dummy_passenger_roofchair_L_thighmrr","Dummy_passenger_roofchair_L_thighmfr","Dummy_passenger_roofchair_L_thightrr"],
+		["Dummy_passenger_roofchair_L_thighmfr","Dummy_passenger_roofchair_L_thightfr","Dummy_passenger_roofchair_L_thightrr"],
+		["Dummy_passenger_roofchair_L_thighmfl","Dummy_passenger_roofchair_L_thighmrl","Dummy_passenger_roofchair_L_thightfl"],
+		["Dummy_passenger_roofchair_L_thighmrl","Dummy_passenger_roofchair_L_thightrl","Dummy_passenger_roofchair_L_thightfl"],
+		
+		["Dummy_passenger_roofchair_L_thighbfr","Dummy_passenger_roofchair_L_thighbfl","Dummy_passenger_roofchair_L_thighmfr"],
+        ["Dummy_passenger_roofchair_L_thighmfl","Dummy_passenger_roofchair_L_thighmfr","Dummy_passenger_roofchair_L_thighbfl"],
+		["Dummy_passenger_roofchair_L_thighbrl","Dummy_passenger_roofchair_L_thighbrr","Dummy_passenger_roofchair_L_thighmrl"],
+        ["Dummy_passenger_roofchair_L_thighmrr","Dummy_passenger_roofchair_L_thighmrl","Dummy_passenger_roofchair_L_thighbrr"],
+
+		["Dummy_passenger_roofchair_L_thighbfr","Dummy_passenger_roofchair_L_thighbrl","Dummy_passenger_roofchair_L_thighbfl"],
+		["Dummy_passenger_roofchair_L_thighbrr","Dummy_passenger_roofchair_L_thighbrl","Dummy_passenger_roofchair_L_thighbfr"],
+		
+		//non-collidable tris
+		{"triangleType":"NONCOLLIDABLE"},
+		["Dummy_passenger_roofchair_L_thightfr","Dummy_passenger_roofchair_L_thightfl","Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_L_thightfl","Dummy_passenger_roofchair_L_thightrl","Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_L_thightrl","Dummy_passenger_roofchair_L_thightrr","Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_L_thightrr","Dummy_passenger_roofchair_L_thightfr","Dummy_passenger_roofchair_L_thighpelvis"],
+		
+		
+		["Dummy_passenger_roofchair_L_thighbrr","Dummy_passenger_roofchair_L_thighbfr","Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_thighbfr","Dummy_passenger_roofchair_L_thighmfr","Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_thighbfl","Dummy_passenger_roofchair_L_thighbrl","Dummy_passenger_roofchair_L_thighmfl"],
+		["Dummy_passenger_roofchair_L_thighbrl","Dummy_passenger_roofchair_L_thighmrl","Dummy_passenger_roofchair_L_thighmfl"],
+		{"triangleType":"NORMALTYPE"},
+		
+		
+		//right thigh
+        {"group":"agentj_Dummy_passenger_roofchair_thigh_R"},
+		
+        ["Dummy_passenger_roofchair_R_thighmfr","Dummy_passenger_roofchair_R_thighmfl","Dummy_passenger_roofchair_R_thightfr"],
+        ["Dummy_passenger_roofchair_R_thightfl","Dummy_passenger_roofchair_R_thightfr","Dummy_passenger_roofchair_R_thighmfl"],
+		["Dummy_passenger_roofchair_R_thighmrl","Dummy_passenger_roofchair_R_thighmrr","Dummy_passenger_roofchair_R_thightrl"],
+        ["Dummy_passenger_roofchair_R_thightrr","Dummy_passenger_roofchair_R_thightrl","Dummy_passenger_roofchair_R_thighmrr"],
+
+		["Dummy_passenger_roofchair_R_thighmrr","Dummy_passenger_roofchair_R_thighmfr","Dummy_passenger_roofchair_R_thightrr"],
+		["Dummy_passenger_roofchair_R_thighmfr","Dummy_passenger_roofchair_R_thightfr","Dummy_passenger_roofchair_R_thightrr"],
+		["Dummy_passenger_roofchair_R_thighmfl","Dummy_passenger_roofchair_R_thighmrl","Dummy_passenger_roofchair_R_thightfl"],
+		["Dummy_passenger_roofchair_R_thighmrl","Dummy_passenger_roofchair_R_thightrl","Dummy_passenger_roofchair_R_thightfl"],
+		
+		["Dummy_passenger_roofchair_R_thighbfr","Dummy_passenger_roofchair_R_thighbfl","Dummy_passenger_roofchair_R_thighmfr"],
+        ["Dummy_passenger_roofchair_R_thighmfl","Dummy_passenger_roofchair_R_thighmfr","Dummy_passenger_roofchair_R_thighbfl"],
+		["Dummy_passenger_roofchair_R_thighbrl","Dummy_passenger_roofchair_R_thighbrr","Dummy_passenger_roofchair_R_thighmrl"],
+        ["Dummy_passenger_roofchair_R_thighmrr","Dummy_passenger_roofchair_R_thighmrl","Dummy_passenger_roofchair_R_thighbrr"],
+
+		["Dummy_passenger_roofchair_R_thighbfr","Dummy_passenger_roofchair_R_thighbrl","Dummy_passenger_roofchair_R_thighbfl"],
+		["Dummy_passenger_roofchair_R_thighbrr","Dummy_passenger_roofchair_R_thighbrl","Dummy_passenger_roofchair_R_thighbfr"],	
+
+		//non-collidable tris
+		{"triangleType":"NONCOLLIDABLE"},
+		["Dummy_passenger_roofchair_R_thightfr","Dummy_passenger_roofchair_R_thightfl","Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_R_thightfl","Dummy_passenger_roofchair_R_thightrl","Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_R_thightrl","Dummy_passenger_roofchair_R_thightrr","Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_R_thightrr","Dummy_passenger_roofchair_R_thightfr","Dummy_passenger_roofchair_R_thighpelvis"],
+		
+	
+		["Dummy_passenger_roofchair_R_thighbrr","Dummy_passenger_roofchair_R_thighbfr","Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_thighbfr","Dummy_passenger_roofchair_R_thighmfr","Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_thighbfl","Dummy_passenger_roofchair_R_thighbrl","Dummy_passenger_roofchair_R_thighmfl"],
+		["Dummy_passenger_roofchair_R_thighbrl","Dummy_passenger_roofchair_R_thighmrl","Dummy_passenger_roofchair_R_thighmfl"],
+		{"triangleType":"NORMALTYPE"},
+		
+		
+		//left legshin
+        {"group":"agentj_Dummy_passenger_roofchair_legshin_L"},
+		
+		["Dummy_passenger_roofchair_L_legshinbfr","Dummy_passenger_roofchair_L_legshinbfl","Dummy_passenger_roofchair_L_legshinmfr"],
+        ["Dummy_passenger_roofchair_L_legshinmfl","Dummy_passenger_roofchair_L_legshinmfr","Dummy_passenger_roofchair_L_legshinbfl"],
+		["Dummy_passenger_roofchair_L_legshinbrl","Dummy_passenger_roofchair_L_legshinbrr","Dummy_passenger_roofchair_L_legshinmrl"],
+        ["Dummy_passenger_roofchair_L_legshinmrr","Dummy_passenger_roofchair_L_legshinmrl","Dummy_passenger_roofchair_L_legshinbrr"],
+
+		["Dummy_passenger_roofchair_L_legshinbrr","Dummy_passenger_roofchair_L_legshinbfr","Dummy_passenger_roofchair_L_legshinmrr"],
+		["Dummy_passenger_roofchair_L_legshinbfr","Dummy_passenger_roofchair_L_legshinmfr","Dummy_passenger_roofchair_L_legshinmrr"],
+		["Dummy_passenger_roofchair_L_legshinbfl","Dummy_passenger_roofchair_L_legshinbrl","Dummy_passenger_roofchair_L_legshinmfl"],
+		["Dummy_passenger_roofchair_L_legshinbrl","Dummy_passenger_roofchair_L_legshinmrl","Dummy_passenger_roofchair_L_legshinmfl"],
+		
+		["Dummy_passenger_roofchair_L_legshinmfr", "Dummy_passenger_roofchair_L_legshinmfl","Dummy_passenger_roofchair_L_legshintipl"],
+		["Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_legshinmfr"],
+		["Dummy_passenger_roofchair_L_legshinmrl", "Dummy_passenger_roofchair_L_legshinmrr","Dummy_passenger_roofchair_L_legshintipl"],
+		["Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_legshinmrr"],
+		
+		["Dummy_passenger_roofchair_L_legshinbrl","Dummy_passenger_roofchair_L_legshinbfl","Dummy_passenger_roofchair_L_legshinfoot"],
+		["Dummy_passenger_roofchair_L_legshinbfl","Dummy_passenger_roofchair_L_legshinbfr","Dummy_passenger_roofchair_L_legshinfoot"],
+		["Dummy_passenger_roofchair_L_legshinbfr","Dummy_passenger_roofchair_L_legshinbrr","Dummy_passenger_roofchair_L_legshinfoot"],
+		["Dummy_passenger_roofchair_L_legshinbrr","Dummy_passenger_roofchair_L_legshinbrl","Dummy_passenger_roofchair_L_legshinfoot"],
+		
+		//non-collidable tris
+		{"triangleType":"NONCOLLIDABLE"},		
+		["Dummy_passenger_roofchair_L_legshinmfr","Dummy_passenger_roofchair_L_legshinmrr","Dummy_passenger_roofchair_L_legshintipr"],
+		["Dummy_passenger_roofchair_L_legshinmfl","Dummy_passenger_roofchair_L_legshinmrl","Dummy_passenger_roofchair_L_legshintipl"],
+		{"triangleType":"NORMALTYPE"},
+		
+		
+		//right legshin
+        {"group":"agentj_Dummy_passenger_roofchair_legshin_R"},
+		
+		["Dummy_passenger_roofchair_R_legshinbfr","Dummy_passenger_roofchair_R_legshinbfl","Dummy_passenger_roofchair_R_legshinmfr"],
+        ["Dummy_passenger_roofchair_R_legshinmfl","Dummy_passenger_roofchair_R_legshinmfr","Dummy_passenger_roofchair_R_legshinbfl"],
+		["Dummy_passenger_roofchair_R_legshinbrl","Dummy_passenger_roofchair_R_legshinbrr","Dummy_passenger_roofchair_R_legshinmrl"],
+        ["Dummy_passenger_roofchair_R_legshinmrr","Dummy_passenger_roofchair_R_legshinmrl","Dummy_passenger_roofchair_R_legshinbrr"],
+
+		["Dummy_passenger_roofchair_R_legshinbrr","Dummy_passenger_roofchair_R_legshinbfr","Dummy_passenger_roofchair_R_legshinmrr"],
+		["Dummy_passenger_roofchair_R_legshinbfr","Dummy_passenger_roofchair_R_legshinmfr","Dummy_passenger_roofchair_R_legshinmrr"],
+		["Dummy_passenger_roofchair_R_legshinbfl","Dummy_passenger_roofchair_R_legshinbrl","Dummy_passenger_roofchair_R_legshinmfl"],
+		["Dummy_passenger_roofchair_R_legshinbrl","Dummy_passenger_roofchair_R_legshinmrl","Dummy_passenger_roofchair_R_legshinmfl"],
+		
+		["Dummy_passenger_roofchair_R_legshinmfr", "Dummy_passenger_roofchair_R_legshinmfl","Dummy_passenger_roofchair_R_legshintipl"],
+		["Dummy_passenger_roofchair_R_legshintipl","Dummy_passenger_roofchair_R_legshintipr","Dummy_passenger_roofchair_R_legshinmfr"],
+		["Dummy_passenger_roofchair_R_legshinmrl", "Dummy_passenger_roofchair_R_legshinmrr","Dummy_passenger_roofchair_R_legshintipl"],
+		["Dummy_passenger_roofchair_R_legshintipr","Dummy_passenger_roofchair_R_legshintipl","Dummy_passenger_roofchair_R_legshinmrr"],
+		
+		["Dummy_passenger_roofchair_R_legshinbrl","Dummy_passenger_roofchair_R_legshinbfl","Dummy_passenger_roofchair_R_legshinfoot"],
+		["Dummy_passenger_roofchair_R_legshinbfl","Dummy_passenger_roofchair_R_legshinbfr","Dummy_passenger_roofchair_R_legshinfoot"],
+		["Dummy_passenger_roofchair_R_legshinbfr","Dummy_passenger_roofchair_R_legshinbrr","Dummy_passenger_roofchair_R_legshinfoot"],
+		["Dummy_passenger_roofchair_R_legshinbrr","Dummy_passenger_roofchair_R_legshinbrl","Dummy_passenger_roofchair_R_legshinfoot"],
+			
+		//non-collidable tris
+		{"triangleType":"NONCOLLIDABLE"},
+		["Dummy_passenger_roofchair_R_legshinmfr","Dummy_passenger_roofchair_R_legshinmrr","Dummy_passenger_roofchair_R_legshintipr"],
+		["Dummy_passenger_roofchair_R_legshinmfl","Dummy_passenger_roofchair_R_legshinmrl","Dummy_passenger_roofchair_R_legshintipl"],
+		{"triangleType":"NORMALTYPE"},
+		
+		
+		//left foot
+		{"group":"agentj_Dummy_passenger_roofchair_foot_L"},
+		["Dummy_passenger_roofchair_L_foottipr","Dummy_passenger_roofchair_L_foottipl","Dummy_passenger_roofchair_L_foottfr"],
+        ["Dummy_passenger_roofchair_L_foottfl", "Dummy_passenger_roofchair_L_foottfr","Dummy_passenger_roofchair_L_foottipl"],
+		["Dummy_passenger_roofchair_L_footbrl", "Dummy_passenger_roofchair_L_footbrr", "Dummy_passenger_roofchair_L_foottrl"],
+        ["Dummy_passenger_roofchair_L_foottrr", "Dummy_passenger_roofchair_L_foottrl", "Dummy_passenger_roofchair_L_footbrr"],
+
+		["Dummy_passenger_roofchair_L_footbmr", "Dummy_passenger_roofchair_L_footbfr", "Dummy_passenger_roofchair_L_foottrr"],
+		["Dummy_passenger_roofchair_L_footbfr", "Dummy_passenger_roofchair_L_foottfr", "Dummy_passenger_roofchair_L_foottrr"],
+		["Dummy_passenger_roofchair_L_footbfl", "Dummy_passenger_roofchair_L_footbml", "Dummy_passenger_roofchair_L_foottfl"],
+		["Dummy_passenger_roofchair_L_footbml", "Dummy_passenger_roofchair_L_foottrl", "Dummy_passenger_roofchair_L_foottfl"],
+		
+		["Dummy_passenger_roofchair_L_footbml", "Dummy_passenger_roofchair_L_footbrl", "Dummy_passenger_roofchair_L_foottrl"],
+		["Dummy_passenger_roofchair_L_footbrr", "Dummy_passenger_roofchair_L_footbmr", "Dummy_passenger_roofchair_L_foottrr"],
+		["Dummy_passenger_roofchair_L_foottipl","Dummy_passenger_roofchair_L_footbfl", "Dummy_passenger_roofchair_L_foottfl"],
+		["Dummy_passenger_roofchair_L_footbfr", "Dummy_passenger_roofchair_L_foottipr","Dummy_passenger_roofchair_L_foottfr"],
+
+		{"dragCoef":5}
+		["Dummy_passenger_roofchair_L_foottipr","Dummy_passenger_roofchair_L_footbrl","Dummy_passenger_roofchair_L_foottipl"],
+		["Dummy_passenger_roofchair_L_footbrr" ,"Dummy_passenger_roofchair_L_footbrl","Dummy_passenger_roofchair_L_foottipr"],		
+		{"dragCoef":4}
+		
+		//non-collidable tris
+		{"triangleType":"NONCOLLIDABLE"},
+		["Dummy_passenger_roofchair_L_foottfl", "Dummy_passenger_roofchair_L_foottrr", "Dummy_passenger_roofchair_L_foottfr"],
+		["Dummy_passenger_roofchair_L_foottrl", "Dummy_passenger_roofchair_L_foottrr", "Dummy_passenger_roofchair_L_foottfl"],
+		{"triangleType":"NORMALTYPE"},
+		
+		
+		//right foot
+		{"group":"agentj_Dummy_passenger_roofchair_foot_R"},
+		["Dummy_passenger_roofchair_R_foottipr","Dummy_passenger_roofchair_R_foottipl","Dummy_passenger_roofchair_R_foottfr"],
+        ["Dummy_passenger_roofchair_R_foottfl", "Dummy_passenger_roofchair_R_foottfr","Dummy_passenger_roofchair_R_foottipl"],
+		["Dummy_passenger_roofchair_R_footbrl", "Dummy_passenger_roofchair_R_footbrr", "Dummy_passenger_roofchair_R_foottrl"],
+        ["Dummy_passenger_roofchair_R_foottrr", "Dummy_passenger_roofchair_R_foottrl", "Dummy_passenger_roofchair_R_footbrr"],
+
+		["Dummy_passenger_roofchair_R_footbmr", "Dummy_passenger_roofchair_R_footbfr", "Dummy_passenger_roofchair_R_foottrr"],
+		["Dummy_passenger_roofchair_R_footbfr", "Dummy_passenger_roofchair_R_foottfr", "Dummy_passenger_roofchair_R_foottrr"],
+		["Dummy_passenger_roofchair_R_footbfl", "Dummy_passenger_roofchair_R_footbml", "Dummy_passenger_roofchair_R_foottfl"],
+		["Dummy_passenger_roofchair_R_footbml", "Dummy_passenger_roofchair_R_foottrl", "Dummy_passenger_roofchair_R_foottfl"],
+		
+		["Dummy_passenger_roofchair_R_footbml", "Dummy_passenger_roofchair_R_footbrl", "Dummy_passenger_roofchair_R_foottrl"],
+		["Dummy_passenger_roofchair_R_footbrr", "Dummy_passenger_roofchair_R_footbmr", "Dummy_passenger_roofchair_R_foottrr"],
+		["Dummy_passenger_roofchair_R_foottipl","Dummy_passenger_roofchair_R_footbfl", "Dummy_passenger_roofchair_R_foottfl"],
+		["Dummy_passenger_roofchair_R_footbfr", "Dummy_passenger_roofchair_R_foottipr","Dummy_passenger_roofchair_R_foottfr"],
+
+		{"dragCoef":5}
+		["Dummy_passenger_roofchair_R_foottipr","Dummy_passenger_roofchair_R_footbrl","Dummy_passenger_roofchair_R_foottipl"],
+		["Dummy_passenger_roofchair_R_footbrr" ,"Dummy_passenger_roofchair_R_footbrl","Dummy_passenger_roofchair_R_foottipr"],		
+		{"dragCoef":4}
+		
+		//non-collidable tris
+		{"triangleType":"NONCOLLIDABLE"},
+		["Dummy_passenger_roofchair_R_foottfl", "Dummy_passenger_roofchair_R_foottrr", "Dummy_passenger_roofchair_R_foottfr"],
+		["Dummy_passenger_roofchair_R_foottrl", "Dummy_passenger_roofchair_R_foottrr", "Dummy_passenger_roofchair_R_foottfl"],
+		{"triangleType":"NORMALTYPE"},
+		
+		{"group":""},
+    ],
+},
+
+}

@@ -1,14 +1,14 @@
 {
 "roofbars_couch_dummy": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Couch with Dummy",
     },
     "slotType" : "pallet_load",
     "slots": [
         ["type", "default", "description"]
         ["skin_couch","couch_skin_stripe","Couch Type", {"coreSlot":true}],
-	["AgentY_Dummy_passenger_roofchair","AgentY_Dummy_passenger_roofchair","Dummy", {"nodeMove":{"x":0.0, "y":0.1, "z":-0.25}}],
+	["AgentJ_Dummy_passenger_roofchair","AgentJ_Dummy_passenger_roofchair","Dummy", {"nodeMove":{"x":0.0, "y":0.1, "z":-0.25}}],
     ],
     "flexbodies": [
         ["mesh", "[group]:", "nonFlexMaterials"],

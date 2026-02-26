@@ -1,0 +1,103 @@
+{
+"AgentJ_Dummy3_arm_L_sit": {
+    "information":{
+        "name":"Left Arm",
+        "authors":"AgentJ",
+
+    },
+    "slotType":"AgentJ_Dummy3_arm_L",
+    
+     "flexbodies": [
+        ["mesh", "[group]:", "nonFlexMaterials"],
+        ["AgentJ_Dummy_upperarm_l",		["agentj_Dummy3_upperarm_L"],[]{"pos":{"x":0,"y":"$=$aDummy3scale*-1.30","z":"$=$aDummy3scale*0.86"},"rot":{"x":-70, "y":0,"z":0},"scale":{"x":"$aDummy3scale", "y":"$aDummy3scale", "z":"$aDummy3scale"}}],
+		["AgentJ_Dummy_forearm_l", 		["agentj_Dummy3_forearm_L"], []{"pos":{"x":0,"y":"$=$aDummy3scale*-1.36","z":"$=$aDummy3scale*1.47"},"rot":{"x":-100,"y":0,"z":0},"scale":{"x":"$aDummy3scale", "y":"$aDummy3scale", "z":"$aDummy3scale"}}],
+		["AgentJ_Dummy_armconnector_l", ["agentj_Dummy3_upperarm_L"],[]{"pos":{"x":0,"y":"$=$aDummy3scale*-1.30","z":"$=$aDummy3scale*0.86"},"rot":{"x":-70, "y":0,"z":0},"scale":{"x":"$aDummy3scale", "y":"$aDummy3scale", "z":"$aDummy3scale"}}],
+		["AgentJ_Dummy_wrist_l",  		["agentj_Dummy3_forearm_L"], []{"pos":{"x":0,"y":"$=$aDummy3scale*-1.36","z":"$=$aDummy3scale*1.47"},"rot":{"x":-100,"y":0,"z":0},"scale":{"x":"$aDummy3scale", "y":"$aDummy3scale", "z":"$aDummy3scale"}}],
+		["AgentJ_Dummy_fingers_l", 		["agentj_Dummy3_fingers_L"], []{"pos":{"x":0,"y":"$=$aDummy3scale*-1.36","z":"$=$aDummy3scale*1.47"},"rot":{"x":-100,"y":0,"z":0},"scale":{"x":"$aDummy3scale", "y":"$aDummy3scale", "z":"$aDummy3scale"}}],
+    ],
+	
+     "nodes": [
+       		["id", "posX", "posY", "posZ"],
+
+		{"nodeMaterial":"|NM_PLASTIC"},
+        	{"frictionCoef":0.5},
+        	{"collision":true},
+		{"selfCollision":false},
+
+		//--LEFT UPPER ARM--
+        	{"group":"agentj_Dummy3_upperarm_L"},
+		//4.03kg -> 0.50375 kg/node
+		{"nodeWeight":"$=$aDummy3weight*0.50375"},
+     	
+		["Dummy3_L_upperarm1","$=$aDummy3scale*0.14","$=$aDummy3scale*0.01","$=$aDummy3scale*1.38"],
+		{"selfCollision":true},	
+		["Dummy3_L_upperarm2", "$=$aDummy3scale*0.25", "$=$aDummy3scale*0.02", "$=$aDummy3scale*1.44"],
+		["Dummy3_L_upperarm3", "$=$aDummy3scale*0.25", "$=$aDummy3scale*0.06", "$=$aDummy3scale*1.36"],	
+		{"selfCollision":false},
+		["Dummy3_L_upperarm4", "$=$aDummy3scale*0.25", "$=$aDummy3scale*-0.18", "$=$aDummy3scale*1.27"],
+		{"selfCollision":true},	
+		
+		
+		//--LEFT FOREARM--
+        	{"group":"agentj_Dummy3_forearm_L"},
+		//2.3188kg -> 0.2895 kg/node
+		{"nodeWeight":"$=$aDummy3weight*0.2895"},
+		
+		["Dummy3_L_forearm1","$=$aDummy3scale*0.33", "$=$aDummy3scale*-0.18", "$=$aDummy3scale*1.27",{"group":""}],
+		["Dummy3_L_forearm2","$=$aDummy3scale*0.18", "$=$aDummy3scale*-0.18", "$=$aDummy3scale*1.27"],			
+		{"selfCollision":false},
+		["Dummy3_L_forearm3","$=$aDummy3scale*0.27", "$=$aDummy3scale*-0.46", "$=$aDummy3scale*1.32"],
+		//limiter + flexbody help + rigidifier
+		{"collision":false},
+		["Dummy3_L_forearm4","$=$aDummy3scale*0.26", "$=$aDummy3scale*-0.30", "$=$aDummy3scale*1.20"],
+		{"collision":true},
+		{"selfCollision":true},
+	
+		//--LEFT HAND--
+        	{"group":"agentj_Dummy3_fingers_L"},
+
+		//0.806kg -> 0.13433 kg/node
+		{"nodeWeight":"$=$aDummy3weight*0.13433"},
+	
+		["Dummy3_L_hand1","$=$aDummy3scale*0.265", "$=$aDummy3scale*-0.450", "$=$aDummy3scale*1.270"],
+		["Dummy3_L_hand2","$=$aDummy3scale*0.275", "$=$aDummy3scale*-0.450", "$=$aDummy3scale*1.360"],
+		["Dummy3_L_hand3","$=$aDummy3scale*0.270", "$=$aDummy3scale*-0.635", "$=$aDummy3scale*1.330"],
+
+		{"group":""},
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+     	{"beamDeform": 500000, "beamStrength":"FLT_MAX"}, 
+        {"breakGroup":""},
+		
+	//--LEFT UPPER ARM--
+	{"beamSpring": "$=$aDummy3weight*1001000","beamDamp":"$=$aDummy3weight*10"},				
+	["Dummy3_L_upperarm1", "Dummy3_L_upperarm2"],
+	["Dummy3_L_upperarm1", "Dummy3_L_upperarm3"],
+	["Dummy3_L_upperarm1", "Dummy3_L_upperarm4"],
+	["Dummy3_L_upperarm2", "Dummy3_L_upperarm3"],
+	["Dummy3_L_upperarm2", "Dummy3_L_upperarm4"],
+	["Dummy3_L_upperarm3", "Dummy3_L_upperarm4"],
+
+	//--LEFT FOREARM--
+	{"beamSpring": "$=$aDummy3weight*601000","beamDamp":"$=$aDummy3weight*10"},
+	["Dummy3_L_forearm1", "Dummy3_L_forearm2"],
+	["Dummy3_L_forearm1", "Dummy3_L_forearm3"],
+	["Dummy3_L_forearm1", "Dummy3_L_forearm4"],
+	["Dummy3_L_forearm2", "Dummy3_L_forearm3"],
+	["Dummy3_L_forearm2", "Dummy3_L_forearm4"],
+	["Dummy3_L_forearm3", "Dummy3_L_forearm4"],
+
+	//--LEFT HAND--
+	{"beamSpring": "$=$aDummy3weight*301000","beamDamp":"$=$aDummy3weight*10"},
+	["Dummy3_L_hand1", "Dummy3_L_hand2"],
+	["Dummy3_L_hand2", "Dummy3_L_hand3"],
+	["Dummy3_L_hand3", "Dummy3_L_hand1"],
+
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+    ],
+    
+},
+
+}

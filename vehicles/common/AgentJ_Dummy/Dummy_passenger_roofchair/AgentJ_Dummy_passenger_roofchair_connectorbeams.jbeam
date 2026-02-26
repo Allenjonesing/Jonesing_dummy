@@ -1,0 +1,696 @@
+{
+"passenger_roofchair_Breakable_no": {
+    "information":{
+		"name":"No",
+		"authors":"AgentJ",
+    },
+	
+    "slotType":"AgentJ_Dummy_passenger_roofchair_breakable",
+    
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+     	{"beamDeform": 500000, "beamStrength":"FLT_MAX"}, 
+        
+		//thorax to abdomen
+		{"beamSpring": 50000,"beamDamp":50},
+		{"deformLimitExpansion":1.1}, 
+		{"breakGroup":"Dummy_passenger_roofchair_thoraxabdomen"},
+		
+		["Dummy_passenger_roofchair_thoraxtfl", "Dummy_passenger_roofchair_abdomentfl"],
+		["Dummy_passenger_roofchair_thoraxtfr", "Dummy_passenger_roofchair_abdomentfr"],
+		["Dummy_passenger_roofchair_thoraxmrl", "Dummy_passenger_roofchair_abdomentrl"],
+		["Dummy_passenger_roofchair_thoraxmrr", "Dummy_passenger_roofchair_abdomentrr"],
+		
+		["Dummy_passenger_roofchair_thoraxbfl", "Dummy_passenger_roofchair_abdomentfl"],
+		["Dummy_passenger_roofchair_thoraxbfr", "Dummy_passenger_roofchair_abdomentfr"],
+		["Dummy_passenger_roofchair_thoraxbrl", "Dummy_passenger_roofchair_abdomentrl"],
+		["Dummy_passenger_roofchair_thoraxbrr", "Dummy_passenger_roofchair_abdomentrr"],
+		
+		["Dummy_passenger_roofchair_thoraxmrr", "Dummy_passenger_roofchair_abdomentfl"],
+		["Dummy_passenger_roofchair_thoraxmrl", "Dummy_passenger_roofchair_abdomentfr"],
+		["Dummy_passenger_roofchair_thoraxmfr", "Dummy_passenger_roofchair_abdomentrl"],
+		["Dummy_passenger_roofchair_thoraxmfl", "Dummy_passenger_roofchair_abdomentrr"],
+		
+		["Dummy_passenger_roofchair_thoraxbrr", "Dummy_passenger_roofchair_abdomentfl"],
+		["Dummy_passenger_roofchair_thoraxbrl", "Dummy_passenger_roofchair_abdomentfr"],
+		["Dummy_passenger_roofchair_thoraxbfr", "Dummy_passenger_roofchair_abdomentrl"],
+		["Dummy_passenger_roofchair_thoraxbfl", "Dummy_passenger_roofchair_abdomentrr"],
+
+		
+		//pelvis to abdomen
+		{"beamSpring": 50000,"beamDamp":50},
+		{"deformLimitExpansion":1.1}, 
+		{"breakGroup":"Dummy_passenger_roofchair_pelvisabdomen"},
+		
+		["Dummy_passenger_roofchair_pelvismfl", "Dummy_passenger_roofchair_abdomenbfl"],
+		["Dummy_passenger_roofchair_pelvismfr", "Dummy_passenger_roofchair_abdomenbfr"],
+		["Dummy_passenger_roofchair_pelvismrl", "Dummy_passenger_roofchair_abdomenbrl"],
+		["Dummy_passenger_roofchair_pelvismrr", "Dummy_passenger_roofchair_abdomenbrr"],
+		
+		["Dummy_passenger_roofchair_pelvistfl", "Dummy_passenger_roofchair_abdomenbfl"],
+		["Dummy_passenger_roofchair_pelvistfr", "Dummy_passenger_roofchair_abdomenbfr"],
+		["Dummy_passenger_roofchair_pelvistrl", "Dummy_passenger_roofchair_abdomenbrl"],
+		["Dummy_passenger_roofchair_pelvistrr", "Dummy_passenger_roofchair_abdomenbrr"],
+		
+		["Dummy_passenger_roofchair_pelvismrr", "Dummy_passenger_roofchair_abdomenbfl"],
+		["Dummy_passenger_roofchair_pelvismrl", "Dummy_passenger_roofchair_abdomenbfr"],
+		["Dummy_passenger_roofchair_pelvismfr", "Dummy_passenger_roofchair_abdomenbrl"],
+		["Dummy_passenger_roofchair_pelvismfl", "Dummy_passenger_roofchair_abdomenbrr"],
+		
+		["Dummy_passenger_roofchair_pelvistrr", "Dummy_passenger_roofchair_abdomenbfl"],
+		["Dummy_passenger_roofchair_pelvistrl", "Dummy_passenger_roofchair_abdomenbfr"],
+		["Dummy_passenger_roofchair_pelvistfr", "Dummy_passenger_roofchair_abdomenbrl"],
+		["Dummy_passenger_roofchair_pelvistfl", "Dummy_passenger_roofchair_abdomenbrr"],
+
+
+		//head to thorax
+		{"breakGroup":"Dummy_passenger_roofchair_headthorax"},
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.1}, 
+		["Dummy_passenger_roofchair_thoraxhead", "Dummy_passenger_roofchair_neckb"],
+		
+		{"beamSpring": 70000,"beamDamp":60},
+		["Dummy_passenger_roofchair_thoraxtfl", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxtfr", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxtrl", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxtrr", "Dummy_passenger_roofchair_neckb"],
+
+		["Dummy_passenger_roofchair_thoraxmfl", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxmfr", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxmrl", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxmrr", "Dummy_passenger_roofchair_neckb"],
+
+		{"beamSpring": 10000,"beamDamp":100},
+		["Dummy_passenger_roofchair_thoraxtfl", "Dummy_passenger_roofchair_headbfl"],
+		["Dummy_passenger_roofchair_thoraxtfr", "Dummy_passenger_roofchair_headbfr"],
+		["Dummy_passenger_roofchair_thoraxtrl", "Dummy_passenger_roofchair_headmrl"],
+		["Dummy_passenger_roofchair_thoraxtrr", "Dummy_passenger_roofchair_headmrr"],
+
+
+		//left thigh to pelvis
+		{"breakGroup":"Dummy_passenger_roofchair_L_thighpelvis"},
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.01}, 
+
+		["Dummy_passenger_roofchair_pelvismfl","Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismfr","Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismrl","Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismrr","Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvisbf", "Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvisbr", "Dummy_passenger_roofchair_L_thighpelvis"],
+
+		{"beamSpring": 50000,"beamDamp":50},
+		["Dummy_passenger_roofchair_pelvismfl", "Dummy_passenger_roofchair_L_thightfr"],
+		["Dummy_passenger_roofchair_pelvistfl", "Dummy_passenger_roofchair_L_thightfl"],
+
+
+		//right thigh to pelvis
+		{"breakGroup":"Dummy_passenger_roofchair_R_thighpelvis"},
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.01}, 
+
+		["Dummy_passenger_roofchair_pelvismfl","Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismfr","Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismrl","Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismrr","Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvisbf", "Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvisbr", "Dummy_passenger_roofchair_R_thighpelvis"],
+		
+		{"beamSpring": 50000,"beamDamp":50},
+		["Dummy_passenger_roofchair_pelvismfr", "Dummy_passenger_roofchair_R_thightfl"],
+		["Dummy_passenger_roofchair_pelvistfr", "Dummy_passenger_roofchair_R_thightfr"],
+		
+		
+		//left thigh to legshin
+		{"breakGroup":"Dummy_passenger_roofchair_L_thighlegshin"},
+		
+		{"beamSpring": 100000,"beamDamp":10},
+		{"deformLimitExpansion":1.005}, 		
+		["Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_thighbrr"],
+		["Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_thighbrl"],
+		["Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_thighbrr"],
+		["Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_thighbrl"],
+
+		["Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_thighmrl"],
+		["Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_thighmrl"],
+		
+		{"beamSpring": 1000,"beamDamp":10},
+		{"deformLimitExpansion":1.1}, 
+		["Dummy_passenger_roofchair_L_legshinmrr", "Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_legshinmfr", "Dummy_passenger_roofchair_L_thighmfr"],
+		["Dummy_passenger_roofchair_L_legshinmrl", "Dummy_passenger_roofchair_L_thighmrl"],
+		["Dummy_passenger_roofchair_L_legshinmfl", "Dummy_passenger_roofchair_L_thighmfl"],
+		
+		
+		//right thigh to legshin
+		{"breakGroup":"Dummy_passenger_roofchair_R_thighlegshin"},
+		
+		{"beamSpring": 50000,"beamDamp":10},
+		{"deformLimitExpansion":1.005},
+		["Dummy_passenger_roofchair_R_legshintipr", "Dummy_passenger_roofchair_R_thighbrr"],
+		["Dummy_passenger_roofchair_R_legshintipl", "Dummy_passenger_roofchair_R_thighbrl"],
+		["Dummy_passenger_roofchair_R_legshintipl", "Dummy_passenger_roofchair_R_thighbrr"],
+		["Dummy_passenger_roofchair_R_legshintipr", "Dummy_passenger_roofchair_R_thighbrl"],
+
+		["Dummy_passenger_roofchair_R_legshintipr", "Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_legshintipl", "Dummy_passenger_roofchair_R_thighmrl"],
+		["Dummy_passenger_roofchair_R_legshintipl", "Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_legshintipr", "Dummy_passenger_roofchair_R_thighmrl"],
+		
+		{"beamSpring": 5000,"beamDamp":10},
+		{"deformLimitExpansion":1.1}, 
+		["Dummy_passenger_roofchair_R_legshinmrr", "Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_legshinmfr", "Dummy_passenger_roofchair_R_thighmfr"],
+		["Dummy_passenger_roofchair_R_legshinmrl", "Dummy_passenger_roofchair_R_thighmrl"],
+		["Dummy_passenger_roofchair_R_legshinmfl", "Dummy_passenger_roofchair_R_thighmfl"],
+		
+		
+		//left foot to leg
+		{"breakGroup":"Dummy_passenger_roofchair_L_footleg"},
+		
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.01}, 
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_foottfr"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_foottfl"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_foottrl"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_foottrr"],
+		
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_footbfr"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_footbfl"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_footbml"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_footbmr"],
+		
+		{"beamSpring": 50000,"beamDamp":100},
+		{"deformLimitExpansion":1.1}, 
+		["Dummy_passenger_roofchair_L_legshinbfr", "Dummy_passenger_roofchair_L_foottfr"],
+		["Dummy_passenger_roofchair_L_legshinbfl", "Dummy_passenger_roofchair_L_foottfl"],
+		["Dummy_passenger_roofchair_L_legshinbrl", "Dummy_passenger_roofchair_L_foottrl"],
+		["Dummy_passenger_roofchair_L_legshinbrr", "Dummy_passenger_roofchair_L_foottrr"],
+		
+		
+		//right foot to leg
+		{"breakGroup":"Dummy_passenger_roofchair_R_footleg"},
+		
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.01}, 
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_foottfr"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_foottfl"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_foottrl"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_foottrr"],
+		
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_footbfr"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_footbfl"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_footbml"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_footbmr"],
+		
+		{"beamSpring": 50000,"beamDamp":100},
+		{"deformLimitExpansion":1.1},
+		["Dummy_passenger_roofchair_R_legshinbfr", "Dummy_passenger_roofchair_R_foottfr"],
+		["Dummy_passenger_roofchair_R_legshinbfl", "Dummy_passenger_roofchair_R_foottfl"],
+		["Dummy_passenger_roofchair_R_legshinbrl", "Dummy_passenger_roofchair_R_foottrl"],
+		["Dummy_passenger_roofchair_R_legshinbrr", "Dummy_passenger_roofchair_R_foottrr"],
+		
+
+		//left arm to thorax
+		{"breakGroup":"Dummy_passenger_roofchair_L_armthorax"},		
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.1}, 
+		["Dummy_passenger_roofchair_L_upperarmthorax","Dummy_passenger_roofchair_thoraxarml"],
+
+		["Dummy_passenger_roofchair_L_upperarmthorax", "Dummy_passenger_roofchair_thoraxtfl"],
+		["Dummy_passenger_roofchair_L_upperarmthorax", "Dummy_passenger_roofchair_thoraxtrl"],
+		["Dummy_passenger_roofchair_L_upperarmthorax", "Dummy_passenger_roofchair_thoraxmfl"],
+		["Dummy_passenger_roofchair_L_upperarmthorax", "Dummy_passenger_roofchair_thoraxmrl"],
+
+		["Dummy_passenger_roofchair_L_upperarmtfl","Dummy_passenger_roofchair_thoraxarml"],
+		["Dummy_passenger_roofchair_L_upperarmtfr","Dummy_passenger_roofchair_thoraxarml"],
+		["Dummy_passenger_roofchair_L_upperarmtrl","Dummy_passenger_roofchair_thoraxarml"],
+		["Dummy_passenger_roofchair_L_upperarmtrr","Dummy_passenger_roofchair_thoraxarml"],
+
+
+		//left arm to forearm
+		{"breakGroup":"Dummy_passenger_roofchair_L_armforearm"},
+		
+		{"beamSpring": 50000,"beamDamp":10},
+		{"deformLimitExpansion":1.001}, 		
+		["Dummy_passenger_roofchair_L_forearmtipr","Dummy_passenger_roofchair_L_upperarmbfr"],
+		["Dummy_passenger_roofchair_L_forearmtipl","Dummy_passenger_roofchair_L_upperarmbfl"],
+		["Dummy_passenger_roofchair_L_forearmtipl","Dummy_passenger_roofchair_L_upperarmbfr"],
+		["Dummy_passenger_roofchair_L_forearmtipr","Dummy_passenger_roofchair_L_upperarmbfl"],
+
+		["Dummy_passenger_roofchair_L_forearmtipr","Dummy_passenger_roofchair_L_upperarmmrr"],
+		["Dummy_passenger_roofchair_L_forearmtipl","Dummy_passenger_roofchair_L_upperarmmrl"],
+		["Dummy_passenger_roofchair_L_forearmtipl","Dummy_passenger_roofchair_L_upperarmmrr"],
+		["Dummy_passenger_roofchair_L_forearmtipr","Dummy_passenger_roofchair_L_upperarmmrl"],
+		
+		{"beamSpring": 1000,"beamDamp":10},
+		{"deformLimitExpansion":1.05}, 
+		["Dummy_passenger_roofchair_L_forearmmrr", "Dummy_passenger_roofchair_L_upperarmmrr"],
+		["Dummy_passenger_roofchair_L_forearmmfr", "Dummy_passenger_roofchair_L_upperarmmfr"],
+		["Dummy_passenger_roofchair_L_forearmmrl", "Dummy_passenger_roofchair_L_upperarmmrl"],
+		["Dummy_passenger_roofchair_L_forearmmfl", "Dummy_passenger_roofchair_L_upperarmmfl"],
+		
+		
+		//left hand to arm
+		{"breakGroup":"Dummy_passenger_roofchair_L_handarm"},
+		{"beamSpring": 50000,"beamDamp":10},
+		{"deformLimitExpansion":1.001}, 	
+		
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handtrr"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handtrl"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handtfr"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handtfl"],
+		
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handbrr"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handbrl"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handbfr"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handbfl"],
+		
+		{"beamSpring": 1000,"beamDamp":10},
+		{"deformLimitExpansion":1.05}, 		
+		["Dummy_passenger_roofchair_L_forearmbrr", "Dummy_passenger_roofchair_L_handtrr"],
+		["Dummy_passenger_roofchair_L_forearmbrl", "Dummy_passenger_roofchair_L_handtrl"],
+		["Dummy_passenger_roofchair_L_forearmbfr", "Dummy_passenger_roofchair_L_handtfr"],
+		["Dummy_passenger_roofchair_L_forearmbfl", "Dummy_passenger_roofchair_L_handtfl"],
+		
+		
+		//right arm to thorax
+		{"breakGroup":"Dummy_passenger_roofchair_R_armthorax"},		
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.1},
+		["Dummy_passenger_roofchair_R_upperarmthorax","Dummy_passenger_roofchair_thoraxarmr"],
+
+		["Dummy_passenger_roofchair_R_upperarmthorax", "Dummy_passenger_roofchair_thoraxtfr"],
+		["Dummy_passenger_roofchair_R_upperarmthorax", "Dummy_passenger_roofchair_thoraxtrr"],
+		["Dummy_passenger_roofchair_R_upperarmthorax", "Dummy_passenger_roofchair_thoraxmfr"],
+		["Dummy_passenger_roofchair_R_upperarmthorax", "Dummy_passenger_roofchair_thoraxmrr"],
+
+		["Dummy_passenger_roofchair_R_upperarmtfl","Dummy_passenger_roofchair_thoraxarmr"],
+		["Dummy_passenger_roofchair_R_upperarmtfr","Dummy_passenger_roofchair_thoraxarmr"],
+		["Dummy_passenger_roofchair_R_upperarmtrl","Dummy_passenger_roofchair_thoraxarmr"],
+		["Dummy_passenger_roofchair_R_upperarmtrr","Dummy_passenger_roofchair_thoraxarmr"],
+
+
+		//right arm to forearm
+		{"breakGroup":"Dummy_passenger_roofchair_R_armforearm"},
+		
+		{"beamSpring": 50000,"beamDamp":10},
+		{"deformLimitExpansion":1.001}, 		
+		["Dummy_passenger_roofchair_R_forearmtipr","Dummy_passenger_roofchair_R_upperarmbfr"],
+		["Dummy_passenger_roofchair_R_forearmtipl","Dummy_passenger_roofchair_R_upperarmbfl"],
+		["Dummy_passenger_roofchair_R_forearmtipl","Dummy_passenger_roofchair_R_upperarmbfr"],
+		["Dummy_passenger_roofchair_R_forearmtipr","Dummy_passenger_roofchair_R_upperarmbfl"],
+
+		["Dummy_passenger_roofchair_R_forearmtipr","Dummy_passenger_roofchair_R_upperarmmrr"],
+		["Dummy_passenger_roofchair_R_forearmtipl","Dummy_passenger_roofchair_R_upperarmmrl"],
+		["Dummy_passenger_roofchair_R_forearmtipl","Dummy_passenger_roofchair_R_upperarmmrr"],
+		["Dummy_passenger_roofchair_R_forearmtipr","Dummy_passenger_roofchair_R_upperarmmrl"],
+		
+		{"beamSpring": 1000,"beamDamp":10},
+		{"deformLimitExpansion":1.05}, 
+		["Dummy_passenger_roofchair_R_forearmmrr", "Dummy_passenger_roofchair_R_upperarmmrr"],
+		["Dummy_passenger_roofchair_R_forearmmfr", "Dummy_passenger_roofchair_R_upperarmmfr"],
+		["Dummy_passenger_roofchair_R_forearmmrl", "Dummy_passenger_roofchair_R_upperarmmrl"],
+		["Dummy_passenger_roofchair_R_forearmmfl", "Dummy_passenger_roofchair_R_upperarmmfl"],
+		
+		
+		//right hand to arm
+		{"breakGroup":"Dummy_passenger_roofchair_R_handarm"},
+		{"beamSpring": 50000,"beamDamp":10},
+		{"deformLimitExpansion":1.001}, 	
+		
+		["Dummy_passenger_roofchair_R_forearmhand", "Dummy_passenger_roofchair_R_handtrr"],
+		["Dummy_passenger_roofchair_R_forearmhand", "Dummy_passenger_roofchair_R_handtrl"],
+		["Dummy_passenger_roofchair_R_forearmhand", "Dummy_passenger_roofchair_R_handtfr"],
+		["Dummy_passenger_roofchair_R_forearmhand", "Dummy_passenger_roofchair_R_handtfl"],
+		
+		["Dummy_passenger_roofchair_R_forearmhand", "Dummy_passenger_roofchair_R_handbrr"],
+		["Dummy_passenger_roofchair_R_forearmhand", "Dummy_passenger_roofchair_R_handbrl"],
+		["Dummy_passenger_roofchair_R_forearmhand", "Dummy_passenger_roofchair_R_handbfr"],
+		["Dummy_passenger_roofchair_R_forearmhand", "Dummy_passenger_roofchair_R_handbfl"],
+		
+		{"beamSpring": 1000,"beamDamp":10},
+		{"deformLimitExpansion":1.05}, 		
+		["Dummy_passenger_roofchair_R_forearmbrr", "Dummy_passenger_roofchair_R_handtrr"],
+		["Dummy_passenger_roofchair_R_forearmbrl", "Dummy_passenger_roofchair_R_handtrl"],
+		["Dummy_passenger_roofchair_R_forearmbfr", "Dummy_passenger_roofchair_R_handtfr"],
+		["Dummy_passenger_roofchair_R_forearmbfl", "Dummy_passenger_roofchair_R_handtfl"],
+		
+		{"breakGroup":""},
+    ],
+    
+},
+
+"passenger_roofchair_Breakable_yes": {
+    "information":{
+        "name":"Yes",
+        "authors":"AgentJ",
+    },
+	
+    "slotType":"AgentJ_Dummy_passenger_roofchair_breakable",
+    "variables": [
+        ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+        ["$aDummy_passenger_roofchairstrength", "range", "N", "Roof Dummy", 6700, 0, 10000, "Dummy Strength", "Min force needed to break off part of the dummy", {"stepDis":100,"subCategory":"Strength"}],
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+     	{"beamDeform": 500000, "beamStrength":"$aDummy_passenger_roofchairstrength"}, 
+        
+		//thorax to abdomen
+		{"beamSpring": 50000,"beamDamp":50},
+		{"deformLimitExpansion":1.1}, 
+		{"breakGroup":"Dummy_passenger_roofchair_thoraxabdomen"},
+		
+		["Dummy_passenger_roofchair_thoraxtfl", "Dummy_passenger_roofchair_abdomentfl"],
+		["Dummy_passenger_roofchair_thoraxtfr", "Dummy_passenger_roofchair_abdomentfr"],
+		["Dummy_passenger_roofchair_thoraxmrl", "Dummy_passenger_roofchair_abdomentrl"],
+		["Dummy_passenger_roofchair_thoraxmrr", "Dummy_passenger_roofchair_abdomentrr"],
+		
+		["Dummy_passenger_roofchair_thoraxbfl", "Dummy_passenger_roofchair_abdomentfl"],
+		["Dummy_passenger_roofchair_thoraxbfr", "Dummy_passenger_roofchair_abdomentfr"],
+		["Dummy_passenger_roofchair_thoraxbrl", "Dummy_passenger_roofchair_abdomentrl"],
+		["Dummy_passenger_roofchair_thoraxbrr", "Dummy_passenger_roofchair_abdomentrr"],
+		
+		["Dummy_passenger_roofchair_thoraxmrr", "Dummy_passenger_roofchair_abdomentfl"],
+		["Dummy_passenger_roofchair_thoraxmrl", "Dummy_passenger_roofchair_abdomentfr"],
+		["Dummy_passenger_roofchair_thoraxmfr", "Dummy_passenger_roofchair_abdomentrl"],
+		["Dummy_passenger_roofchair_thoraxmfl", "Dummy_passenger_roofchair_abdomentrr"],
+		
+		["Dummy_passenger_roofchair_thoraxbrr", "Dummy_passenger_roofchair_abdomentfl"],
+		["Dummy_passenger_roofchair_thoraxbrl", "Dummy_passenger_roofchair_abdomentfr"],
+		["Dummy_passenger_roofchair_thoraxbfr", "Dummy_passenger_roofchair_abdomentrl"],
+		["Dummy_passenger_roofchair_thoraxbfl", "Dummy_passenger_roofchair_abdomentrr"],
+
+		
+		//pelvis to abdomen
+		{"beamSpring": 50000,"beamDamp":50},
+		{"deformLimitExpansion":1.1}, 
+		{"breakGroup":"Dummy_passenger_roofchair_pelvisabdomen"},
+		
+		["Dummy_passenger_roofchair_pelvismfl", "Dummy_passenger_roofchair_abdomenbfl"],
+		["Dummy_passenger_roofchair_pelvismfr", "Dummy_passenger_roofchair_abdomenbfr"],
+		["Dummy_passenger_roofchair_pelvismrl", "Dummy_passenger_roofchair_abdomenbrl"],
+		["Dummy_passenger_roofchair_pelvismrr", "Dummy_passenger_roofchair_abdomenbrr"],
+		
+		["Dummy_passenger_roofchair_pelvistfl", "Dummy_passenger_roofchair_abdomenbfl"],
+		["Dummy_passenger_roofchair_pelvistfr", "Dummy_passenger_roofchair_abdomenbfr"],
+		["Dummy_passenger_roofchair_pelvistrl", "Dummy_passenger_roofchair_abdomenbrl"],
+		["Dummy_passenger_roofchair_pelvistrr", "Dummy_passenger_roofchair_abdomenbrr"],
+		
+		["Dummy_passenger_roofchair_pelvismrr", "Dummy_passenger_roofchair_abdomenbfl"],
+		["Dummy_passenger_roofchair_pelvismrl", "Dummy_passenger_roofchair_abdomenbfr"],
+		["Dummy_passenger_roofchair_pelvismfr", "Dummy_passenger_roofchair_abdomenbrl"],
+		["Dummy_passenger_roofchair_pelvismfl", "Dummy_passenger_roofchair_abdomenbrr"],
+		
+		["Dummy_passenger_roofchair_pelvistrr", "Dummy_passenger_roofchair_abdomenbfl"],
+		["Dummy_passenger_roofchair_pelvistrl", "Dummy_passenger_roofchair_abdomenbfr"],
+		["Dummy_passenger_roofchair_pelvistfr", "Dummy_passenger_roofchair_abdomenbrl"],
+		["Dummy_passenger_roofchair_pelvistfl", "Dummy_passenger_roofchair_abdomenbrr"],
+
+
+		//head to thorax
+		{"breakGroup":"Dummy_passenger_roofchair_headthorax"},
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.1}, 
+		["Dummy_passenger_roofchair_thoraxhead", "Dummy_passenger_roofchair_neckb"],
+		
+		{"beamSpring": 70000,"beamDamp":60},
+		["Dummy_passenger_roofchair_thoraxtfl", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxtfr", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxtrl", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxtrr", "Dummy_passenger_roofchair_neckb"],
+
+		["Dummy_passenger_roofchair_thoraxmfl", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxmfr", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxmrl", "Dummy_passenger_roofchair_neckb"],
+		["Dummy_passenger_roofchair_thoraxmrr", "Dummy_passenger_roofchair_neckb"],
+
+		{"beamSpring": 10000,"beamDamp":100},
+		["Dummy_passenger_roofchair_thoraxtfl", "Dummy_passenger_roofchair_headbfl"],
+		["Dummy_passenger_roofchair_thoraxtfr", "Dummy_passenger_roofchair_headbfr"],
+		["Dummy_passenger_roofchair_thoraxtrl", "Dummy_passenger_roofchair_headmrl"],
+		["Dummy_passenger_roofchair_thoraxtrr", "Dummy_passenger_roofchair_headmrr"],
+
+
+		//left thigh to pelvis
+		{"breakGroup":"Dummy_passenger_roofchair_L_thighpelvis"},
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.01}, 
+
+		["Dummy_passenger_roofchair_pelvismfl","Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismfr","Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismrl","Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismrr","Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvisbf", "Dummy_passenger_roofchair_L_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvisbr", "Dummy_passenger_roofchair_L_thighpelvis"],
+
+		{"beamSpring": 50000,"beamDamp":50},
+		["Dummy_passenger_roofchair_pelvismfl", "Dummy_passenger_roofchair_L_thightfr"],
+		["Dummy_passenger_roofchair_pelvistfl", "Dummy_passenger_roofchair_L_thightfl"],
+
+
+		//right thigh to pelvis
+		{"breakGroup":"Dummy_passenger_roofchair_R_thighpelvis"},
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.01}, 
+
+		["Dummy_passenger_roofchair_pelvismfl","Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismfr","Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismrl","Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvismrr","Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvisbf", "Dummy_passenger_roofchair_R_thighpelvis"],
+		["Dummy_passenger_roofchair_pelvisbr", "Dummy_passenger_roofchair_R_thighpelvis"],
+		
+		{"beamSpring": 50000,"beamDamp":50},
+		["Dummy_passenger_roofchair_pelvismfr", "Dummy_passenger_roofchair_R_thightfl"],
+		["Dummy_passenger_roofchair_pelvistfr", "Dummy_passenger_roofchair_R_thightfr"],
+		
+		
+		//left thigh to legshin
+		{"breakGroup":"Dummy_passenger_roofchair_L_thighlegshin"},
+		
+		{"beamSpring": 100000,"beamDamp":10},
+		{"deformLimitExpansion":1.005}, 		
+		["Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_thighbrr"],
+		["Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_thighbrl"],
+		["Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_thighbrr"],
+		["Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_thighbrl"],
+
+		["Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_thighmrl"],
+		["Dummy_passenger_roofchair_L_legshintipl","Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_legshintipr","Dummy_passenger_roofchair_L_thighmrl"],
+		
+		{"beamSpring": 1000,"beamDamp":10},
+		{"deformLimitExpansion":1.1}, 
+		["Dummy_passenger_roofchair_L_legshinmrr", "Dummy_passenger_roofchair_L_thighmrr"],
+		["Dummy_passenger_roofchair_L_legshinmfr", "Dummy_passenger_roofchair_L_thighmfr"],
+		["Dummy_passenger_roofchair_L_legshinmrl", "Dummy_passenger_roofchair_L_thighmrl"],
+		["Dummy_passenger_roofchair_L_legshinmfl", "Dummy_passenger_roofchair_L_thighmfl"],
+		
+		
+		//right thigh to legshin
+		{"breakGroup":"Dummy_passenger_roofchair_R_thighlegshin"},
+		
+		{"beamSpring": 50000,"beamDamp":10},
+		{"deformLimitExpansion":1.005},
+		["Dummy_passenger_roofchair_R_legshintipr", "Dummy_passenger_roofchair_R_thighbrr"],
+		["Dummy_passenger_roofchair_R_legshintipl", "Dummy_passenger_roofchair_R_thighbrl"],
+		["Dummy_passenger_roofchair_R_legshintipl", "Dummy_passenger_roofchair_R_thighbrr"],
+		["Dummy_passenger_roofchair_R_legshintipr", "Dummy_passenger_roofchair_R_thighbrl"],
+
+		["Dummy_passenger_roofchair_R_legshintipr", "Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_legshintipl", "Dummy_passenger_roofchair_R_thighmrl"],
+		["Dummy_passenger_roofchair_R_legshintipl", "Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_legshintipr", "Dummy_passenger_roofchair_R_thighmrl"],
+		
+		{"beamSpring": 5000,"beamDamp":10},
+		{"deformLimitExpansion":1.1}, 
+		["Dummy_passenger_roofchair_R_legshinmrr", "Dummy_passenger_roofchair_R_thighmrr"],
+		["Dummy_passenger_roofchair_R_legshinmfr", "Dummy_passenger_roofchair_R_thighmfr"],
+		["Dummy_passenger_roofchair_R_legshinmrl", "Dummy_passenger_roofchair_R_thighmrl"],
+		["Dummy_passenger_roofchair_R_legshinmfl", "Dummy_passenger_roofchair_R_thighmfl"],
+		
+		
+		//left foot to leg
+		{"breakGroup":"Dummy_passenger_roofchair_L_footleg"},
+		
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.01}, 
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_foottfr"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_foottfl"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_foottrl"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_foottrr"],
+		
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_footbfr"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_footbfl"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_footbml"],
+		["Dummy_passenger_roofchair_L_legshinfoot","Dummy_passenger_roofchair_L_footbmr"],
+		
+		{"beamSpring": 50000,"beamDamp":100},
+		{"deformLimitExpansion":1.1}, 
+		["Dummy_passenger_roofchair_L_legshinbfr", "Dummy_passenger_roofchair_L_foottfr"],
+		["Dummy_passenger_roofchair_L_legshinbfl", "Dummy_passenger_roofchair_L_foottfl"],
+		["Dummy_passenger_roofchair_L_legshinbrl", "Dummy_passenger_roofchair_L_foottrl"],
+		["Dummy_passenger_roofchair_L_legshinbrr", "Dummy_passenger_roofchair_L_foottrr"],
+		
+		
+		//right foot to leg
+		{"breakGroup":"Dummy_passenger_roofchair_R_footleg"},
+		
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.01}, 
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_foottfr"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_foottfl"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_foottrl"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_foottrr"],
+		
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_footbfr"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_footbfl"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_footbml"],
+		["Dummy_passenger_roofchair_R_legshinfoot","Dummy_passenger_roofchair_R_footbmr"],
+		
+		{"beamSpring": 50000,"beamDamp":100},
+		{"deformLimitExpansion":1.1},
+		["Dummy_passenger_roofchair_R_legshinbfr", "Dummy_passenger_roofchair_R_foottfr"],
+		["Dummy_passenger_roofchair_R_legshinbfl", "Dummy_passenger_roofchair_R_foottfl"],
+		["Dummy_passenger_roofchair_R_legshinbrl", "Dummy_passenger_roofchair_R_foottrl"],
+		["Dummy_passenger_roofchair_R_legshinbrr", "Dummy_passenger_roofchair_R_foottrr"],
+		
+
+		//left arm to thorax
+		{"breakGroup":"Dummy_passenger_roofchair_L_armthorax"},		
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.1}, 
+		["Dummy_passenger_roofchair_L_upperarmthorax","Dummy_passenger_roofchair_thoraxarml"],
+
+		["Dummy_passenger_roofchair_L_upperarmthorax", "Dummy_passenger_roofchair_thoraxtfl"],
+		["Dummy_passenger_roofchair_L_upperarmthorax", "Dummy_passenger_roofchair_thoraxtrl"],
+		["Dummy_passenger_roofchair_L_upperarmthorax", "Dummy_passenger_roofchair_thoraxmfl"],
+		["Dummy_passenger_roofchair_L_upperarmthorax", "Dummy_passenger_roofchair_thoraxmrl"],
+
+		["Dummy_passenger_roofchair_L_upperarmtfl","Dummy_passenger_roofchair_thoraxarml"],
+		["Dummy_passenger_roofchair_L_upperarmtfr","Dummy_passenger_roofchair_thoraxarml"],
+		["Dummy_passenger_roofchair_L_upperarmtrl","Dummy_passenger_roofchair_thoraxarml"],
+		["Dummy_passenger_roofchair_L_upperarmtrr","Dummy_passenger_roofchair_thoraxarml"],
+
+
+		//left arm to forearm
+		{"breakGroup":"Dummy_passenger_roofchair_L_armforearm"},
+		
+		{"beamSpring": 50000,"beamDamp":10},
+		{"deformLimitExpansion":1.001}, 		
+		["Dummy_passenger_roofchair_L_forearmtipr","Dummy_passenger_roofchair_L_upperarmbfr"],
+		["Dummy_passenger_roofchair_L_forearmtipl","Dummy_passenger_roofchair_L_upperarmbfl"],
+		["Dummy_passenger_roofchair_L_forearmtipl","Dummy_passenger_roofchair_L_upperarmbfr"],
+		["Dummy_passenger_roofchair_L_forearmtipr","Dummy_passenger_roofchair_L_upperarmbfl"],
+
+		["Dummy_passenger_roofchair_L_forearmtipr","Dummy_passenger_roofchair_L_upperarmmrr"],
+		["Dummy_passenger_roofchair_L_forearmtipl","Dummy_passenger_roofchair_L_upperarmmrl"],
+		["Dummy_passenger_roofchair_L_forearmtipl","Dummy_passenger_roofchair_L_upperarmmrr"],
+		["Dummy_passenger_roofchair_L_forearmtipr","Dummy_passenger_roofchair_L_upperarmmrl"],
+		
+		{"beamSpring": 1000,"beamDamp":10},
+		{"deformLimitExpansion":1.05}, 
+		["Dummy_passenger_roofchair_L_forearmmrr", "Dummy_passenger_roofchair_L_upperarmmrr"],
+		["Dummy_passenger_roofchair_L_forearmmfr", "Dummy_passenger_roofchair_L_upperarmmfr"],
+		["Dummy_passenger_roofchair_L_forearmmrl", "Dummy_passenger_roofchair_L_upperarmmrl"],
+		["Dummy_passenger_roofchair_L_forearmmfl", "Dummy_passenger_roofchair_L_upperarmmfl"],
+		
+		
+		//left hand to arm
+		{"breakGroup":"Dummy_passenger_roofchair_L_handarm"},
+		{"beamSpring": 50000,"beamDamp":10},
+		{"deformLimitExpansion":1.001}, 	
+		
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handtrr"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handtrl"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handtfr"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handtfl"],
+		
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handbrr"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handbrl"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handbfr"],
+		["Dummy_passenger_roofchair_L_forearmhand", "Dummy_passenger_roofchair_L_handbfl"],
+		
+		{"beamSpring": 1000,"beamDamp":10},
+		{"deformLimitExpansion":1.05}, 		
+		["Dummy_passenger_roofchair_L_forearmbrr", "Dummy_passenger_roofchair_L_handtrr"],
+		["Dummy_passenger_roofchair_L_forearmbrl", "Dummy_passenger_roofchair_L_handtrl"],
+		["Dummy_passenger_roofchair_L_forearmbfr", "Dummy_passenger_roofchair_L_handtfr"],
+		["Dummy_passenger_roofchair_L_forearmbfl", "Dummy_passenger_roofchair_L_handtfl"],
+		
+		
+		//right arm to thorax
+		{"breakGroup":"Dummy_passenger_roofchair_R_armthorax"},		
+		{"beamSpring": 100000,"beamDamp":50},
+		{"deformLimitExpansion":1.1},
+		["Dummy_passenger_roofchair_R_upperarmthorax","Dummy_passenger_roofchair_thoraxarmr"],
+
+		["Dummy_passenger_roofchair_R_upperarmthorax", "Dummy_passenger_roofchair_thoraxtfr"],
+		["Dummy_passenger_roofchair_R_upperarmthorax", "Dummy_passenger_roofchair_thoraxtrr"],
+		["Dummy_passenger_roofchair_R_upperarmthorax", "Dummy_passenger_roofchair_thoraxmfr"],
+		["Dummy_passenger_roofchair_R_upperarmthorax", "Dummy_passenger_roofchair_thoraxmrr"],
+
+		["Dummy_passenger_roofchair_R_upperarmtfl","Dummy_passenger_roofchair_thoraxarmr"],
+		["Dummy_passenger_roofchair_R_upperarmtfr","Dummy_passenger_roofchair_thoraxarmr"],
+		["Dummy_passenger_roofchair_R_upperarmtrl","Dummy_passenger_roofchair_thoraxarmr"],
+		["Dummy_passenger_roofchair_R_upperarmtrr","Dummy_passenger_roofchair_thoraxarmr"],
+
+
+		//right arm to forearm
+		{"breakGroup":"Dummy_passenger_roofchair_R_armforearm"},
+		
+		{"beamSpring": 50000,"beamDamp":10},
+		{"deformLimitExpansion":1.001}, 		
+		["Dummy_passenger_roofchair_R_forearmtipr","Dummy_passenger_roofchair_R_upperarmbfr"],
+		["Dummy_passenger_roofchair_R_forearmtipl","Dummy_passenger_roofchair_R_upperarmbfl"],
+		["Dummy_passenger_roofchair_R_forearmtipl","Dummy_passenger_roofchair_R_upperarmbfr"],
+		["Dummy_passenger_roofchair_R_forearmtipr","Dummy_passenger_roofchair_R_upperarmbfl"],
+
+		["Dummy_passenger_roofchair_R_forearmtipr","Dummy_passenger_roofchair_R_upperarmmrr"],
+		["Dummy_passenger_roofchair_R_forearmtipl","Dummy_passenger_roofchair_R_upperarmmrl"],
+		["Dummy_passenger_roofchair_R_forearmtipl","Dummy_passenger_roofchair_R_upperarmmrr"],
+		["Dummy_passenger_roofchair_R_forearmtipr","Dummy_passenger_roofchair_R_upperarmmrl"],
+		
+		{"beamSpring": 1000,"beamDamp":10},
+		{"deformLimitExpansion":1.05}, 
+		["Dummy_passenger_roofchair_R_forearmmrr", "Dummy_passenger_roofchair_R_upperarmmrr"],
+		["Dummy_passenger_roofchair_R_forearmmfr", "Dummy_passenger_roofchair_R_upperarmmfr"],
+		["Dummy_passenger_roofchair_R_forearmmrl", "Dummy_passenger_roofchair_R_upperarmmrl"],
+		["Dummy_passenger_roofchair_R_forearmmfl", "Dummy_passenger_roofchair_R_upperarmmfl"],
+		
+		
+		//right hand to arm
+		{"breakGroup":"Dummy_passenger_roofchair_R_handarm"},
+		{"beamSpring": 50000,"beamDamp":10},
+		{"deformLimitExpansion":1.001}, 	
+		
+		["Dummy_passenger_roofchair_R_forearmhand","Dummy_passenger_roofchair_R_handtrr"],
+		["Dummy_passenger_roofchair_R_forearmhand","Dummy_passenger_roofchair_R_handtrl"],
+		["Dummy_passenger_roofchair_R_forearmhand","Dummy_passenger_roofchair_R_handtfr"],
+		["Dummy_passenger_roofchair_R_forearmhand","Dummy_passenger_roofchair_R_handtfl"],
+		
+		["Dummy_passenger_roofchair_R_forearmhand","Dummy_passenger_roofchair_R_handbrr"],
+		["Dummy_passenger_roofchair_R_forearmhand","Dummy_passenger_roofchair_R_handbrl"],
+		["Dummy_passenger_roofchair_R_forearmhand","Dummy_passenger_roofchair_R_handbfr"],
+		["Dummy_passenger_roofchair_R_forearmhand","Dummy_passenger_roofchair_R_handbfl"],
+		
+		{"beamSpring": 1000,"beamDamp":10},
+		{"deformLimitExpansion":1.05}, 		
+		["Dummy_passenger_roofchair_R_forearmbrr", "Dummy_passenger_roofchair_R_handtrr"],
+		["Dummy_passenger_roofchair_R_forearmbrl", "Dummy_passenger_roofchair_R_handtrl"],
+		["Dummy_passenger_roofchair_R_forearmbfr", "Dummy_passenger_roofchair_R_handtfr"],
+		["Dummy_passenger_roofchair_R_forearmbfl", "Dummy_passenger_roofchair_R_handtfl"],
+		
+		
+		{"breakGroup":""},
+    ],
+    
+},
+
+}

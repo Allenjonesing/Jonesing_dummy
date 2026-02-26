@@ -1,0 +1,77 @@
+{
+"AgentJ_Dummy4_collision_basic": {
+    "information":{
+        "name":"Basic (Use if can't fall off the car on mods)",
+        "authors":"AgentJ",
+    },
+    "slotType":"AgentJ_Dummy4_collision",
+    "triangles": [
+        ["id1:","id2:","id3:"],
+        {"groundModel":"plastic"},
+	{"dragCoef":0},
+		
+	//left thigh
+        {"group":"agentj_Dummy4_thigh_L"},
+	["Dummy4_L_thigh1", "Dummy4_L_thigh2", "Dummy4_L_thigh4"],
+	["Dummy4_L_thigh1", "Dummy4_L_thigh4", "Dummy4_L_thigh3"],
+	["Dummy4_L_thigh1", "Dummy4_L_thigh3", "Dummy4_L_thigh2"],
+	["Dummy4_L_thigh2", "Dummy4_L_thigh3", "Dummy4_L_thigh4"],
+
+	//right thigh
+        {"group":"agentj_Dummy4_thigh_R"},
+	["Dummy4_R_thigh1", "Dummy4_R_thigh4", "Dummy4_R_thigh2"],
+	["Dummy4_R_thigh1", "Dummy4_R_thigh3", "Dummy4_R_thigh4"],
+	["Dummy4_R_thigh1", "Dummy4_R_thigh2", "Dummy4_R_thigh3"],
+	["Dummy4_R_thigh2", "Dummy4_R_thigh4", "Dummy4_R_thigh3"],
+        
+	//left legshin
+        {"group":"agentj_Dummy4_legshin_L"},
+	["Dummy4_L_legshin1", "Dummy4_L_legshin3", "Dummy4_L_legshin2"],
+
+	//right legshin
+        {"group":"agentj_Dummy4_legshin_R"},
+	["Dummy4_R_legshin1", "Dummy4_R_legshin2", "Dummy4_R_legshin3"],
+
+	//left foot
+        {"group":"agentj_Dummy4_foot_L"},
+	["Dummy4_L_foot1", "Dummy4_L_foot2", "Dummy4_L_foot3"],
+
+	//right foot
+        {"group":"agentj_Dummy4_foot_R"},
+	["Dummy4_R_foot1", "Dummy4_R_foot3", "Dummy4_R_foot2"],
+
+	//left upperarm
+        {"group":"agentj_Dummy4_upperarm_L"},
+	["Dummy4_L_upperarm1", "Dummy4_L_upperarm4", "Dummy4_L_upperarm2"],
+	["Dummy4_L_upperarm1", "Dummy4_L_upperarm3", "Dummy4_L_upperarm4"],
+	["Dummy4_L_upperarm1", "Dummy4_L_upperarm2", "Dummy4_L_upperarm3"],
+	["Dummy4_L_upperarm2", "Dummy4_L_upperarm4", "Dummy4_L_upperarm3"],	
+      
+	//left forearm
+	{"group":"agentj_Dummy4_forearm_L"},
+  	["Dummy4_L_forearm1", "Dummy4_L_forearm3", "Dummy4_L_forearm2"],
+
+	//left hand
+	{"group":"agentj_Dummy4_hand_L"},
+  	["Dummy4_L_hand1", "Dummy4_L_hand2", "Dummy4_L_hand3"],
+
+	//right upperarm
+        {"group":"agentj_Dummy4_upperarm_R"},
+	["Dummy4_R_upperarm1", "Dummy4_R_upperarm2", "Dummy4_R_upperarm4"],
+	["Dummy4_R_upperarm1", "Dummy4_R_upperarm4", "Dummy4_R_upperarm3"],
+	["Dummy4_R_upperarm1", "Dummy4_R_upperarm3", "Dummy4_R_upperarm2"],
+	["Dummy4_R_upperarm2", "Dummy4_R_upperarm3", "Dummy4_R_upperarm4"],	
+      
+	//right forearm
+	{"group":"agentj_Dummy4_forearm_L"},
+  	["Dummy4_R_forearm1", "Dummy4_R_forearm2", "Dummy4_R_forearm3"],
+
+	//right hand
+	{"group":"agentj_Dummy4_hand_L"},
+  	["Dummy4_R_hand1", "Dummy4_R_hand3", "Dummy4_R_hand2"],
+
+	{"group":""},
+    ],
+},
+
+}

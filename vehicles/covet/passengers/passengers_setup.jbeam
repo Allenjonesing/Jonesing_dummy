@@ -1,10 +1,10 @@
 { //This file can be used to create your own automatic setup for a mod car.
-"agenty_dummy_mod_passengers_setup":{ //DO NOT CHANGE THE NAME
+"agentj_dummy_mod_passengers_setup":{ //DO NOT CHANGE THE NAME
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Ibishu Covet Setup (LHD)", //You can put the name of the car here
     }
-    "slotType" : "agenty_dummy_mod_passengers_setup", //DON'T CHANGE THIS
+    "slotType" : "agentj_dummy_mod_passengers_setup", //DON'T CHANGE THIS
 
     "variables": [ //Change the FIRST number ("default") in each variable into an appropriate offset in m
 
@@ -22,12 +22,12 @@
 
 },
 
-"agenty_dummy_mod_passengers_setup_alt":{
+"agentj_dummy_mod_passengers_setup_alt":{
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Ibishu Covet Setup (RHD)",
     }
-    "slotType" : "agenty_dummy_mod_passengers_setup",
+    "slotType" : "agentj_dummy_mod_passengers_setup",
 
     "variables": [
 

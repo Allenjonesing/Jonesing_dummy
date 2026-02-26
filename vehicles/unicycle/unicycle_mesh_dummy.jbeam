@@ -1,19 +1,19 @@
 {
 "unicycle_dummy": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Crash Test Dummy",
     },
     "slotType" : "unicycle_meshes",
     "slots": [
         ["type", "default", "description"],
 	["unicycle_dummy_animated_legs", "unicycle_dummy_animated_legs", "Animated Legs"],
-        ["AgentY_Dummy0_torso","AgentY_Dummy0_torso", "Body", {"coreSlot":true, "nodeMove":{"x":0,"y":0,"z":-0.2}}],
-	["AgentY_Dummy0_extras","", "Accessories", {"nodeMove":{"x":0,"y":0,"z":-0.2}}],
+        ["AgentJ_Dummy0_torso","AgentJ_Dummy0_torso", "Body", {"coreSlot":true, "nodeMove":{"x":0,"y":0,"z":-0.2}}],
+	["AgentJ_Dummy0_extras","", "Accessories", {"nodeMove":{"x":0,"y":0,"z":-0.2}}],
 	["skin_dummy","","Skin"],
         ["licenseplate_design_2_1","","Licenseplate Addon Slot"],
-        ["AgentY_Dummy_mod", "", "Additional Modification"],
-	["AgentY_Dummy_breakable", "Breakable_yes", "Breakable", {"coreSlot":true}],
+        ["AgentJ_Dummy_mod", "", "Additional Modification"],
+	["AgentJ_Dummy_breakable", "Breakable_yes", "Breakable", {"coreSlot":true}],
     ],
     "variables": [
         ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
@@ -121,7 +121,7 @@
 
 "unicycle_dummy_animated_legs": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Animated Legs",
     },
     "slotType" : "unicycle_dummy_animated_legs",

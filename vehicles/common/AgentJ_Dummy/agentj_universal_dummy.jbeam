@@ -1,0 +1,110 @@
+{
+"agentj_universal_dummy": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"AgentJ Universal Dummy Mod",
+    },
+    "slotType" : ["licenseplate_design_2_1", "agentj_jato_mod_dummyslot"],
+    "slots": [
+  ["type", "default", "description"],
+
+  ["agentj_dummy_mod_driver","agentj_dummy_mod_driver_dummy","Driver", {"nodeMove":{"x":"$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX or $cbpdriverOffsetX_setup",   "y":"$=case($cbpdriverOffsetY_setup == nil, $cbpdriverOffsetY, $cbpdriverOffsetY_setup)", "z":"$=case($cbpdriverOffsetZ_setup == nil, $cbpdriverOffsetZ, $cbpdriverOffsetZ_setup)"}}],
+  ["agentj_dummy_mod_passenger_F","","Front Passenger",      {"nodeMove":{"x":"$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX or -$cbpdriverOffsetX_setup", "y":"$=case($cbpdriverOffsetY_setup == nil, $cbpdriverOffsetY, $cbpdriverOffsetY_setup)", "z":"$=case($cbpdriverOffsetZ_setup == nil, $cbpdriverOffsetZ, $cbpdriverOffsetZ_setup)"}}],
+  ["agentj_dummy_mod_passengers_R","","Back Seat Passengers"],
+  ["agentj_dummy_mod_passengers_extra","","Extra Passengers"],
+
+  ["agentj_dummy_mod_passengers_setup","agentj_dummy_mod_passengers_setup","Positioning Setup - LEAVE DEFAULT FOR VANILLA CARS"],
+  ["agentj_dummy_mod_interior_setup","agentj_dummy_mod_interior_setup_lhd_alt","Interior Collision Setup"],
+  ["agentj_dummy_mod_intcollision_fix","","Fix Falling Through Seats"],
+  ["agentj_dummy_mod_seatbelts","","Seatbelts"],
+  ["agentj_dummy_mod_driver_hands_move","agentj_dummy_mod_driver_hands_move","Animated Hands"],
+  ["agentj_dummy_mod_passengers_mod","","Additional Modifications"],
+  ["agentj_dummy_mod_trunkload","","Trunk Load"],
+
+  ["agentj_dummy_mod_car_strength_setting","","Car Strength Settings"],
+
+  ["skin_dummy","","Dummy Skin"],
+  ["skin_dummyhead","","Dummy Head Skin"],
+  ["skin_stuntman_shirt","","Stuntman Shirt Skin"],
+  ["skin_stuntman_trousers","","Stuntman Trousers Skin"],
+  ["skin_stuntman_extras","","Stuntman Extras Skin"],
+  ["skin_stuntman_helmet","","Stuntman Helmet Skin"],
+
+  ["licenseplate_design_vanilla_duplicate","","License Plate Design"],
+
+  ["agentj_dummy_mod_jatoslot","","Universal JATO Mod"],
+    ],
+    "variables": [
+  ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+  ["$cbpdriverOffsetX", "range", "m", "Driver and Passengers",  0.35, -5, 5,  "Driver Position X", "Move the driver left or right",{"stepDis":0.001,"subCategory":"MANUAL OFFSET SETUP - USE THIS FOR MOD CARS"}],
+  ["$cbpdriverOffsetY", "range", "m", "Driver and Passengers",  0.10, -5, 5,  "Driver Position Y", "Move the driver front or back",{"stepDis":0.001,"subCategory":"MANUAL OFFSET SETUP - USE THIS FOR MOD CARS"}],
+  ["$cbpdriverOffsetZ", "range", "m", "Driver and Passengers", -0.30, -5, 5,  "Driver Position Z", "Move the driver up or down",   {"stepDis":0.001,"subCategory":"MANUAL OFFSET SETUP - USE THIS FOR MOD CARS"}],
+  ],
+},
+
+"agentj_dummy_mod_passengers_setup_auto_experimental": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"(REQUIRES CAR RESET AFTERWARDS) Auto Setup (EXPERIMENTAL - Not Editable)",
+    },
+    "slotType" : "agentj_dummy_mod_passengers_setup",
+    "controller": [
+        ["fileName"],
+        ["agentjDummyPositioner", {"mode":"Experimental"}],
+   ],
+},
+"agentj_dummy_mod_passengers_setup_auto_uimessage": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Setup Calculations - UI Message Will Show Recommended Tuning Values",
+    },
+    "slotType" : "agentj_dummy_mod_passengers_setup",
+    "controller": [
+        ["fileName"],
+        ["agentjDummyPositioner", {"mode":"UIMessage"}],
+   ],
+},
+
+"agentj_dummy_mod_passengers_R": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Back Seat Passengers",
+    },
+    "slotType" : "agentj_dummy_mod_passengers_R",
+    "slots": [
+  ["type", "default", "description"],
+  ["agentj_dummy_mod_passenger_RR","agentj_dummy_mod_passenger_RR_dummy","Rear Right Passenger",{"nodeMove":{"x":"$=$cbpRLpassOffsetX_setup == nil and -$cbpRLpassOffsetX or -$cbpRLpassOffsetX_setup", "y":"$=case($cbpRLpassOffsetY_setup == nil, $cbpRLpassOffsetY, $cbpRLpassOffsetY_setup)", "z":"$=case($cbpRLpassOffsetZ_setup == nil, $cbpRLpassOffsetZ, $cbpRLpassOffsetZ_setup)"}}],
+  ["agentj_dummy_mod_passenger_RL","agentj_dummy_mod_passenger_RL_dummy","Rear Left Passenger", {"nodeMove":{"x":"$=$cbpRLpassOffsetX_setup == nil and $cbpRLpassOffsetX or $cbpRLpassOffsetX_setup",   "y":"$=case($cbpRLpassOffsetY_setup == nil, $cbpRLpassOffsetY, $cbpRLpassOffsetY_setup)", "z":"$=case($cbpRLpassOffsetZ_setup == nil, $cbpRLpassOffsetZ, $cbpRLpassOffsetZ_setup)"}}],
+  ["agentj_dummy_mod_seatbelts_R","","Back Seatbelts"],
+  ["agentj_dummy_mod_intcollision_R","agentj_dummy_mod_intcollision_R","Rear Seat Collision Fix"],
+  ["agentj_dummy_mod_passengers_R_mod","","Additional Modifications"],
+    ],
+    "variables": [
+  ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+  ["$cbpRLpassOffsetX", "range", "m", "Driver and Passengers",  0.35, -1, 1,  "Back Seat Passengers Offset X", "Move the passengers left or right",{"stepDis":0.001,"subCategory":"MANUAL OFFSET SETUP - USE THIS FOR MOD CARS"}],
+  ["$cbpRLpassOffsetY", "range", "m", "Driver and Passengers",  0.95, -5, 5,  "Back Seat Passengers Offset Y", "Move the passengers front or back",{"stepDis":0.001,"subCategory":"MANUAL OFFSET SETUP - USE THIS FOR MOD CARS"}],
+  ["$cbpRLpassOffsetZ", "range", "m", "Driver and Passengers", -0.25, -1, 1,  "Back Seat Passengers Offset Z", "Move the passengers up or down",   {"stepDis":0.001,"subCategory":"MANUAL OFFSET SETUP - USE THIS FOR MOD CARS"}],
+  ],
+},
+
+"agentj_dummy_mod_car_strength_setting":{
+  "information":{
+        "authors":"AgentJ",
+        "name":"Car Strength Settings",
+    }
+    "slotType" : "agentj_dummy_mod_car_strength_setting",
+
+  "variables": [
+    ["name", "type", "unit", "category", "default", "min", "max", "title", "description"]
+    ["$adeformscale", "range", "x", "Driver and Passengers", 1, 1, 100, "Deformation Resistance Scale (Up)",  "Scale up how much resistent the car is to deformaton, higher values = deforms less."               {"stepDis":1,   "subCategory":"Car strength settings"}],
+    ["$abreakscale",  "range", "x", "Driver and Passengers", 1, 1, 100, "Breaking Resistance Scale (Up)",     "Scale up how much resistent the car is to breaking into pieces, higher values = more force needed to break."  {"stepDis":1,   "subCategory":"Car strength settings"}],
+    ["$adeformscale2","range", "x", "Driver and Passengers", 1, 0.01, 1,"Deformation Resistance Scale (Down)","Scale down how much resistent the car is to deformaton, lower values = deforms more."      {"stepDis":0.01,"subCategory":"Car strength settings"}]
+    ["$abreakscale2", "range", "x", "Driver and Passengers", 1, 0.01, 1,"Breaking Resistance Scale (Down)",   "Scale down how much resistent the car is to breaking into pieces, lower values = less force needed to break." {"stepDis":0.01,"subCategory":"Car strength settings"}]
+  ],
+
+  "scalebeamDeform": "$=$adeformscale*$adeformscale2",
+  "scalebeamStrength": "$=$abreakscale*$abreakscale2",
+},
+
+
+}

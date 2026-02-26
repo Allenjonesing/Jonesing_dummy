@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_bluebuck": {
+"agentj_dummy_mod_seatbelts_bluebuck": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"2-Point Seatbelts for Gavril Bluebuck",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
     
     "beams": [
         ["id1:", "id2:"],

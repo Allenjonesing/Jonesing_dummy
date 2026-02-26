@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_bolide": {
+"agentj_dummy_mod_seatbelts_bolide": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"4-Point Seatbelts for Civetta Bolide",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
     
     "beams": [
         ["id1:", "id2:"],

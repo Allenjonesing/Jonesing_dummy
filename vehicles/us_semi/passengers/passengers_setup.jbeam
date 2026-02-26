@@ -1,10 +1,10 @@
 { //This file can be used to create your own automatic setup for a mod car.
-"agenty_dummy_mod_passengers_setup":{ //DO NOT CHANGE THE NAME
+"agentj_dummy_mod_passengers_setup":{ //DO NOT CHANGE THE NAME
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Gavril T-Series Setup (Conventional Aero Cab)", //You can put the name of the car here
     }
-    "slotType" : "agenty_dummy_mod_passengers_setup", //DON'T CHANGE THIS
+    "slotType" : "agentj_dummy_mod_passengers_setup", //DON'T CHANGE THIS
 
     "variables": [ //Change the FIRST number ("default") in each variable into an appropriate offset in m
 
@@ -17,12 +17,12 @@
     ],
 },
 
-"agenty_dummy_mod_passengers_setup_sleeper":{ //DO NOT CHANGE THE NAME
+"agentj_dummy_mod_passengers_setup_sleeper":{ //DO NOT CHANGE THE NAME
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Gavril T-Series Setup (Conventional Sleeper Cab)", //You can put the name of the car here
     }
-    "slotType" : "agenty_dummy_mod_passengers_setup", //DON'T CHANGE THIS
+    "slotType" : "agentj_dummy_mod_passengers_setup", //DON'T CHANGE THIS
 
     "variables": [ //Change the FIRST number ("default") in each variable into an appropriate offset in m
 
@@ -35,12 +35,12 @@
     ],
 },
 
-"agenty_dummy_mod_passengers_setup_day":{ //DO NOT CHANGE THE NAME
+"agentj_dummy_mod_passengers_setup_day":{ //DO NOT CHANGE THE NAME
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Gavril T-Series Setup (Conventional Day Cab)", //You can put the name of the car here
     }
-    "slotType" : "agenty_dummy_mod_passengers_setup", //DON'T CHANGE THIS
+    "slotType" : "agentj_dummy_mod_passengers_setup", //DON'T CHANGE THIS
 
     "variables": [ //Change the FIRST number ("default") in each variable into an appropriate offset in m
 
@@ -53,12 +53,12 @@
     ],
 },
 
-"agenty_dummy_mod_passengers_setup_cabover":{ //DO NOT CHANGE THE NAME
+"agentj_dummy_mod_passengers_setup_cabover":{ //DO NOT CHANGE THE NAME
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Gavril T-Series Setup (Cabover Aero Cab)", //You can put the name of the car here
     }
-    "slotType" : "agenty_dummy_mod_passengers_setup", //DON'T CHANGE THIS
+    "slotType" : "agentj_dummy_mod_passengers_setup", //DON'T CHANGE THIS
 
     "variables": [ //Change the FIRST number ("default") in each variable into an appropriate offset in m
 
@@ -71,12 +71,12 @@
     ],
 },
 
-"agenty_dummy_mod_passengers_setup_sleeper_cabover":{ //DO NOT CHANGE THE NAME
+"agentj_dummy_mod_passengers_setup_sleeper_cabover":{ //DO NOT CHANGE THE NAME
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Gavril T-Series Setup (Cabover Sleeper Cab)", //You can put the name of the car here
     }
-    "slotType" : "agenty_dummy_mod_passengers_setup", //DON'T CHANGE THIS
+    "slotType" : "agentj_dummy_mod_passengers_setup", //DON'T CHANGE THIS
 
     "variables": [ //Change the FIRST number ("default") in each variable into an appropriate offset in m
 
@@ -89,12 +89,12 @@
     ],
 },
 
-"agenty_dummy_mod_passengers_setup_day_cabover":{ //DO NOT CHANGE THE NAME
+"agentj_dummy_mod_passengers_setup_day_cabover":{ //DO NOT CHANGE THE NAME
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Gavril T-Series Setup (Cabover Day Cab)", //You can put the name of the car here
     }
-    "slotType" : "agenty_dummy_mod_passengers_setup", //DON'T CHANGE THIS
+    "slotType" : "agentj_dummy_mod_passengers_setup", //DON'T CHANGE THIS
 
     "variables": [ //Change the FIRST number ("default") in each variable into an appropriate offset in m
 

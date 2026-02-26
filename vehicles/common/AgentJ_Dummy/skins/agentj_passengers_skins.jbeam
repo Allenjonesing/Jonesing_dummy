@@ -1,0 +1,95 @@
+{
+"agentj_dummy_skin_angrydummy": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Steel Base",
+    },
+    "slotType" : "skin_dummy",
+    "skinName" : "angrydummy",
+},
+"agentj_dummy_skin_col1": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Colorable (Color 1)",
+    },
+    "slotType" : "skin_dummy",
+    "skinName" : "dummy_col1",
+},
+"agentj_dummy_skin_col2": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Colorable (Color 2)",
+    },
+    "slotType" : "skin_dummy",
+    "skinName" : "dummy_col2",
+},
+"agentj_dummy_skin_col3": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Colorable (Color 3)",
+    },
+    "slotType" : "skin_dummy",
+    "skinName" : "dummy_col3",
+},
+
+"agentj_stuntman_shirt_skin_deputy": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Deputy Shirt",
+    },
+    "slotType" : "skin_stuntman_shirt",
+    "skinName" : "deputy",
+},
+"agentj_stuntman_trousers_skin_deputy": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Striped Trousers",
+    },
+    "slotType" : "skin_stuntman_trousers",
+    "skinName" : "deputy",
+},
+"agentj_stuntman_extras_skin_deputy": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Grey Deputy Shoes & Golves",
+    },
+    "slotType" : "skin_stuntman_extras",
+    "skinName" : "deputy",
+},
+
+"agentj_stuntman_extras_skin_cargo": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Purple Deputy Shoes & Golves",
+    },
+    "slotType" : "skin_stuntman_extras",
+    "skinName" : "cargo",
+},
+"agentj_stuntman_helmet_skin_cargo": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Race Graphics",
+    },
+    "slotType" : "skin_stuntman_helmet",
+    "skinName" : "cargo",
+},
+
+"agentj_stuntman_helmet_skin_black": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Black Helmet",
+    },
+    "slotType" : "skin_stuntman_helmet",
+    "skinName" : "black",
+},
+
+"agentj_stuntman_helmet_skin_bluevisor": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"Blue Visor",
+    },
+    "slotType" : "skin_stuntman_helmet",
+    "skinName" : "bluevisor",
+},
+
+}

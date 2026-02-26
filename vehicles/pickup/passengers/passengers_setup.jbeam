@@ -1,10 +1,10 @@
 { //This file can be used to create your own automatic setup for a mod car.
-"agenty_dummy_mod_passengers_setup":{ //DO NOT CHANGE THE NAME
+"agentj_dummy_mod_passengers_setup":{ //DO NOT CHANGE THE NAME
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Gavril D-Series Setup", //You can put the name of the car here
     }
-    "slotType" : "agenty_dummy_mod_passengers_setup", //DON'T CHANGE THIS
+    "slotType" : "agentj_dummy_mod_passengers_setup", //DON'T CHANGE THIS
 
     "variables": [ //Change the FIRST number ("default") in each variable into an appropriate offset in m
 
@@ -22,17 +22,17 @@
 
 },
 
-"agenty_dummy_mod_passenger_ambulance_pickup": {
+"agentj_dummy_mod_passenger_ambulance_pickup": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"Ambulance Patient",
     },
-    "slotType" : "agenty_dummy_mod_passengers_extra",
+    "slotType" : "agentj_dummy_mod_passengers_extra",
     "slots": [
 	["type", "default", "description"],
-	["AgentY_Dummy0_extras","", "Accessories",{"nodeMove":{"x":0.27, "y":2.10, "z":1.20}}],
-	["AgentY_Dummy0_torso_lying","AgentY_Dummy0_torso_lying","Body",{"nodeMove":{"x":0.27, "y":2.10, "z":1.20}}],
-	["AgentY_Dummy_breakable", "Breakable_yes", "Breakable", {"coreSlot":true}],
+	["AgentJ_Dummy0_extras","", "Accessories",{"nodeMove":{"x":0.27, "y":2.10, "z":1.20}}],
+	["AgentJ_Dummy0_torso_lying","AgentJ_Dummy0_torso_lying","Body",{"nodeMove":{"x":0.27, "y":2.10, "z":1.20}}],
+	["AgentJ_Dummy_breakable", "Breakable_yes", "Breakable", {"coreSlot":true}],
     ],
     "variables": [
         ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],

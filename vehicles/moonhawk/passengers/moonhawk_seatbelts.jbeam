@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_moonhawk": {
+"agentj_dummy_mod_seatbelts_moonhawk": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"2-Point Seatbelts for Bruckell Moonhawk",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
     
     "beams": [
         ["id1:", "id2:"],

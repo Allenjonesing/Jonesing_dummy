@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_etkc": {
+"agentj_dummy_mod_seatbelts_etkc": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"3-Point Seatbelts for ETK K-Series",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
     
     "beams": [
         ["id1:", "id2:"],

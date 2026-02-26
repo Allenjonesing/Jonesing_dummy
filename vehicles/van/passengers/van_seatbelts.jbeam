@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_van": {
+"agentj_dummy_mod_seatbelts_van": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"2-Point Seatbelts for Gavril H-Series",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
     
     "beams": [
         ["id1:", "id2:"],

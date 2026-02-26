@@ -1,10 +1,10 @@
 {
-"agenty_dummy_mod_seatbelts_etk800": {
+"agentj_dummy_mod_seatbelts_etk800": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"3-Point Seatbelts for ETK 800",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts",
+    "slotType" : "agentj_dummy_mod_seatbelts",
     
     "beams": [
         ["id1:", "id2:"],
@@ -83,12 +83,12 @@
     ],
 },
 
-"agenty_dummy_mod_seatbelts_R_etk800": {
+"agentj_dummy_mod_seatbelts_R_etk800": {
     "information":{
-        "authors":"AgentY",
+        "authors":"AgentJ",
         "name":"3-Point Seatbelts for ETK 800",
     },
-    "slotType" : "agenty_dummy_mod_seatbelts_R",
+    "slotType" : "agentj_dummy_mod_seatbelts_R",
     
     "beams": [
         ["id1:", "id2:"],

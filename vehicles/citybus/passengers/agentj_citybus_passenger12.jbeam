@@ -1,0 +1,159 @@
+{
+"agentj_dummy_mod_citybus_passenger12": {
+    "information":{
+        "name":"passenger12",
+        "authors":"AgentJ",
+    },
+    "slotType":"agentj_dummy_mod_citybus_passenger12",
+    "flexbodies": [
+	["mesh", "[group]:", "nonFlexMaterials"],
+	["AgentJ_Dummy_body_merged",      ["passenger12_body"]],
+	["AgentJ_Dummy_arm_L_merged",     ["passenger12_arm_L"]],
+	["AgentJ_Dummy_arm_R_merged",     ["passenger12_arm_R"]],
+	["AgentJ_Dummy_legs_upper_merged",["passenger12_legs_upper"],[]{"pos":{"x":0,"y":-0.97,"z":0.96},"rot":{"x":-95,"y":0,"z":0}}],
+	["AgentJ_Dummy_legs_lower_merged",["passenger12_legs_lower"],[]{"pos":{"x":0,"y":-0.86,"z":0.62},"rot":{"x":-55,"y":0,"z":0}}],
+     ],
+     "nodes": [
+        ["id", "posX", "posY", "posZ"],
+	{"nodeMaterial":"|NM_PLASTIC"},
+        {"frictionCoef":0.75},
+        {"collision":true},
+	{"selfCollision":true},
+	{"nodeWeight":5.5},
+
+        {"group":["passenger12_body", "passenger12_legs_upper"]},
+	["passenger12_b1l", 0.14,-0.02, 0.95],
+	["passenger12_b1r",-0.14,-0.02, 0.95],
+	{"group":["passenger12_body", "passenger12_arm_L"]},
+	["passenger12_b2l", 0.20,-0.04, 1.40],
+	{"group":["passenger12_body", "passenger12_arm_R"]},
+	["passenger12_b2r",-0.20,-0.04, 1.40],
+	{"group":["passenger12_body"]},
+	["passenger12_b3",  0.00,-0.10, 1.75],
+
+	{"group":["passenger12_legs_upper", "passenger12_legs_lower"]},
+	["passenger12_l1l", 0.14,-0.45, 0.95],
+	["passenger12_l1r",-0.14,-0.45, 0.95],
+	{"group":["passenger12_legs_lower"]},
+	["passenger12_l2l", 0.14,-0.83, 0.70],
+	["passenger12_l2r",-0.14,-0.83, 0.70],
+
+	{"group":["passenger12_arm_L"]},
+	["passenger12_a1l", 0.26,-0.01, 1.20],
+	{"group":["passenger12_arm_R"]},
+	["passenger12_a1r",-0.26,-0.01, 1.20],
+	{"group":["passenger12_arm_L","passenger12_arm_R"]},
+	["passenger12_a2l", 0.27, 0.00, 0.95],
+	["passenger12_a2r",-0.27, 0.00, 0.95],
+
+	{"group":""},
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+	{"breakGroup":""},
+
+	//--DUMMY--
+        {"beamSpring": 5001000,"beamDamp":500},
+     	{"beamDeform": "FLT_MAX", "beamStrength":"FLT_MAX"}, 
+		
+	//body
+	["passenger12_b1l", "passenger12_b1r"],
+	["passenger12_b2l", "passenger12_b2r"],
+	["passenger12_b1l", "passenger12_b2l"],
+	["passenger12_b1r", "passenger12_b2r"],
+	["passenger12_b1l", "passenger12_b2r"],
+	["passenger12_b2l", "passenger12_b1r"],
+
+	//head
+	["passenger12_b1l", "passenger12_b3"],
+	["passenger12_b1r", "passenger12_b3"],
+	["passenger12_b2l", "passenger12_b3"],
+	["passenger12_b2r", "passenger12_b3"],
+
+	//upper legs
+	["passenger12_l1l", "passenger12_b1l"],
+	["passenger12_l1r", "passenger12_b1r"],
+	["passenger12_l1l", "passenger12_b1r"],
+	["passenger12_l1r", "passenger12_b1l"],
+	["passenger12_l1l", "passenger12_l1r"],
+
+	//lower legs
+	["passenger12_l2l", "passenger12_l1l"],
+	["passenger12_l2r", "passenger12_l1r"],
+	["passenger12_l2l", "passenger12_l1r"],
+	["passenger12_l2r", "passenger12_l1l"],
+	["passenger12_l2l", "passenger12_l2r"],
+
+	//arms
+	["passenger12_a1l", "passenger12_b2l"],
+	["passenger12_a1l", "passenger12_a2l"],
+	["passenger12_a1r", "passenger12_b2r"],
+	["passenger12_a1r", "passenger12_a2r"],
+
+	//muscles
+	{"beamSpring": 1000,"beamDamp":100},
+     	{"beamDeform": 1000, "beamStrength":101000}, 
+	{"disableMeshBreaking":true, "disableTriangleBreaking":true},
+	["passenger12_l1l", "passenger12_b2l"],
+	["passenger12_l1r", "passenger12_b2r"],
+
+
+	//--LIMITERS--
+	{"beamPrecompression":1, "beamType":"|SUPPORT", "beamLongBound":10},
+	{"beamSpring": 5001000,"beamDamp":500},
+	{"beamDeform": "FLT_MAX", "beamStrength":"FLT_MAX"},
+
+	//knees
+	{"beamPrecompression":0.4},
+	["passenger12_l1l", "passenger12_b2l"],
+	["passenger12_l1r", "passenger12_b2r"],
+
+	//feet
+	{"beamPrecompression":0.2},
+	["passenger12_l2l", "passenger12_b1l"],
+	["passenger12_l2r", "passenger12_b1r"],
+
+	//elbows
+	{"beamPrecompression":1.0},
+	["passenger12_a1l", "passenger12_b1l"],
+	["passenger12_a1r", "passenger12_b1r"],
+	["passenger12_a1l", "passenger12_b2r"],
+	["passenger12_a1r", "passenger12_b2l"],
+
+	//head
+	{"beamPrecompression":0.5},
+	["passenger12_a1l", "passenger12_b3"],
+	["passenger12_a1r", "passenger12_b3"],
+
+	//hands
+	{"beamPrecompression":0.5},
+	["passenger12_a2l", "passenger12_b3"],
+	["passenger12_a2r", "passenger12_b3"],
+	["passenger12_a2l", "passenger12_b2l"],
+	["passenger12_a2r", "passenger12_b2r"],
+	
+	{"disableMeshBreaking":false, "disableTriangleBreaking":false},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},	
+    ],
+    "triangles": [
+        ["id1:","id2:","id3:"],
+        {"groundModel":"plastic"},
+	{"dragCoef":0},
+        {"group":"passenger12"},
+
+	["passenger12_l2r", "passenger12_l2l", "passenger12_l1r"],
+	["passenger12_l1r", "passenger12_l2l", "passenger12_l1l"],
+	["passenger12_l1r", "passenger12_l1l", "passenger12_b1r"],
+	["passenger12_b1r", "passenger12_l1l", "passenger12_b1l"],
+	["passenger12_b1r", "passenger12_b1l", "passenger12_b2r"],
+	["passenger12_b2r", "passenger12_b1l", "passenger12_b2l"],
+	["passenger12_b2l", "passenger12_b3", "passenger12_b2r"],
+
+	{"group":""},
+	{"groundModel":"metal"},
+	{"dragCoef":10},
+    ],
+},
+
+}

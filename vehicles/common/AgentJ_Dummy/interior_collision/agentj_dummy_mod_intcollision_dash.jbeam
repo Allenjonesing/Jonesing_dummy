@@ -1,0 +1,268 @@
+{
+"agentj_dummy_mod_interior_setup_lhd": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"LHD Interior Setup",
+    },
+    "slotType" : "agentj_dummy_mod_interior_setup",
+    "slots": [
+	["type", "default", "description"],
+	["agentj_dummy_mod_steeringwheel","agentj_dummy_mod_steeringwheel","Steering Wheel Collision", {"coreSlot":true}],
+	["agentj_dummy_mod_intcollision_car_attach","agentj_dummy_mod_intcollision_car_attach","Collision to Car Attachment", {"coreSlot":true}],
+	["agentj_dummy_mod_airbags","","Airbags"],
+    ],
+    "nodes": [
+        ["id", "posX", "posY", "posZ"],
+        {"collision":false},
+        {"selfCollision":false},
+        {"nodeWeight":0.2},
+        {"frictionCoef":0},
+        {"nodeMaterial":"|NM_PLASTIC"},
+	{"group":""},
+	{"breakGroup":""},
+
+	//Very janky setup for universal automatic node placement
+
+	//dash
+	["intcollision_dashtl", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX+0.25 or $cbpdriverOffsetX_setup+0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.25 or $cbpdriverOffsetZ_setup+1.25"],
+	["intcollision_dashtr", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX-0.25 or -$cbpdriverOffsetX_setup-0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.25 or $cbpdriverOffsetZ_setup+1.25"],
+	["intcollision_dashbl", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX+0.25 or $cbpdriverOffsetX_setup+0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.05 or $cbpdriverOffsetZ_setup+1.05"],
+	["intcollision_dashbr", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX-0.25 or -$cbpdriverOffsetX_setup-0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.05 or $cbpdriverOffsetZ_setup+1.05"],
+
+	//floor
+	["intcollision_floortl", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX+0.25 or $cbpdriverOffsetX_setup+0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.85 or $cbpdriverOffsetZ_setup+0.85"],
+	["intcollision_floortr", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX-0.25 or -$cbpdriverOffsetX_setup-0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.85 or $cbpdriverOffsetZ_setup+0.85"],
+	["intcollision_floorbl", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX+0.25 or $cbpdriverOffsetX_setup+0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.55 or $cbpdriverOffsetZ_setup+0.55"],
+	["intcollision_floorbr", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX-0.25 or -$cbpdriverOffsetX_setup-0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.55 or $cbpdriverOffsetZ_setup+0.55"],
+
+	{"collision":true},
+        {"selfCollision":true},	
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1}, 
+        {"breakGroup":""},
+
+	//Stabilize sitting position while steering
+	{"beamSpring": 10000,"beamDamp":10},
+     	{"beamDeform": 1000, "beamStrength":2000}, 
+	{"breakGroup":"driver_sit"},
+	{"optional":true},
+	["sf3ll", "Dummy1_thoraxtrl"],
+	["sf3l",  "Dummy1_thoraxtrr"],
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+    "triangles": [
+        ["id1:","id2:","id3:"],
+        {"groundModel":"plastic"},
+	{"dragCoef":0},
+        {"group":""},
+	{"breakGroup":""},
+
+	//dash
+        ["intcollision_dashbl", "intcollision_dashbr", "intcollision_dashtl"],
+	["intcollision_dashtl", "intcollision_dashbr", "intcollision_dashtr"],
+
+	//floor
+	["intcollision_floorbl", "intcollision_floorbr", "intcollision_floortl"],
+	["intcollision_floortl", "intcollision_floorbr", "intcollision_floortr"],
+	
+	//dash to floor
+	["intcollision_floortl", "intcollision_floortr", "intcollision_dashbl"],
+	["intcollision_dashbl", "intcollision_floortr", "intcollision_dashbr"],
+		
+    ],	
+},
+"agentj_dummy_mod_interior_setup_rhd": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"RHD Interior Setup",
+    },
+    "slotType" : "agentj_dummy_mod_interior_setup",
+    "slots": [
+	["type", "default", "description"],
+	["agentj_dummy_mod_steeringwheel","agentj_dummy_mod_steeringwheel","Steering Wheel Collision", {"coreSlot":true}],
+	["agentj_dummy_mod_intcollision_car_attach","agentj_dummy_mod_intcollision_car_attach","Collision to Car Attachment", {"coreSlot":true}],
+	["agentj_dummy_mod_airbags","","Airbags"],
+    ],
+    "nodes": [
+        ["id", "posX", "posY", "posZ"],
+        {"collision":false},
+        {"selfCollision":false},
+        {"nodeWeight":0.2},
+        {"frictionCoef":0},
+        {"nodeMaterial":"|NM_PLASTIC"},
+	{"group":""},
+	{"breakGroup":""},
+
+	//Very janky setup for universal automatic node placement
+
+	//dash
+	["intcollision_dashtr", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX-0.25 or $cbpdriverOffsetX_setup-0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.25 or $cbpdriverOffsetZ_setup+1.25"],
+	["intcollision_dashtl", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX+0.25 or -$cbpdriverOffsetX_setup+0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.25 or $cbpdriverOffsetZ_setup+1.25"],
+	["intcollision_dashbr", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX-0.25 or $cbpdriverOffsetX_setup-0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.05 or $cbpdriverOffsetZ_setup+1.05"],
+	["intcollision_dashbl", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX+0.25 or -$cbpdriverOffsetX_setup+0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.05 or $cbpdriverOffsetZ_setup+1.05"],
+	
+	//floor
+	["intcollision_floortr", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX-0.25 or $cbpdriverOffsetX_setup-0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.85 or $cbpdriverOffsetZ_setup+0.85"],
+	["intcollision_floortl", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX+0.25 or -$cbpdriverOffsetX_setup+0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.85 or $cbpdriverOffsetZ_setup+0.85"],
+	["intcollision_floorbr", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX-0.25 or $cbpdriverOffsetX_setup-0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.55 or $cbpdriverOffsetZ_setup+0.55"],
+	["intcollision_floorbl", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX+0.25 or -$cbpdriverOffsetX_setup+0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.55 or $cbpdriverOffsetZ_setup+0.55"],
+
+	{"collision":true},
+        {"selfCollision":true},	
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+        {"breakGroup":""},
+
+	//Stabilize sitting position while steering
+	{"beamSpring": 10000,"beamDamp":10},
+     	{"beamDeform": 1000, "beamStrength":2000}, 
+	{"breakGroup":"driver_sit"},
+	{"optional":true},
+	["sf3r", "Dummy1_thoraxtrl"],
+	["sf3rr","Dummy1_thoraxtrr"],
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+    "triangles": [
+	["id1:","id2:","id3:"],
+	{"groundModel":"plastic"},
+	{"dragCoef":0},
+	{"group":""},
+	{"breakGroup":""},
+
+	//dash
+	["intcollision_dashbl", "intcollision_dashbr", "intcollision_dashtl"],
+	["intcollision_dashtl", "intcollision_dashbr", "intcollision_dashtr"],
+	
+	//floor
+	["intcollision_floorbl", "intcollision_floorbr", "intcollision_floortl"],
+	["intcollision_floortl", "intcollision_floorbr", "intcollision_floortr"],
+	
+	//dash to floor
+	["intcollision_floortl", "intcollision_floortr", "intcollision_dashbl"],
+	["intcollision_dashbl", "intcollision_floortr", "intcollision_dashbr"],	
+    ],
+},
+
+"agentj_dummy_mod_interior_setup_lhd_alt": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"LHD Interior Setup (No Collision)",
+    },
+    "slotType" : "agentj_dummy_mod_interior_setup",
+    "slots": [
+	["type", "default", "description"],
+	["agentj_dummy_mod_steeringwheel","agentj_dummy_mod_steeringwheel","Steering Wheel Collision", {"coreSlot":true}],
+	["agentj_dummy_mod_intcollision_car_attach","agentj_dummy_mod_intcollision_car_attach","Collision to Car Attachment", {"coreSlot":true}],
+	["agentj_dummy_mod_airbags","","Airbags"],
+    ],
+    "nodes": [
+        ["id", "posX", "posY", "posZ"],
+        {"collision":false},
+        {"selfCollision":false},
+        {"nodeWeight":0.2},
+        {"frictionCoef":0},
+        {"nodeMaterial":"|NM_PLASTIC"},
+	{"group":""},
+	{"breakGroup":""},
+
+	//Very janky setup for universal automatic node placement
+
+	//dash
+	["intcollision_dashtl", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX+0.25 or $cbpdriverOffsetX_setup+0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.25 or $cbpdriverOffsetZ_setup+1.25"],
+	["intcollision_dashtr", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX-0.25 or -$cbpdriverOffsetX_setup-0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.25 or $cbpdriverOffsetZ_setup+1.25"],
+	["intcollision_dashbl", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX+0.25 or $cbpdriverOffsetX_setup+0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.05 or $cbpdriverOffsetZ_setup+1.05"],
+	["intcollision_dashbr", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX-0.25 or -$cbpdriverOffsetX_setup-0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.05 or $cbpdriverOffsetZ_setup+1.05"],
+
+	//floor
+	["intcollision_floortl", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX+0.25 or $cbpdriverOffsetX_setup+0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.85 or $cbpdriverOffsetZ_setup+0.85"],
+	["intcollision_floortr", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX-0.25 or -$cbpdriverOffsetX_setup-0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.85 or $cbpdriverOffsetZ_setup+0.85"],
+	["intcollision_floorbl", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX+0.25 or $cbpdriverOffsetX_setup+0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.55 or $cbpdriverOffsetZ_setup+0.55"],
+	["intcollision_floorbr", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX-0.25 or -$cbpdriverOffsetX_setup-0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.55 or $cbpdriverOffsetZ_setup+0.55"],
+
+	{"collision":true},
+        {"selfCollision":true},	
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1}, 
+        {"breakGroup":""},
+
+	//Stabilize sitting position while steering
+	{"beamSpring": 10000,"beamDamp":10},
+     	{"beamDeform": 1000, "beamStrength":2000}, 
+	{"breakGroup":"driver_sit"},
+	{"optional":true},
+	["sf3ll", "Dummy1_thoraxtrl"],
+	["sf3l",  "Dummy1_thoraxtrr"],
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+"agentj_dummy_mod_interior_setup_rhd_alt": {
+    "information":{
+        "authors":"AgentJ",
+        "name":"RHD Interior Setup (No Collision)",
+    },
+    "slotType" : "agentj_dummy_mod_interior_setup",
+    "slots": [
+	["type", "default", "description"],
+	["agentj_dummy_mod_steeringwheel","agentj_dummy_mod_steeringwheel","Steering Wheel Collision", {"coreSlot":true}],
+	["agentj_dummy_mod_intcollision_car_attach","agentj_dummy_mod_intcollision_car_attach","Collision to Car Attachment", {"coreSlot":true}],
+	["agentj_dummy_mod_airbags","","Airbags"],
+    ],
+    "nodes": [
+        ["id", "posX", "posY", "posZ"],
+        {"collision":false},
+        {"selfCollision":false},
+        {"nodeWeight":0.2},
+        {"frictionCoef":0},
+        {"nodeMaterial":"|NM_PLASTIC"},
+	{"group":""},
+	{"breakGroup":""},
+
+	//Very janky setup for universal automatic node placement
+
+	//dash
+	["intcollision_dashtr", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX-0.25 or $cbpdriverOffsetX_setup-0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.25 or $cbpdriverOffsetZ_setup+1.25"],
+	["intcollision_dashtl", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX+0.25 or -$cbpdriverOffsetX_setup+0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.25 or $cbpdriverOffsetZ_setup+1.25"],
+	["intcollision_dashbr", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX-0.25 or $cbpdriverOffsetX_setup-0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.05 or $cbpdriverOffsetZ_setup+1.05"],
+	["intcollision_dashbl", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX+0.25 or -$cbpdriverOffsetX_setup+0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-0.65 or $cbpdriverOffsetY_setup-0.65", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+1.05 or $cbpdriverOffsetZ_setup+1.05"],
+	
+	//floor
+	["intcollision_floortr", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX-0.25 or $cbpdriverOffsetX_setup-0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.85 or $cbpdriverOffsetZ_setup+0.85"],
+	["intcollision_floortl", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX+0.25 or -$cbpdriverOffsetX_setup+0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.85 or $cbpdriverOffsetZ_setup+0.85"],
+	["intcollision_floorbr", "$=$cbpdriverOffsetX_setup == nil and $cbpdriverOffsetX-0.25 or $cbpdriverOffsetX_setup-0.25",   "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.55 or $cbpdriverOffsetZ_setup+0.55"],
+	["intcollision_floorbl", "$=$cbpdriverOffsetX_setup == nil and -$cbpdriverOffsetX+0.25 or -$cbpdriverOffsetX_setup+0.25", "$=$cbpdriverOffsetY_setup == nil and $cbpdriverOffsetY-1 or $cbpdriverOffsetY_setup-1", "$=$cbpdriverOffsetZ_setup == nil and $cbpdriverOffsetZ+0.55 or $cbpdriverOffsetZ_setup+0.55"],
+
+	{"collision":true},
+        {"selfCollision":true},	
+    ],
+    "beams": [
+        ["id1:", "id2:"],
+        {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+        {"breakGroup":""},
+
+	//Stabilize sitting position while steering
+	{"beamSpring": 10000,"beamDamp":10},
+     	{"beamDeform": 1000, "beamStrength":2000}, 
+	{"breakGroup":"driver_sit"},
+	{"optional":true},
+	["sf3r", "Dummy1_thoraxtrl"],
+	["sf3rr","Dummy1_thoraxtrr"],
+	{"optional":false},
+	{"breakGroup":""},
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1.0, "beamShortBound":1.0},
+    ],
+},
+
+}
