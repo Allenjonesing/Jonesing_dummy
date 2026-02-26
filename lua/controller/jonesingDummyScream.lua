@@ -9,8 +9,9 @@
 -- Each frame the position displacement is divided by dt to estimate instantaneous
 -- impact speed.  When that speed exceeds the threshold and the cooldown has
 -- expired, a random sound is selected from the pool and queued for playback via
--- obj:queueGameEngineLua → Engine.Audio.playOnce.
--- `Engine` is a Game Engine global not available inside vehicle controller Lua;
+-- obj:queueGameEngineLua → sfxPlayOnce.
+-- `sfxPlayOnce` is a Torque3D/BeamNG GE-Lua global that plays a sound file once
+-- directly from a file path — no prior asset registration required.
 -- queueGameEngineLua bridges the call into the GE context where it IS defined.
 --
 -- ── Configuration ─────────────────────────────────────────────────────────────
@@ -92,8 +93,10 @@ end
 -- `Engine` is a Game Engine (GE) Lua global — it is NOT available in vehicle
 -- controller Lua.  `obj:queueGameEngineLua(code)` queues a string of Lua code
 -- to run in the GE context on the next engine tick, where `Engine` IS defined.
--- In GE Lua, Engine.Audio.playOnce(path) takes the sound file path as its
--- first (and only required) argument — there is no channel-name parameter.
+-- `Engine.Audio.playOnce` requires a pre-registered sound description name and
+-- cannot accept a raw file path directly.  `sfxPlayOnce` is a lower-level
+-- Torque3D / BeamNG GE-Lua global that accepts a raw OGG file path and plays
+-- it as a one-shot sound without any prior asset registration.
 -- The path is escaped before embedding into the queued code string.
 local function playScream()
     if numSounds < 1 then return end
@@ -102,7 +105,7 @@ local function playScream()
     -- Escape backslashes then double-quotes before embedding into Lua source.
     local safePath = path:gsub('\\', '\\\\'):gsub('"', '\\"')
     obj:queueGameEngineLua(
-        string.format('Engine.Audio.playOnce("%s")', safePath)
+        string.format('sfxPlayOnce("%s")', safePath)
     )
 end
 
