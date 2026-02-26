@@ -1,10 +1,12 @@
 [
   {
+    "isTrigger": true,
     "actionMap": "jonesingDummyMod",
     "name": "jonesingDummy_spawnPeds",
     "description": "Spawn Ped Dummies"
   },
   {
+    "isTrigger": true,
     "actionMap": "jonesingDummyMod",
     "name": "jonesingDummy_despawnPeds",
     "description": "Despawn / Clear Dummies"

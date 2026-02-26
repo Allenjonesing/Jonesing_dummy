@@ -10,23 +10,24 @@ The mod adds two user-assignable actions that appear in BeamNG's **Controls** se
 
 | Action | Default binding | Description |
 |--------|----------------|-------------|
-| **Spawn Ped Dummies** | *(unbound)* | Spawns a row of `agenty_dummy` props ahead of the player vehicle |
-| **Despawn / Clear Dummies** | *(unbound)* | Removes all dummies spawned through the hotkey |
+| **Spawn Ped Dummies** | **F7** | Spawns a row of `agenty_dummy` props ahead of the player vehicle |
+| **Despawn / Clear Dummies** | **F8** | Removes all dummies spawned through the hotkey |
 
-Both actions have **no default key** — you must bind them yourself so they never conflict with existing bindings.
+Both actions default to **F7** (spawn) and **F8** (despawn) — you can rebind them at any time.
 
 ### How to bind the hotkeys in BeamNG Controls
 
-1. Launch BeamNG.drive and load any map.
-2. Open **Options** → **Controls** (or press **Escape → Options → Controls**).
-3. In the search box at the top type **"Jonesing"** (or browse to the **Jonesing Dummy Mod** category).
-4. Click the empty binding next to **Spawn Ped Dummies** and press the key you want (e.g. `F7`).
-5. Click the empty binding next to **Despawn / Clear Dummies** and press your chosen key (e.g. `F8`).
-6. Click **Save** and close Options.
+F7 and F8 are set as defaults. To rebind them:
+
+1. Open **Options** → **Controls** (or press **Escape → Options → Controls**).
+2. In the search box at the top type **"Jonesing"** (or browse to the **Jonesing Dummy Mod** category).
+3. Click the binding next to **Spawn Ped Dummies** and press your preferred key.
+4. Click the binding next to **Despawn / Clear Dummies** and press your preferred key.
+5. Click **Save** and close Options.
 
 ### How it works
 
-* `ui/inputActions/jonesingDummyMod.json` defines the two actions (`actionMap`, `name`, `description`) so BeamNG merges them into the Controls UI and the **"Jonesing Dummy Mod"** category appears in **Options → Controls → Bindings**.
+* `ui/inputActions/jonesingDummyMod.json` defines the two actions (`actionMap`, `name`, `description`, `isTrigger: true`) so BeamNG merges them into the Controls UI and the **"Jonesing Dummy Mod"** category appears in **Options → Controls → Bindings**.
 * `settings/inputmaps/jonesingDummyMod.json` seeds the default (empty) key bindings for those action names.
 * `lua/ge/extensions/gameplay/jonesingDummySpawner.lua` is a GE-side extension that listens for the actions via `onInputAction` and calls `core_vehicles.spawnNewVehicle("agenty_dummy", ...)` with the `Normal` config — the same vehicle used when spawning dummies through other means.
 
@@ -57,16 +58,15 @@ Available configs (from `vehicles/agenty_dummy/`):
 
 ## In-game verification / testing
 
-1. Bind **Spawn Ped Dummies** (e.g. `F7`) and **Despawn / Clear Dummies** (e.g. `F8`) in Controls.
-2. Start **Free Roam** on any map.
-3. Press `F7` — you should see 3 dummies spawn ~4 m ahead of your vehicle.  
+1. Start **Free Roam** on any map.
+2. Press `F7` — you should see 3 dummies spawn ~4 m ahead of your vehicle.  
    Check the **Lua console** (`` ` `` key → open Lua console) for log lines:
    ```
    [I] jonesingDummySpawner: spawning 3 ped dummy(s) ahead of player
    [I] jonesingDummySpawner: spawned agenty_dummy id=…
    ```
-4. Press `F7` again within 500 ms — nothing should happen (cooldown).
-5. Press `F8` — all 3 dummies should vanish and the console should show:
+3. Press `F7` again within 500 ms — nothing should happen (cooldown).
+4. Press `F8` — all 3 dummies should vanish and the console should show:
    ```
    [I] jonesingDummySpawner: despawning 3 tracked ped dummy(s)
    ```
