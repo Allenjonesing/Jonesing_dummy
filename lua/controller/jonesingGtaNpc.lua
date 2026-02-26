@@ -93,15 +93,18 @@ local physState      = "grace"   -- "grace" | "active" | "standing"
 local aiState        = "wander"  -- "wander" | "idle" | "flee" | "pursue"
 
 -- Node tables (same mechanism as original implementation)
-local allNodes       = {}        -- {cid, spawnX, spawnY, spawnZ}
-local refCid         = nil       -- cid of chest reference node (impact detection)
-local lastWalkOffsetX = 0.0      -- walkOffset used for last teleport (impact baseline X)
-local lastWalkOffsetY = 0.0      -- walkOffset used for last teleport (impact baseline Y)
+local allNodes       = {}        -- {cid, spawnX, spawnY, spawnZ, lastX, lastY}
+local refCid         = nil       -- cid of chest reference node
 local rawNodeIds     = {}        -- all node cids (collected at init)
-local localOffsets   = {}        -- {cid, dx, dy, dz} jbeam-local offsets
+local localOffsets   = {}        -- {cid, dx, dy, dz} jbeam-local offsets from anchor
 local lowestCid      = nil       -- node with minimum jbeam Z (foot level)
 local gracePrevX     = nil       -- previous frame grace-period X (jump detection)
 local gracePrevY     = nil
+
+-- Body rotation tracking (for facing the walk direction)
+local bodyAnchorX    = 0.0       -- world X of anchor node (rawNodeIds[1]) at placement
+local bodyAnchorY    = 0.0       -- world Y of anchor node at placement
+local spawnHeading   = 0.0       -- heading at placement; rotation is (currentHeading − spawnHeading)
 
 -- Timing
 local aiTickAccum    = 0.0       -- accumulates dt; AI tick fires at 1/aiTickHz
@@ -495,8 +498,9 @@ local function init(jbeamData)
     stateTimer     = 0.0
     stuckTimer     = 0.0
     idleTimer      = 0.0
-    lastWalkOffsetX = 0.0
-    lastWalkOffsetY = 0.0
+    bodyAnchorX    = 0.0
+    bodyAnchorY    = 0.0
+    spawnHeading   = 0.0
     gracePrevX     = nil
     gracePrevY     = nil
     threatPos      = nil
@@ -514,8 +518,9 @@ local function reset()
     aiTickAccum = 0.0
     stateTimer  = 0.0
     stuckTimer  = 0.0
-    lastWalkOffsetX = 0.0
-    lastWalkOffsetY = 0.0
+    bodyAnchorX = 0.0
+    bodyAnchorY = 0.0
+    spawnHeading = 0.0
     gracePrevX  = nil
     gracePrevY  = nil
     threatPos   = nil
@@ -580,18 +585,20 @@ local function updateGFX(dt)
                     end
 
                     -- Build allNodes from jbeam-local offsets + world anchor.
+                    -- Store the anchor position and initial heading so the
+                    -- rotation logic can rotate the body to face currentHeading.
+                    bodyAnchorX  = p0.x
+                    bodyAnchorY  = p0.y
+                    spawnHeading = currentHeading
                     local terrainZ = lowestCid and obj:getNodePosition(lowestCid).z or p0.z
                     for _, off in ipairs(localOffsets) do
                         local nx = p0.x + off.dx
                         local ny = p0.y + off.dy
                         local nz = terrainZ + off.dz
-                        table.insert(allNodes, { cid=off.cid, spawnX=nx, spawnY=ny, spawnZ=nz })
+                        table.insert(allNodes, { cid=off.cid, spawnX=nx, spawnY=ny, spawnZ=nz,
+                                                 lastX=nx, lastY=ny })
                         obj:setNodePosition(off.cid, vec3(nx, ny, nz))
                     end
-
-                    -- Initialise impact-check baseline (walkOffset just set above = 0/0).
-                    lastWalkOffsetX = walkOffsetX
-                    lastWalkOffsetY = walkOffsetY
 
                     -- Initialise stuck-detection baseline.
                     stuckPrevX, stuckPrevY = getDummyXY()
@@ -622,33 +629,49 @@ local function updateGFX(dt)
     end
 
     -- ── 2. Impact detection (all nodes, any XY displacement > threshold) ────────
-    -- Compares each node's current physics position against its expected position
-    -- (spawnPos + lastWalkOffset). Any node displaced > 6 cm means something
-    -- physical (a vehicle, wall, etc.) has pushed it. Copy that node's velocity
-    -- to ALL nodes so the whole body ragdolls from the impact, then release to
-    -- full physics by switching to "standing".
+    -- Compares each node's physics position against the position we teleported it
+    -- to last frame (rec.lastX/lastY, which already includes body rotation).
+    -- Any node displaced > 6 cm means something physical pushed it.
+    -- On impact: read the player vehicle's velocity and apply it to every node
+    -- with a height-based scale (upper body gets more velocity than the feet),
+    -- creating a forward tumble. Then release to full physics ("standing").
     if #allNodes > 0 then
         local impactCid = nil
         for _, rec in ipairs(allNodes) do
             local cur = vec3(obj:getNodePosition(rec.cid))
-            local ddx = cur.x - (rec.spawnX + lastWalkOffsetX)
-            local ddy = cur.y - (rec.spawnY + lastWalkOffsetY)
+            local ddx = cur.x - (rec.lastX or rec.spawnX)
+            local ddy = cur.y - (rec.lastY or rec.spawnY)
             if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
                 impactCid = rec.cid
                 break
             end
         end
         if impactCid then
-            -- Read the struck node's velocity (given by the colliding vehicle)
-            -- and apply it to every node so the body flies/tumbles on impact.
-            local ok, vel = pcall(function() return obj:getNodeVelocity(impactCid) end)
-            if ok and vel then
+            -- Derive impact velocity from the player vehicle (reliably non-zero
+            -- and reflects the actual speed/direction of the collision).
+            local ragdollOk = pcall(function()
+                local pv = be:getPlayerVehicle(0)
+                if not pv then return end
+                local vel = pv:getVelocity()
+                if not vel then return end
                 local vx, vy, vz = vel.x, vel.y, vel.z
-                pcall(function()
-                    for _, rec in ipairs(allNodes) do
-                        obj:setNodeVelocity(rec.cid, vec3(vx, vy, vz))
-                    end
-                end)
+                -- Find body Z range for height-based scaling (upper body gets
+                -- more velocity than the feet → creates a forward tumble).
+                -- Scale range: 0.4× at feet → 1.6× at head; plus 2 m/s upward at head.
+                local minZ, maxZ = math.huge, -math.huge
+                for _, rec in ipairs(allNodes) do
+                    if rec.spawnZ < minZ then minZ = rec.spawnZ end
+                    if rec.spawnZ > maxZ then maxZ = rec.spawnZ end
+                end
+                local bodyH = math.max(maxZ - minZ, 0.1)
+                for _, rec in ipairs(allNodes) do
+                    local hf    = (rec.spawnZ - minZ) / bodyH  -- 0 = feet, 1 = head
+                    local scale = 0.4 + hf * 1.2               -- 0.4× at feet, 1.6× at head
+                    obj:setNodeVelocity(rec.cid, vec3(vx * scale, vy * scale, vz + hf * 2.0))
+                end
+            end)
+            if not ragdollOk then
+                dbg("ragdoll pcall failed — releasing to physics without velocity set")
             end
             physState = "standing"
             dbg("Impact → STANDING (ragdoll)")
@@ -678,22 +701,27 @@ local function updateGFX(dt)
     walkOffsetX = walkOffsetX + math.sin(currentHeading) * speed * dt
     walkOffsetY = walkOffsetY + math.cos(currentHeading) * speed * dt
 
-    -- ── 6. Teleport all nodes (preserving beam lengths, no physics forces) ────
-    -- Z tracking: allow terrain-following uphill only — never decrease spawnZ.
+    -- ── 6. Teleport all nodes — rotate body to face currentHeading ──────────────
+    -- Each node's body-local XY offset (relative to bodyAnchor at placement) is
+    -- rotated by (currentHeading − spawnHeading) so the mesh turns as the dummy
+    -- walks. The rotated position is stored in rec.lastX/lastY so impact detection
+    -- knows exactly where each node was placed this frame.
+    local angle = currentHeading - spawnHeading
+    local cosA  = math.cos(angle)
+    local sinA  = math.sin(angle)
     for _, rec in ipairs(allNodes) do
+        -- Body-local offset at placement time
+        local ldx = rec.spawnX - bodyAnchorX
+        local ldy = rec.spawnY - bodyAnchorY
+        -- Rotate offset by heading delta, then add anchor + walk translation
+        local ex = bodyAnchorX + walkOffsetX + ldx * cosA - ldy * sinA
+        local ey = bodyAnchorY + walkOffsetY + ldx * sinA + ldy * cosA
         local curZ = obj:getNodePosition(rec.cid).z
         if curZ > rec.spawnZ then rec.spawnZ = curZ end
-        obj:setNodePosition(rec.cid, vec3(
-            rec.spawnX + walkOffsetX,
-            rec.spawnY + walkOffsetY,
-            rec.spawnZ
-        ))
+        rec.lastX = ex
+        rec.lastY = ey
+        obj:setNodePosition(rec.cid, vec3(ex, ey, rec.spawnZ))
     end
-
-    -- Record the walkOffset used for this teleport so impact detection next
-    -- frame knows what each node's expected position is.
-    lastWalkOffsetX = walkOffsetX
-    lastWalkOffsetY = walkOffsetY
 end
 
 
