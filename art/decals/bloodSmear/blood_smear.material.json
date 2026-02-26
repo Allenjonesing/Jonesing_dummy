@@ -1,0 +1,13 @@
+{
+  "bloodSmearDecal": {
+    "mapTo": "bloodSmearDecal",
+    "diffuseMap": "art/decals/bloodSmear/blood_smear.png",
+    "translucent": true,
+    "alphaTest": false,
+    "alphaRef": 0,
+    "castShadows": false,
+    "doubleSided": false,
+    "renderBin": 25,
+    "version": 1.5
+  }
+}
