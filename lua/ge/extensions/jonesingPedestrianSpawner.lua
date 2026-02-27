@@ -4,31 +4,30 @@
 
 -- jonesingPedestrianSpawner.lua
 -- Automatically spawns Jonesing dummy pedestrians when a freeroam map loads.
--- Hooks into onClientStartMission and skips execution when a scenario is active.
---
--- Dependencies (loaded explicitly before propRecycler):
---   roadSampler              — road/ground pose sampling utility
---   roadSamplertrafficCompat — traffic-system-compatible road sampler
---   propRecycler             — spawns 10 agenty_dummy pedestrians and keeps
---                              them recycled near the player via onUpdate
+-- Hooks into onClientStartMission and defers the actual spawn to onUpdate so
+-- that the player vehicle is guaranteed to exist before propRecycler is called.
 
 local M = {}
+
+-- Set by onClientStartMission; cleared once the spawn succeeds.
+local _needsSpawn = false
 
 local function onClientStartMission(missionPath)
     -- Only spawn in freeroam (not during a scenario or time trial, etc.)
     if scenario_scenarios and scenario_scenarios.getScenario and scenario_scenarios.getScenario() then
+        _needsSpawn = false
         return
     end
+    _needsSpawn = true
+end
 
-    -- Load sampling helpers first; propRecycler declares roadSampler as a
-    -- dependency but pre-loading here guarantees ordering regardless of how
-    -- BeamNG resolves M.dependencies at runtime.
-    if not roadSampler then
-        extensions.load("roadSampler")
-    end
-    if not roadSamplertrafficCompat then
-        extensions.load("roadSamplertrafficCompat")
-    end
+-- Polls every frame until the player vehicle is ready, then spawns once.
+local function onUpdate(dt)
+    if not _needsSpawn then return end
+    -- Wait until the player vehicle exists; spawn10DummiesAndStart requires it.
+    if not (be and be:getPlayerVehicle(0)) then return end
+    _needsSpawn = false
+
     if not propRecycler then
         extensions.load("propRecycler")
     end
@@ -43,5 +42,6 @@ local function onClientStartMission(missionPath)
 end
 
 M.onClientStartMission = onClientStartMission
+M.onUpdate = onUpdate
 
 return M
