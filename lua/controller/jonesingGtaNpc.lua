@@ -133,7 +133,7 @@ local aiTickInterval = 1.0 / 15  -- seconds between AI ticks
 
 -- Immutable physics/safety constants
 local PLACED_DETECTION_SQ  = 2.0  * 2.0    -- m²  (2 m jump → world placement)
-local IMPACT_THRESHOLD_SQ  = 0.06 * 0.06   -- m²  (6 cm XY → vehicle impact)
+local IMPACT_THRESHOLD_SQ  = 0.04 * 0.04   -- m²  (4 cm XY → vehicle impact)
 local TWO_PI               = 2 * math.pi
 local REF_NODE_NAME        = "dummy1_thoraxtfl"
 
@@ -487,6 +487,20 @@ local function init(jbeamData)
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() * 1000 + seed * 7919)
 
+    -- Determine the jbeam's default forward direction in world space.
+    -- spawnHeading is the heading that corresponds to the un-rotated jbeam pose.
+    -- The rotation formula is: angle = currentHeading - spawnHeading (CW rotation).
+    -- This value is a model constant — it must NOT be reset in reset().
+    local jbeamFwd = nil
+    pcall(function() jbeamFwd = obj:getDirectionVector() end)
+    if jbeamFwd and (math.abs(jbeamFwd.x) > 0.001 or math.abs(jbeamFwd.y) > 0.001) then
+        spawnHeading = math.atan2(jbeamFwd.x, jbeamFwd.y)
+    else
+        -- Fallback: jbeam front-chest nodes are at negative Y (from node data), meaning
+        -- the model faces world -Y at default rotation → heading = π (south).
+        spawnHeading = math.pi
+    end
+
     -- Reset all mutable state
     walkOffsetX    = 0.0
     walkOffsetY    = 0.0
@@ -500,7 +514,6 @@ local function init(jbeamData)
     idleTimer      = 0.0
     bodyAnchorX    = 0.0
     bodyAnchorY    = 0.0
-    spawnHeading   = 0.0
     gracePrevX     = nil
     gracePrevY     = nil
     threatPos      = nil
@@ -520,7 +533,7 @@ local function reset()
     stuckTimer  = 0.0
     bodyAnchorX = 0.0
     bodyAnchorY = 0.0
-    spawnHeading = 0.0
+    -- spawnHeading is a model constant set in init(); do NOT reset here.
     gracePrevX  = nil
     gracePrevY  = nil
     threatPos   = nil
@@ -585,11 +598,11 @@ local function updateGFX(dt)
                     end
 
                     -- Build allNodes from jbeam-local offsets + world anchor.
-                    -- Store the anchor position and initial heading so the
-                    -- rotation logic can rotate the body to face currentHeading.
+                    -- bodyAnchorX/Y is the world anchor used by the rotation formula.
+                    -- spawnHeading was already computed in init() from getDirectionVector()
+                    -- and must NOT be overwritten here.
                     bodyAnchorX  = p0.x
                     bodyAnchorY  = p0.y
-                    spawnHeading = currentHeading
                     local terrainZ = lowestCid and obj:getNodePosition(lowestCid).z or p0.z
                     for _, off in ipairs(localOffsets) do
                         local nx = p0.x + off.dx
@@ -629,52 +642,49 @@ local function updateGFX(dt)
     end
 
     -- ── 2. Impact detection (all nodes, any XY displacement > threshold) ────────
-    -- Compares each node's physics position against the position we teleported it
-    -- to last frame (rec.lastX/lastY, which already includes body rotation).
-    -- Any node displaced > 6 cm means something physical pushed it.
-    -- On impact: read the player vehicle's velocity and apply it to every node
-    -- with a height-based scale (upper body gets more velocity than the feet),
-    -- creating a forward tumble. Then release to full physics ("standing").
+    -- Compares each node's physics position against the rotation-corrected position
+    -- we placed it at last frame (rec.lastX/lastY). Any node displaced > 4 cm means
+    -- something physical (a vehicle, wall, etc.) pushed it.
+    -- Ragdoll velocity is derived directly from the node's own displacement:
+    --   vx = ddx/dt, vy = ddy/dt  (the impulse the car applied in this GFX frame).
+    -- This is reliable in all sandbox environments, no external API required.
     if #allNodes > 0 then
         local impactCid = nil
+        local impactDDX, impactDDY = 0, 0
         for _, rec in ipairs(allNodes) do
             local cur = vec3(obj:getNodePosition(rec.cid))
             local ddx = cur.x - (rec.lastX or rec.spawnX)
             local ddy = cur.y - (rec.lastY or rec.spawnY)
             if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
-                impactCid = rec.cid
+                impactCid  = rec.cid
+                impactDDX  = ddx
+                impactDDY  = ddy
                 break
             end
         end
         if impactCid then
-            -- Derive impact velocity from the player vehicle (reliably non-zero
-            -- and reflects the actual speed/direction of the collision).
-            local ragdollOk = pcall(function()
-                local pv = be:getPlayerVehicle(0)
-                if not pv then return end
-                local vel = pv:getVelocity()
-                if not vel then return end
-                local vx, vy, vz = vel.x, vel.y, vel.z
-                -- Find body Z range for height-based scaling (upper body gets
-                -- more velocity than the feet → creates a forward tumble).
-                -- Scale range: 0.4× at feet → 1.6× at head; plus 2 m/s upward at head.
-                local minZ, maxZ = math.huge, -math.huge
-                for _, rec in ipairs(allNodes) do
-                    if rec.spawnZ < minZ then minZ = rec.spawnZ end
-                    if rec.spawnZ > maxZ then maxZ = rec.spawnZ end
-                end
-                local bodyH = math.max(maxZ - minZ, 0.1)
+            -- Compute impact velocity from node displacement (displacement ÷ dt gives the
+            -- velocity that was applied to this node by the car this frame).
+            local clampedDt = math.max(dt, 0.001)
+            local vx = impactDDX / clampedDt
+            local vy = impactDDY / clampedDt
+            -- Height-based scaling: feet 0.4×, head 1.6×, plus upward component at top.
+            -- The velocity differential between bottom and top creates a forward tumble.
+            local minZ, maxZ = math.huge, -math.huge
+            for _, rec in ipairs(allNodes) do
+                if rec.spawnZ < minZ then minZ = rec.spawnZ end
+                if rec.spawnZ > maxZ then maxZ = rec.spawnZ end
+            end
+            local bodyH = math.max(maxZ - minZ, 0.1)
+            pcall(function()
                 for _, rec in ipairs(allNodes) do
                     local hf    = (rec.spawnZ - minZ) / bodyH  -- 0 = feet, 1 = head
                     local scale = 0.4 + hf * 1.2               -- 0.4× at feet, 1.6× at head
-                    obj:setNodeVelocity(rec.cid, vec3(vx * scale, vy * scale, vz + hf * 2.0))
+                    obj:setNodeVelocity(rec.cid, vec3(vx * scale, vy * scale, hf * 3.0))
                 end
             end)
-            if not ragdollOk then
-                dbg("ragdoll pcall failed — releasing to physics without velocity set")
-            end
             physState = "standing"
-            dbg("Impact → STANDING (ragdoll)")
+            dbg("Impact → STANDING (ragdoll) vx=" .. vx .. " vy=" .. vy)
             return
         end
     end
@@ -703,19 +713,22 @@ local function updateGFX(dt)
 
     -- ── 6. Teleport all nodes — rotate body to face currentHeading ──────────────
     -- Each node's body-local XY offset (relative to bodyAnchor at placement) is
-    -- rotated by (currentHeading − spawnHeading) so the mesh turns as the dummy
-    -- walks. The rotated position is stored in rec.lastX/lastY so impact detection
-    -- knows exactly where each node was placed this frame.
+    -- rotated CLOCKWISE by (currentHeading − spawnHeading) so the mesh turns as
+    -- the dummy walks. Clockwise is required because the heading convention is
+    -- compass-bearing (increases clockwise viewed from above).
+    -- The rotated position is stored in rec.lastX/lastY so impact detection next
+    -- frame knows exactly where each node was placed.
+    -- CW rotation matrix: x' = x*cosA + y*sinA, y' = -x*sinA + y*cosA
     local angle = currentHeading - spawnHeading
     local cosA  = math.cos(angle)
     local sinA  = math.sin(angle)
     for _, rec in ipairs(allNodes) do
-        -- Body-local offset at placement time
+        -- Body-local offset at placement time (jbeam-local, unrotated)
         local ldx = rec.spawnX - bodyAnchorX
         local ldy = rec.spawnY - bodyAnchorY
-        -- Rotate offset by heading delta, then add anchor + walk translation
-        local ex = bodyAnchorX + walkOffsetX + ldx * cosA - ldy * sinA
-        local ey = bodyAnchorY + walkOffsetY + ldx * sinA + ldy * cosA
+        -- Apply CW rotation, then add anchor + walk translation
+        local ex = bodyAnchorX + walkOffsetX + ldx * cosA + ldy * sinA
+        local ey = bodyAnchorY + walkOffsetY - ldx * sinA + ldy * cosA
         local curZ = obj:getNodePosition(rec.cid).z
         if curZ > rec.spawnZ then rec.spawnZ = curZ end
         rec.lastX = ex
