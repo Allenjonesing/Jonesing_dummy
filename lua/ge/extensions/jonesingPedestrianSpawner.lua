@@ -5,6 +5,12 @@
 -- jonesingPedestrianSpawner.lua
 -- Automatically spawns Jonesing dummy pedestrians when a freeroam map loads.
 -- Hooks into onClientStartMission and skips execution when a scenario is active.
+--
+-- Dependencies (loaded explicitly before propRecycler):
+--   roadSampler              — road/ground pose sampling utility
+--   roadSamplertrafficCompat — traffic-system-compatible road sampler
+--   propRecycler             — spawns 10 agenty_dummy pedestrians and keeps
+--                              them recycled near the player via onUpdate
 
 local M = {}
 
@@ -14,6 +20,15 @@ local function onClientStartMission(missionPath)
         return
     end
 
+    -- Load sampling helpers first; propRecycler declares roadSampler as a
+    -- dependency but pre-loading here guarantees ordering regardless of how
+    -- BeamNG resolves M.dependencies at runtime.
+    if not roadSampler then
+        extensions.load("roadSampler")
+    end
+    if not roadSamplertrafficCompat then
+        extensions.load("roadSamplertrafficCompat")
+    end
     if not propRecycler then
         extensions.load("propRecycler")
     end
