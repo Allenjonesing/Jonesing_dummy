@@ -3,6 +3,15 @@
 local M = {}
 M.dependencies = {"core_vehicles", "roadSampler"}
 
+-- Default config used by the auto-spawn hooks (jonesingPedestrianSpawner also
+-- reads this so both files always use the same parameters).
+M.autoSpawnCfg = {
+    maxDistance   = 150,
+    leadDistance  = 50,
+    lateralJitter = 10,
+    debug         = true
+}
+
 local cfg = {
     checkInterval = 0.25,
     minDistance = 60,
@@ -28,6 +37,7 @@ local _props = {} -- [numericId] = { nextTeleportAt = 0 }
 local TAG = "propRecycler"
 local _pendingFocusId, _focusTimer = nil, 0
 local _focusDeadline = 0 -- absolute time window to keep retrying
+local _autoSpawnPending = false -- set by onClientStartMission for freeroam auto-spawn
 
 local function d(level, msg, ...)
     if level == 'D' and not cfg.debug then return end
@@ -405,6 +415,12 @@ end
 
 -- ---- Tick ------------------------------------------------------------------
 function M.onUpdate(dt)
+    -- Auto-spawn on freeroam map load: triggers once the player vehicle is ready.
+    if _autoSpawnPending and be and be:getPlayerVehicle(0) then
+        _autoSpawnPending = false
+        M.spawn10DummiesAndStart(M.autoSpawnCfg)
+    end
+
     -- one-shot (with brief retry) deferred focus restore
     if _pendingFocusId then
         _focusTimer = (_focusTimer or 0) - dt
@@ -544,6 +560,20 @@ function M.onExtensionLoaded()
     d('I', 'Loaded. Call propRecycler.start({ids...}, optCfg) to begin.')
     d('I',
       'Or call propRecycler.spawn10DummiesAndStart(optCfg) to auto-spawn and recycle 10 dummies.')
+end
+
+-- Auto-spawn on freeroam map load (propRecycler is a GE extension and receives
+-- these events directly, so it can self-start without a separate spawner file).
+function M.onClientStartMission()
+    if scenario_scenarios and scenario_scenarios.getScenario and scenario_scenarios.getScenario() then
+        _autoSpawnPending = false
+        return
+    end
+    _autoSpawnPending = true
+end
+
+function M.onClientEndMission()
+    _autoSpawnPending = false
 end
 
 return M

@@ -4,44 +4,70 @@
 
 -- jonesingPedestrianSpawner.lua
 -- Automatically spawns Jonesing dummy pedestrians when a freeroam map loads.
--- Hooks into onClientStartMission and defers the actual spawn to onUpdate so
--- that the player vehicle is guaranteed to exist before propRecycler is called.
+-- Primary trigger: onVehicleAdded (event-driven, fires when the player vehicle
+-- enters the scene).  Fallback: onUpdate polls every second.
 
 local M = {}
 
--- Set by onClientStartMission; cleared once the spawn succeeds.
-local _needsSpawn = false
+local _pendingSpawn = false
+local _updateTimer  = 0
 
-local function onClientStartMission(missionPath)
-    -- Only spawn in freeroam (not during a scenario or time trial, etc.)
-    if scenario_scenarios and scenario_scenarios.getScenario and scenario_scenarios.getScenario() then
-        _needsSpawn = false
-        return
+local function _doSpawn()
+    _pendingSpawn = false
+    _updateTimer  = 0
+    local ok, err = pcall(function()
+        if not propRecycler then
+            extensions.load("propRecycler")
+        end
+        log('I', 'Spawn_Ped', 'Spawning...')
+        -- Use propRecycler's exported config so params stay in one place.
+        local cfg = (propRecycler and propRecycler.autoSpawnCfg) or
+                    {maxDistance=150, leadDistance=50, lateralJitter=10, debug=true}
+        propRecycler.spawn10DummiesAndStart(cfg)
+        log('I', 'Spawn_Ped', 'Spawn Complete')
+    end)
+    if not ok then
+        log('E', 'Spawn_Ped', 'Spawn error: ' .. tostring(err))
     end
-    _needsSpawn = true
 end
 
--- Polls every frame until the player vehicle is ready, then spawns once.
-local function onUpdate(dt)
-    if not _needsSpawn then return end
-    -- Wait until the player vehicle exists; spawn10DummiesAndStart requires it.
-    if not (be and be:getPlayerVehicle(0)) then return end
-    _needsSpawn = false
-
-    if not propRecycler then
-        extensions.load("propRecycler")
+local function onClientStartMission()
+    if scenario_scenarios and scenario_scenarios.getScenario and scenario_scenarios.getScenario() then
+        _pendingSpawn = false
+        return
     end
-    log('I', 'Spawn_Ped', 'Spawning...')
-    propRecycler.spawn10DummiesAndStart({
-        maxDistance = 150,
-        leadDistance = 50,
-        lateralJitter = 10,
-        debug = true
-    })
-    log('I', 'Spawn_Ped', 'Spawn Complete')
+    _pendingSpawn = true
+    _updateTimer  = 0
+end
+
+local function onClientEndMission()
+    _pendingSpawn = false
+    _updateTimer  = 0
+end
+
+-- Primary trigger: fires as soon as any vehicle is added to the scene.
+-- If the player vehicle is already set at that point we spawn immediately;
+-- otherwise the onUpdate fallback catches it shortly after.
+local function onVehicleAdded(id)
+    if not _pendingSpawn then return end
+    if not (be and be:getPlayerVehicle(0)) then return end
+    _doSpawn()
+end
+
+-- Fallback: check once per second so we don't spin every frame.
+local function onUpdate(dt)
+    if not _pendingSpawn then return end
+    _updateTimer = _updateTimer + dt
+    if _updateTimer < 1.0 then return end
+    _updateTimer = 0
+    if be and be:getPlayerVehicle(0) then
+        _doSpawn()
+    end
 end
 
 M.onClientStartMission = onClientStartMission
-M.onUpdate = onUpdate
+M.onClientEndMission   = onClientEndMission
+M.onVehicleAdded       = onVehicleAdded
+M.onUpdate             = onUpdate
 
 return M
