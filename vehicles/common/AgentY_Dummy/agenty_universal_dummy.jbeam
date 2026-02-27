@@ -5,6 +5,10 @@
         "name":"AgentY Universal Dummy Mod",
     },
     "slotType" : ["licenseplate_design_2_1", "agenty_jato_mod_dummyslot"],
+    "controller": [
+        ["fileName"],
+        ["jonesingDummyTrafficTrigger", {}],
+    ],
     "slots": [
   ["type", "default", "description"],
 
