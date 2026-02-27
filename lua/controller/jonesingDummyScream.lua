@@ -9,11 +9,10 @@
 -- Each frame the position displacement is divided by dt to estimate instantaneous
 -- impact speed.  When that speed exceeds the threshold and the cooldown has
 -- expired, a random sound is selected from the pool and queued for playback via
--- obj:queueGameEngineLua → TorqueScriptLua.eval → sfxPlayOnce.
--- `sfxPlayOnce` is a TorqueScript global (not a GE-Lua global) that plays an
--- OGG file by path without prior asset registration.
--- `TorqueScriptLua.eval(tsCode)` is available in GE Lua and bridges the call
--- into TorqueScript where `sfxPlayOnce` IS defined.
+-- obj:queueGameEngineLua → TorqueScriptLua.call("sfxPlayOnce", path).
+-- `TorqueScriptLua.call(funcName, ...)` is a BeamNG GE-Lua API that invokes a
+-- named TorqueScript function directly; `sfxPlayOnce` is defined in TorqueScript
+-- and accepts a raw OGG file path without prior asset registration.
 --
 -- ── Configuration ─────────────────────────────────────────────────────────────
 -- All tuneable values live in the `cfg` table below.
@@ -95,19 +94,19 @@ end
 -- Neither `Engine.Audio.playOnce` (requires a pre-registered SFXProfile name)
 -- nor bare `sfxPlayOnce` (a TorqueScript global, not a GE-Lua global) work
 -- directly from GE Lua.
--- The solution: `TorqueScriptLua.eval(tsCode)` IS available in GE Lua and
--- executes a TorqueScript string, where `sfxPlayOnce("path")` IS defined and
--- accepts a raw OGG file path without prior asset registration.
--- The path is escaped before embedding into the code strings.
+-- The solution: `TorqueScriptLua.call("sfxPlayOnce", path)` IS available in
+-- GE Lua and invokes the named TorqueScript function directly, where
+-- `sfxPlayOnce` is defined and accepts a raw OGG file path without prior
+-- asset registration.  The path is escaped before embedding into the code.
 local function playScream()
     if numSounds < 1 then return end
     local path = cfg.sounds[math.random(1, numSounds)]
     log('I', 'jonesingDummyScream', 'playing scream: ' .. path)
-    -- Escape backslashes, double-quotes, and single-quotes for safe embedding.
-    local safePath = path:gsub('\\', '\\\\'):gsub('"', '\\"'):gsub("'", "\\'")
-    -- GE Lua: TorqueScriptLua.eval executes TorqueScript where sfxPlayOnce lives.
+    -- Escape backslashes and double-quotes for safe embedding in a Lua string.
+    local safePath = path:gsub('\\', '\\\\'):gsub('"', '\\"')
+    -- GE Lua: TorqueScriptLua.call invokes a TS function by name with arguments.
     obj:queueGameEngineLua(
-        string.format('TorqueScriptLua.eval(\'sfxPlayOnce("%s");\')', safePath)
+        string.format('TorqueScriptLua.call("sfxPlayOnce", "%s")', safePath)
     )
 end
 
