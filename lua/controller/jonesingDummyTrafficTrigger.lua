@@ -8,14 +8,13 @@
 --
 -- Purpose: when the Universal Dummy Mod is loaded (i.e. the license-plate slot
 -- is occupied by the dummy mod), this controller bridges from the Vehicle-Engine
--- (VE) context to the Game-Engine (GE) context so that
--- jonesingDummyTrafficManager can spawn and recycle 10 agenty_dummy pedestrians
--- around the map as traffic.
+-- (VE) context to the Game-Engine (GE) context so that propRecycler can spawn
+-- and recycle 10 agenty_dummy pedestrians around the map as traffic.
 --
 -- VE → GE bridge:
---   init()   fires obj:queueGameEngineLua() to load the extension and pass
---            this vehicle's ID so the manager knows which vehicle to watch.
---   reset()  re-signals activation (vehicle was reset, not destroyed).
+--   init()   fires obj:queueGameEngineLua() to load propRecycler and spawn the
+--            dummy pedestrian pool.
+--   reset()  re-spawns the pool (vehicle was reset, not destroyed).
 
 local M = {}
 
@@ -23,19 +22,17 @@ local M = {}
 -- ── jbeam lifecycle callbacks ─────────────────────────────────────────────────
 
 local function init(jbeamData)
-    -- Load the GE extension (idempotent) and tell it a host vehicle is active.
     obj:queueGameEngineLua(
-        "extensions.load('jonesingDummyTrafficManager');" ..
-        "jonesingDummyTrafficManager.onDummyModActivated(" .. obj:getId() .. ")"
+        "extensions.load('propRecycler');" ..
+        "propRecycler.spawn10DummiesAndStart({maxDistance=150,leadDistance=50,lateralJitter=10,debug=true})"
     )
 end
 
 
 local function reset()
-    -- Vehicle reset (I-key / Insert-key).  The mod is still installed.
     obj:queueGameEngineLua(
-        "extensions.load('jonesingDummyTrafficManager');" ..
-        "jonesingDummyTrafficManager.onDummyModActivated(" .. obj:getId() .. ")"
+        "extensions.load('propRecycler');" ..
+        "propRecycler.spawn10DummiesAndStart({maxDistance=150,leadDistance=50,lateralJitter=10,debug=true})"
     )
 end
 
