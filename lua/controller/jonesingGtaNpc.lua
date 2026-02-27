@@ -10,11 +10,11 @@
 --   GHOST    — Immediately upon traffic-script vehicle placement (detected as a
 --              sudden > 2 m jump in one frame), all nodes are snapped to their
 --              jbeam-local upright pose at the correct world position and locked
---              there.  The dummy walks slowly along the road by teleporting all
---              nodes simultaneously (constant beam lengths, no internal forces),
+--              there.  The dummy walks slowly in a random direction by teleporting
+--              all nodes simultaneously (constant beam lengths, no internal forces),
 --              phasing through everything.
---              Walk direction is aligned to the road (perpendicular of the
---              player→dummy spawn vector, computed after physics settles).
+--              Each frame the body is rotated by θ = π − walkDir so the model
+--              always faces the direction it is currently walking.
 --              Z tracking: each frame Z is allowed to INCREASE (uphill terrain)
 --              but never decrease, preventing gravity-induced sinking.
 --
@@ -23,7 +23,7 @@
 --              will overwhelm the stabilisers and the dummy tumbles naturally.
 --
 -- GHOST → STANDING transition trigger (chest/thorax reference node):
---   XY displacement ≥ 6 cm in a single frame  → vehicle/wall physically hit it
+--   XY displacement ≥ 1 cm in a single frame  → vehicle/wall physically hit it
 --
 -- IMPORTANT — grace period and upright holding:
 --   Traffic scripts call init() BEFORE placing the vehicle at its spawn world
@@ -52,7 +52,7 @@ local M = {}
 
 -- ── internal state ────────────────────────────────────────────────────────────
 local state              = "grace"   -- "grace", "ghost", or "standing"
-local allNodes           = {}        -- {cid, spawnX, spawnY, spawnZ} — set after baseline
+local allNodes           = {}        -- {cid, rawDx, rawDy, spawnZ} — set after baseline
 local refCid             = nil       -- cid of "dummy1_thoraxtfl" (chest reference node)
 local lastRefX           = 0.0      -- where we LAST teleported the reference node (X)
 local lastRefY           = 0.0      -- where we LAST teleported the reference node (Y)
@@ -61,13 +61,16 @@ local walkOffsetY        = 0.0
 local walkDir            = 0.0
 local walkTimer          = 0.0
 local startupTimer       = 0.0
+-- bodyAnchorX/Y: world XY of rawNodeIds[1] at the moment ghost mode begins.
+-- All node positions are computed as: bodyAnchor + rotate(rawDx,rawDy,walkDir) + walkOffset
+local bodyAnchorX        = 0.0
+local bodyAnchorY        = 0.0
 -- rawNodeIds: cid list stored during init() before baseline is captured.
 -- (getNodePosition at init() returns wrong positions; we snapshot later.)
 local rawNodeIds         = {}        -- list of cids for all nodes
 -- localOffsets: XY relative to rawNodeIds[1], Z relative to the LOWEST jbeam node
 -- (foot level), captured in jbeam-local space at init() time.  dz is always >= 0
--- (feet dz≈0, head dz≈1.8 m).  This ensures reconstruction never places any node
--- below the terrain surface regardless of which node is rawNodeIds[1].
+-- (feet dz≈0, head dz≈1.8 m).  Raw (unrotated) so dynamic rotation can be applied.
 local localOffsets       = {}        -- {cid, dx, dy, dz}
 -- lowestCid: the node with the minimum jbeam Z (foot/sole node).  Used as terrain
 -- Z reference at ghost-mode entry so reconstruction always starts from road level.
@@ -113,22 +116,13 @@ local STARTUP_GRACE        = 3.5             -- seconds
 local REF_NODE_NAME        = "dummy1_thoraxtfl"
 
 
--- ── helpers ───────────────────────────────────────────────────────────────────
-
--- Safely get the player vehicle's world position (returns vec3 or nil).
--- Used during init() to compute road direction and sidewalk offset.
-local function getPlayerPos()
-    local ok, result = pcall(function()
-        local pv = be:getPlayerVehicle(0)
-        if not pv then return nil end
-        local p = pv:getPosition()
-        return vec3(p.x, p.y, p.z)
-    end)
-    return (ok and result) or nil
-end
-
-
 -- ── jbeam lifecycle callbacks ─────────────────────────────────────────────────
+
+-- Apply the 2-D rotation matrix and return (x', y').
+local function rotateXY(dx, dy, cosA, sinA)
+    return dx * cosA - dy * sinA,
+           dx * sinA + dy * cosA
+end
 
 local function init(jbeamData)
     walkSpeed        = jbeamData.walkSpeed        or walkSpeed
@@ -173,15 +167,15 @@ local function init(jbeamData)
                 lowestCid = cid
             end
         end
-        -- Pass 2: record offsets (dz = height above foot level, always >= 0).
-        -- dx and dy are negated to rotate the dummy 180° in the XY plane so
-        -- the model faces the direction it walks rather than walking backwards.
+        -- Pass 2: record raw offsets (dz = height above foot level, always >= 0).
+        -- dx/dy are stored unrotated; rotation is applied dynamically each ghost
+        -- frame so the model always faces the current walk direction.
         for _, cid in ipairs(rawNodeIds) do
             local p = vec3(obj:getNodePosition(cid))
             table.insert(localOffsets, {
                 cid = cid,
-                dx  = -(p.x - p0.x),
-                dy  = -(p.y - p0.y),
+                dx  = p.x - p0.x,
+                dy  = p.y - p0.y,
                 dz  = p.z - minZ,   -- height above foot sole (>= 0)
             })
         end
@@ -213,6 +207,8 @@ local function reset()
     startupTimer = 0
     lastRefX     = 0
     lastRefY     = 0
+    bodyAnchorX  = 0
+    bodyAnchorY  = 0
     gracePrevX   = nil
     gracePrevY   = nil
     local seed = rawNodeIds[1] or 0
@@ -286,21 +282,29 @@ local function updateGFX(dt)
             walkOffsetX = math.cos(walkDir) * sidewalkOffset * sideSign
             walkOffsetY = -math.sin(walkDir) * sidewalkOffset * sideSign
 
-            -- Reconstruct the upright body pose.
-            -- XY: use rawNodeIds[1] world XY as the horizontal anchor.
-            -- Z:  use the lowest (foot) node's current world Z as terrain reference,
-            --     then add each node's jbeam height-above-feet (off.dz >= 0).
-            --     This ensures NO node is placed below the road surface regardless
-            --     of which node rawNodeIds[1] is or how the dummy has fallen.
+            -- Record the body anchor (world XY of the jbeam anchor node).
+            -- Ghost-mode node positions are always: anchor + rotate(rawDx,rawDy) + walkOffset
+            bodyAnchorX = p0.x
+            bodyAnchorY = p0.y
+
+            -- Rotation matrix for θ = π − walkDir so the model faces the walk direction.
+            -- (jbeam default faces −Y; θ=π maps −Y→+Y for walkDir=0, then tracks walkDir)
+            -- cos(π−walkDir) = −cos(walkDir),  sin(π−walkDir) = sin(walkDir)
+            local cosA = -math.cos(walkDir)
+            local sinA =  math.sin(walkDir)
+
+            -- Reconstruct the upright body pose with the correct facing.
+            -- Z: use the lowest (foot) node's current world Z as terrain reference.
             local terrainZ = lowestCid and obj:getNodePosition(lowestCid).z or p0.z
             for _, off in ipairs(localOffsets) do
-                local nx = p0.x + off.dx
-                local ny = p0.y + off.dy
+                local rdx, rdy = rotateXY(off.dx, off.dy, cosA, sinA)
+                local nx = p0.x + rdx
+                local ny = p0.y + rdy
                 local nz = terrainZ + off.dz
                 table.insert(allNodes, {
                     cid    = off.cid,
-                    spawnX = nx,
-                    spawnY = ny,
+                    rawDx  = off.dx,
+                    rawDy  = off.dy,
                     spawnZ = nz,
                 })
                 obj:setNodePosition(off.cid, vec3(nx, ny, nz))
@@ -311,8 +315,9 @@ local function updateGFX(dt)
             if refCid then
                 for _, off in ipairs(localOffsets) do
                     if off.cid == refCid then
-                        lastRefX = p0.x + off.dx
-                        lastRefY = p0.y + off.dy
+                        local rdx, rdy = rotateXY(off.dx, off.dy, cosA, sinA)
+                        lastRefX = p0.x + rdx
+                        lastRefY = p0.y + rdy
                         break
                     end
                 end
@@ -359,21 +364,26 @@ local function updateGFX(dt)
     walkOffsetY = walkOffsetY + stepY
 
     -- ── 5. Teleport every node to its desired ghost position ─────────────────
-    --  Moving ALL nodes by the same XY offset keeps every beam length constant
-    --  → no spurious internal forces or vibration.
+    --  Rotation θ = π − walkDir maps the jbeam −Y forward to the world walk direction,
+    --  so the model always faces wherever it is currently walking.
+    --  Moving ALL nodes with the same rotated offsets from bodyAnchor keeps every
+    --  beam length constant → no spurious internal forces or vibration.
     --  Z tracking: read current physics Z.  We only allow Z to INCREASE so the
     --  dummy follows uphill terrain.  We never decrease spawnZ, because gravity
     --  pulls nodes ~1 mm downward between each setNodePosition call; updating
     --  downward would accumulate into the "sinking / sliding on ground" behaviour.
+    local cosA = -math.cos(walkDir)   -- cos(π − walkDir)
+    local sinA =  math.sin(walkDir)   -- sin(π − walkDir)
     for _, rec in ipairs(allNodes) do
+        local rdx, rdy = rotateXY(rec.rawDx, rec.rawDy, cosA, sinA)
         local curZ = obj:getNodePosition(rec.cid).z
         -- Uphill terrain following: allow Z to rise, never sink.
         if curZ > rec.spawnZ then
             rec.spawnZ = curZ
         end
         obj:setNodePosition(rec.cid, vec3(
-            rec.spawnX + walkOffsetX,
-            rec.spawnY + walkOffsetY,
+            bodyAnchorX + walkOffsetX + rdx,
+            bodyAnchorY + walkOffsetY + rdy,
             rec.spawnZ
         ))
     end
@@ -383,8 +393,9 @@ local function updateGFX(dt)
     if refCid then
         for _, rec in ipairs(allNodes) do
             if rec.cid == refCid then
-                lastRefX = rec.spawnX + walkOffsetX
-                lastRefY = rec.spawnY + walkOffsetY
+                local rdx, rdy = rotateXY(rec.rawDx, rec.rawDy, cosA, sinA)
+                lastRefX = bodyAnchorX + walkOffsetX + rdx
+                lastRefY = bodyAnchorY + walkOffsetY + rdy
                 break
             end
         end
