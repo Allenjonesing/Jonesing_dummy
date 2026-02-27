@@ -26,7 +26,8 @@
 --              will overwhelm the stabilisers and the dummy tumbles naturally.
 --
 -- GHOST → STANDING transition trigger (chest/thorax reference node):
---   XY displacement ≥ 6 cm in a single frame  → vehicle/wall physically hit it
+--   XY displacement ≥ 2 cm in a single frame  → vehicle/wall physically hit it
+--   OR any other vehicle within 3 m of the chest node  → proximity ragdoll
 --
 -- IMPORTANT — grace period and upright holding:
 --   Traffic scripts call init() BEFORE placing the vehicle at its spawn world
@@ -42,18 +43,18 @@
 --
 -- Reference node: "dummy1_thoraxtfl" (top-left chest node, ~1.45 m above ground).
 --   Using a high chest node as reference avoids false triggers from foot/ground
---   contact and is far enough from the ground that a ≥6 cm XY displacement is
---   only caused by a vehicle or wall impact (not terrain or limb animation).
+--   contact and is far enough from the ground that a ≥2 cm XY displacement is
+--   only caused by a vehicle or wall impact (not terrain).
 --
 -- Controller params (set in the jbeam slot entry):
---   walkSpeed          (default 0.008 m/s) — very slow pedestrian shuffle in ghost mode
---   maxWalkSpeed       (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
---   walkChangePeriod   (default 5.0 s)   — seconds between gentle road-parallel tweaks
---   sidewalkOffset     (default 0.0 m)   — lateral shift RIGHT of lane direction at spawn
---   walkCyclePeriod    (default 0.8 s)   — duration of one full arm/leg swing cycle
---   legSwingAmplitude  (default 0.12 m)  — peak forward/backward swing of each leg
---   armSwingAmplitude  (default 0.07 m)  — peak forward/backward swing of each arm
---   stepHeight         (default 0.05 m)  — max vertical foot lift per step
+--   walkSpeed        (default 0.001 m/s) — barely perceptible pedestrian shuffle in ghost mode
+--   maxWalkSpeed     (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
+--   walkChangePeriod (default 5.0 s)  — seconds between gentle road-parallel tweaks
+--   sidewalkOffset   (default 0.0 m)  — lateral shift RIGHT of lane direction at spawn (0 = walk from spawn position)
+--
+-- Proximity ragdoll: if any other vehicle comes within PROXIMITY_RADIUS metres of the
+-- dummy's chest node the dummy immediately drops into ragdoll (standing) state.
+-- This prevents fast vehicles from clipping through before physical contact is registered.
 
 local M = {}
 
@@ -104,7 +105,7 @@ local cidToName          = {}
 local walkCycleTimer     = 0.0
 
 -- configurable params
-local walkSpeed          = 0.008    -- m/s  (very slow GTA pedestrian shuffle)
+local walkSpeed          = 0.001    -- m/s  (barely perceptible GTA pedestrian shuffle)
 -- Hard speed cap: teleport delta per frame is clamped so physics velocity
 -- never accumulates beyond this regardless of frame rate or walk speed setting.
 -- 5 mph = 2.235 m/s
@@ -129,12 +130,16 @@ local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
 -- Impact detection — checked on the named chest node "dummy1_thoraxtfl"
 -- (~1.45 m above ground) to avoid false positives from foot/terrain contact.
 --
--- XY threshold: 6 cm.  A car hit displaces the chest node ≥ 5-8 cm per frame;
--- normal walking residual drift ≈ 1 mm.  Z is excluded — terrain height changes
--- only produce vertical displacement; XY-only check avoids false triggers.
--- Limb animation also produces only body-local XY motion, not absolute XY change
--- on the thorax node (which is a body/torso node, not an animated limb node).
-local IMPACT_THRESHOLD_SQ  = 0.06 * 0.06   -- metres²  (6 cm in XY)
+-- XY threshold: 2 cm.  A car hit displaces the chest node ≥ 2 cm per frame
+-- (typically 2–8 cm for vehicle impacts); normal walking residual drift ≈ 1 mm.
+local IMPACT_THRESHOLD_SQ  = 0.02 * 0.02   -- metres²  (2 cm in XY)
+
+-- Proximity radius: if any other vehicle is within this distance (3-D sphere) of
+-- the dummy's chest reference node the dummy immediately enters ragdoll (standing)
+-- state.  This prevents fast vehicles from tunnelling through the dummy before
+-- the physics engine can register a displacement.  Using full 3-D distance avoids
+-- false triggers from vehicles on bridges or overpasses directly above/below.
+local PROXIMITY_RADIUS_SQ  = 3.0 * 3.0     -- metres²  (3 m sphere radius)
 
 -- Grace period after spawn before the impact check is enabled.
 -- Traffic-script spawning runs physics-settling for ~2 s after init();
@@ -453,10 +458,7 @@ local function updateGFX(dt)
     -- holds the 5 m sidewalk shift but the nodes haven't been teleported yet —
     -- that would look like a 5 m displacement and immediately trigger "standing").
     --
-    -- The thorax node is a body node (not an animated limb), so its placed XY
-    -- is always spawnX + walkOffsetX — limb animation does not affect it.
-    --
-    --   • XY displacement ≥ 6 cm since last teleport  → something hit the dummy
+    --   • XY displacement ≥ 2 cm since last teleport  → something hit the dummy
     --
     if refCid and #allNodes > 0 then
         local cur = vec3(obj:getNodePosition(refCid))
@@ -464,6 +466,34 @@ local function updateGFX(dt)
         local ddy = cur.y - lastRefY
         -- XY position displacement check (slow/medium speed vehicle contact)
         if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
+            state = "standing"
+            return
+        end
+    end
+
+    -- ── 2b. Proximity check: go ragdoll as soon as any other vehicle is close ──
+    -- Full 3-D sphere check prevents false triggers from vehicles on overpasses.
+    -- This catches fast vehicles before they physically displace the dummy's nodes.
+    if refCid then
+        local ok, triggered = pcall(function()
+            local refPos = vec3(obj:getNodePosition(refCid))
+            local myId   = obj:getId()
+            local count  = be:getVehicleCount()
+            for i = 0, count - 1 do
+                local veh = be:getVehicle(i)
+                if veh and veh:getID() ~= myId then
+                    local vp = veh:getPosition()
+                    local ex = vp.x - refPos.x
+                    local ey = vp.y - refPos.y
+                    local ez = vp.z - refPos.z
+                    if (ex*ex + ey*ey + ez*ez) < PROXIMITY_RADIUS_SQ then
+                        return true
+                    end
+                end
+            end
+            return false
+        end)
+        if ok and triggered then
             state = "standing"
             return
         end
