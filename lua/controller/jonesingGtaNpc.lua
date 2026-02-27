@@ -66,6 +66,7 @@ local walkOffsetY        = 0.0
 local walkDir            = 0.0
 local walkTimer          = 0.0
 local startupTimer       = 0.0
+local ghostEntryTimer    = 0.0      -- time spent in ghost state; checks gated behind GHOST_ENTRY_GRACE
 -- rawNodeIds: cid list stored during init() before baseline is captured.
 -- (getNodePosition at init() returns wrong positions; we snapshot later.)
 local rawNodeIds         = {}        -- list of cids for all nodes
@@ -118,6 +119,18 @@ local PROXIMITY_RADIUS_SQ  = 3.0 * 3.0     -- metres²  (3 m sphere radius)
 -- Traffic-script spawning runs physics-settling for ~2 s after init();
 -- 3.5 s provides comfortable margin for all map/PC speeds.
 local STARTUP_GRACE        = 3.5             -- seconds
+
+-- Additional delay (seconds) after entering ghost mode before impact detection
+-- and proximity checks are enabled.  Jbeam spring-force residuals can produce
+-- > 2 cm node displacements on the very first ghost frames; this window lets the
+-- physics settle so those residuals never trigger a spurious ragdoll transition.
+local GHOST_ENTRY_GRACE    = 1.0             -- seconds
+
+-- Minimum vehicle speed (m/s) required to trigger proximity ragdoll.
+-- Only vehicles moving faster than this are treated as a threat.
+-- 5 m/s ≈ 18 km/h — slow-moving or stationary vehicles (including the player
+-- vehicle idling nearby at spawn time) are ignored.
+local PROXIMITY_MIN_SPEED_SQ = 5.0 * 5.0    -- m²/s²
 
 -- Name of the reference body node (chest, ~1.45 m above ground).
 -- Using a high thorax node avoids false-positive falls from foot/ground contact.
@@ -207,6 +220,7 @@ local function init(jbeamData)
     walkDir      = 0
     walkTimer    = 0
     startupTimer = 0
+    ghostEntryTimer = 0
     gracePrevX   = nil
     gracePrevY   = nil
 
@@ -215,15 +229,16 @@ end
 
 
 local function reset()
-    allNodes     = {}
-    walkOffsetX  = 0
-    walkOffsetY  = 0
-    walkTimer    = 0
-    startupTimer = 0
-    lastRefX     = 0
-    lastRefY     = 0
-    gracePrevX   = nil
-    gracePrevY   = nil
+    allNodes        = {}
+    walkOffsetX     = 0
+    walkOffsetY     = 0
+    walkTimer       = 0
+    startupTimer    = 0
+    ghostEntryTimer = 0
+    lastRefX        = 0
+    lastRefY        = 0
+    gracePrevX      = nil
+    gracePrevY      = nil
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
@@ -350,6 +365,7 @@ local function updateGFX(dt)
                     end
                 end
             end
+            ghostEntryTimer = 0   -- reset post-grace delay counter
             state = "ghost"
         end
         return  -- walkDir/allNodes not ready yet; ghost teleportation starts next state
@@ -366,7 +382,12 @@ local function updateGFX(dt)
     --
     --   • XY displacement ≥ 2 cm since last teleport  → something hit the dummy
     --
-    if refCid and #allNodes > 0 then
+    -- Both checks are gated behind GHOST_ENTRY_GRACE so that jbeam spring-force
+    -- residuals (which can produce > 2 cm node drift on the very first ghost frames)
+    -- and a nearby-player-vehicle at spawn time cannot cause a spurious ragdoll.
+    ghostEntryTimer = ghostEntryTimer + dt
+
+    if refCid and #allNodes > 0 and ghostEntryTimer >= GHOST_ENTRY_GRACE then
         local cur = vec3(obj:getNodePosition(refCid))
         local ddx = cur.x - lastRefX
         local ddy = cur.y - lastRefY
@@ -380,7 +401,10 @@ local function updateGFX(dt)
     -- ── 2b. Proximity check: go ragdoll as soon as any other vehicle is close ──
     -- Full 3-D sphere check prevents false triggers from vehicles on overpasses.
     -- This catches fast vehicles before they physically displace the dummy's nodes.
-    if refCid then
+    -- Only vehicles moving faster than PROXIMITY_MIN_SPEED_SQ are considered a
+    -- threat — slow or stationary vehicles (e.g. the player vehicle idling nearby
+    -- at spawn time) are ignored, matching the "speeding vehicle" intent.
+    if refCid and ghostEntryTimer >= GHOST_ENTRY_GRACE then
         local ok, triggered = pcall(function()
             local refPos = vec3(obj:getNodePosition(refCid))
             local myId   = obj:getId()
@@ -393,7 +417,17 @@ local function updateGFX(dt)
                     local ey = vp.y - refPos.y
                     local ez = vp.z - refPos.z
                     if (ex*ex + ey*ey + ez*ez) < PROXIMITY_RADIUS_SQ then
-                        return true
+                        -- Only trigger for vehicles that are actually moving fast
+                        -- (ignores the player vehicle parked/idling near spawn).
+                        -- If velocity is unavailable, skip this vehicle; impact
+                        -- detection (section 2) remains the fallback.
+                        local vok, vvel = pcall(function() return veh:getVelocity() end)
+                        if vok and vvel then
+                            local spd2 = vvel.x*vvel.x + vvel.y*vvel.y + vvel.z*vvel.z
+                            if spd2 >= PROXIMITY_MIN_SPEED_SQ then
+                                return true
+                            end
+                        end
                     end
                 end
             end
