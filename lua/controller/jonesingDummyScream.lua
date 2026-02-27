@@ -9,10 +9,15 @@
 -- Each frame the position displacement is divided by dt to estimate instantaneous
 -- impact speed.  When that speed exceeds the threshold and the cooldown has
 -- expired, a random sound is selected from the pool and queued for playback via
--- obj:queueGameEngineLua → TorqueScriptLua.call("sfxPlayOnce", path).
--- `TorqueScriptLua.call(funcName, ...)` is a BeamNG GE-Lua API that invokes a
--- named TorqueScript function directly; `sfxPlayOnce` is defined in TorqueScript
--- and accepts a raw OGG file path without prior asset registration.
+-- obj:queueGameEngineLua → Engine.Audio.playOnce("DummyScreamDesc", path).
+--
+-- Audio bridge:
+--   Vehicle Lua calls obj:queueGameEngineLua(code) to run code in the GE Lua
+--   context where Engine.Audio is available.
+--   Engine.Audio.playOnce(descName, filePath) plays a one-shot sound using the
+--   named SFXDescription for audio settings plus the supplied OGG file path.
+--   The "DummyScreamDesc" SFXDescription is registered on first init() by
+--   exec-ing art/sound/dummy_screams/dummy_screams.cs via TorqueScriptLua.call.
 --
 -- ── Configuration ─────────────────────────────────────────────────────────────
 -- All tuneable values live in the `cfg` table below.
@@ -90,23 +95,19 @@ end
 
 
 -- Plays one randomly chosen scream.
--- `obj:queueGameEngineLua(code)` queues Lua code to run in the GE context.
--- Neither `Engine.Audio.playOnce` (requires a pre-registered SFXProfile name)
--- nor bare `sfxPlayOnce` (a TorqueScript global, not a GE-Lua global) work
--- directly from GE Lua.
--- The solution: `TorqueScriptLua.call("sfxPlayOnce", path)` IS available in
--- GE Lua and invokes the named TorqueScript function directly, where
--- `sfxPlayOnce` is defined and accepts a raw OGG file path without prior
--- asset registration.  The path is escaped before embedding into the code.
+-- Engine.Audio.playOnce(descName, filePath) is the correct BeamNG GE-Lua API:
+--   descName  — name of a registered SFXDescription (audio settings)
+--   filePath  — raw OGG file path; no SFXProfile registration required
+-- "DummyScreamDesc" is a custom SFXDescription registered in init() by
+-- executing art/sound/dummy_screams/dummy_screams.cs via TorqueScriptLua.call.
 local function playScream()
     if numSounds < 1 then return end
     local path = cfg.sounds[math.random(1, numSounds)]
     log('I', 'jonesingDummyScream', 'playing scream: ' .. path)
     -- Escape backslashes and double-quotes for safe embedding in a Lua string.
     local safePath = path:gsub('\\', '\\\\'):gsub('"', '\\"')
-    -- GE Lua: TorqueScriptLua.call invokes a TS function by name with arguments.
     obj:queueGameEngineLua(
-        string.format('TorqueScriptLua.call("sfxPlayOnce", "%s")', safePath)
+        string.format('Engine.Audio.playOnce("DummyScreamDesc", "%s")', safePath)
     )
 end
 
@@ -139,6 +140,15 @@ local function init(jbeamData)
 
     -- Unique RNG seed per dummy instance so they don't play the same variation.
     math.randomseed(os.time() + (refCid or 0))
+
+    -- Register the custom SFXDescription in GE Lua so Engine.Audio.playOnce can
+    -- use it.  A GE-Lua global flag prevents re-executing on every reset/reinit.
+    obj:queueGameEngineLua([[
+        if not __dummyScreamDescReady then
+            __dummyScreamDescReady = true
+            TorqueScriptLua.call("exec", "art/sound/dummy_screams/dummy_screams.cs")
+        end
+    ]])
 end
 
 
