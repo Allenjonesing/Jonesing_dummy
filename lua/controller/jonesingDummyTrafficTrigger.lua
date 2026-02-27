@@ -13,8 +13,8 @@
 --
 -- VE → GE bridge:
 --   init()   fires obj:queueGameEngineLua() to load propRecycler and spawn the
---            dummy pedestrian pool.
---   reset()  re-spawns the pool (vehicle was reset, not destroyed).
+--            dummy pedestrian pool (idempotent — skips if already active).
+--   reset()  no-op: the pool persists across vehicle resets.
 
 local M = {}
 
@@ -30,10 +30,9 @@ end
 
 
 local function reset()
-    obj:queueGameEngineLua(
-        "extensions.load('propRecycler');" ..
-        "propRecycler.spawn10DummiesAndStart({maxDistance=150,leadDistance=50,lateralJitter=10,debug=true})"
-    )
+    -- Vehicle reset (I-key / Insert-key): dummies are already alive on the map,
+    -- so there is nothing to do here.  A new spawn must NOT be issued on every
+    -- reset or the pool would grow by 10 on each respawn.
 end
 
 

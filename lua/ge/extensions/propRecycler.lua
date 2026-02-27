@@ -292,6 +292,16 @@ local function spawnDummyAt(pos, q)
 end
 
 function M.spawn10DummiesAndStart(optCfg)
+    -- Guard: if the pool is already active, don't spawn another batch.
+    -- The license-plate trigger fires on every vehicle init/reset, but the
+    -- dummies should only ever be spawned once per session.
+    if _enabled then
+        if next(_props) ~= nil then
+            d('I', 'Pool already active; skipping re-spawn.')
+            return nil
+        end
+    end
+
     local veh = v()
     if not veh then
         d('E', 'No player vehicle; cannot spawn.');
