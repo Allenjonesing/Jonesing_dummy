@@ -684,10 +684,10 @@
 
 { "ROPE_LINK_CHAIN_TIGHT": {
   "beamType":"|NORMAL",
-  "beamPrecompression":1.00,          // no slack; bump to 1.02 for slight pre-tension
-  "beamLongBound":1.0, "beamShortBound":1.0, // no lengthening/shortening
-  "beamSpring":10000000, "beamDamp":1200,    // stout & well-damped
-  "beamLimitSpring":50000000, "beamLimitDamp":2500, // hard limits to kill bounce
+  "beamPrecompression":1.00,
+  "beamLongBound":1.0, "beamShortBound":1.0,
+  "beamSpring":150000, "beamDamp":800,    // reduced from 10M: at 10M a 1mm error = 10000N, now 1mm = 150N
+  "beamLimitSpring":800000, "beamLimitDamp":1600,  // limitDamp kept at ~2× beamDamp
   "beamDeform":500000, "beamStrength":"FLT_MAX"
 }}
 
@@ -932,7 +932,7 @@
   "beamLongBound":0.15,
   "beamShortBound":9999,
   "beamSpring":20000, "beamDamp":200,
-  "beamDeform":"FLT_MAX", "beamStrength":2500
+  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"  // unbreakable: organs exit via their own tether groups, not via leash
 }},
 {"$ref":"ORGAN_LEASH"},
 
@@ -961,8 +961,8 @@
 { "ORGAN_TO_ORGAN":{
   "beamType":"|NORMAL",
   "beamLongBound":1.10, "beamShortBound":0.90,
-  "beamSpring":8000, "beamDamp":40,
-  "beamLimitSpring":22000, "beamLimitDamp":160,
+  "beamSpring":3000, "beamDamp":30,       // reduced from 8000: softer inter-organ spring
+  "beamLimitSpring":12000, "beamLimitDamp":100,
   "beamDeform":1000, "beamStrength":4000
 }},
 {"$ref":"ORGAN_TO_ORGAN"},
@@ -975,9 +975,6 @@
 
 // Stomach ↔ Liver (lesser omentum)
 ["ost1","olv2"],["ost2","olv1"],["ost3","olv3"],
-
-// Lung ↔ Stomach (via diaphragm area)
-["oll3","ost4"],["orl3","ost4"],
 
 // Stomach ↔ Intestine base (gastric outlet)
 ["ost3","oi1_4"],["ost4","oi4_4"],
