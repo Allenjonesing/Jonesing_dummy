@@ -48,7 +48,7 @@
         {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
         
 		//thorax to abdomen
-		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"30000"},
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"18000"},
 		{"deformLimitExpansion":1.1}, 
 		{"breakGroup":"dummy1_thoraxabdomen"},
 		["dummy1_thoraxtfl", "dummy1_abdomentfl"],
@@ -73,7 +73,7 @@
 
 		
 		//pelvis to abdomen
-		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"20000"},
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"12000"},
 		{"deformLimitExpansion":1.1}, 
 		{"breakGroup":"dummy1_pelvisabdomen"},
 		
@@ -99,7 +99,7 @@
 
 		// INTESTINES //////////////////
 		//thorax to abdomen
-		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"30000"},
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"18000"},
 		{"deformLimitExpansion":1.1}, 
 		{"breakGroup":"dummy1_thoraxabdomen_intestines"},
 		
@@ -125,7 +125,7 @@
 
 		
 		//pelvis to abdomen
-		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"20000"},
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"12000"},
 		{"deformLimitExpansion":1.1}, 
 		{"breakGroup":"dummy1_pelvisabdomen_intestines"},
 		

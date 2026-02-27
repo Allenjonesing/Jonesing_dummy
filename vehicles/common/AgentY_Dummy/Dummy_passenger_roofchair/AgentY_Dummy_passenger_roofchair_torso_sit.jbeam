@@ -204,7 +204,7 @@
 		
 		//--ABDOMEN--
 		{"beamSpring": 30000,"beamDamp":10},
-		{"deformLimitExpansion":2.0},
+		{"deformLimitExpansion":1.15},
 
 		//main shape
 		["Dummy_passenger_roofchair_abdomenbfl", "Dummy_passenger_roofchair_abdomenbfr"],

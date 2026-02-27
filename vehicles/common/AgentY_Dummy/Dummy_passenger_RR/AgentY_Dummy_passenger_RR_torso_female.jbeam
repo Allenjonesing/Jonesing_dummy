@@ -203,7 +203,7 @@
 		
 		//--ABDOMEN--
 		{"beamSpring": "$=$aDummy4weight*30000","beamDamp":"$=$aDummy4weight*10"},
-		{"deformLimitExpansion":2.0},
+		{"deformLimitExpansion":1.15},
 
 		//main shape
 		["Dummy4_abdomenbfl", "Dummy4_abdomenbfr"],

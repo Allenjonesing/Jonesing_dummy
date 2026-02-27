@@ -203,8 +203,8 @@
 		["dummy1_thoraxarml", "dummy1_thoraxarmr"],
 		
 		//--ABDOMEN--
-		{"beamSpring": "$=$adummy1weight*30000","beamDamp":"$=$adummy1weight*10"},
-		{"deformLimitExpansion":2.0},
+		{"beamSpring": "$=$adummy1weight*45000","beamDamp":"$=$adummy1weight*10"},
+		{"deformLimitExpansion":1.15},
 
 		//main shape
 		["dummy1_abdomenbfl", "dummy1_abdomenbfr"],
