@@ -43,10 +43,10 @@
 --   only caused by a vehicle or wall impact (not terrain).
 --
 -- Controller params (set in the jbeam slot entry):
---   walkSpeed        (default 0.008 m/s) — very slow pedestrian shuffle in ghost mode
+--   walkSpeed        (default 0.004 m/s) — very slow pedestrian shuffle in ghost mode
 --   maxWalkSpeed     (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
---   walkChangePeriod (default 5.0 s)  — seconds between gentle road-parallel tweaks
---   sidewalkOffset   (default 0.0 m)  — lateral shift RIGHT of lane direction at spawn (0 = walk from spawn position)
+--   walkChangePeriod (default 5.0 s)  — seconds between gentle direction tweaks
+--   sidewalkOffset   (default 0.0 m)  — lateral shift at spawn (0 = walk from spawn position)
 
 local M = {}
 
@@ -78,7 +78,7 @@ local gracePrevX         = nil
 local gracePrevY         = nil
 
 -- configurable params
-local walkSpeed          = 0.008    -- m/s  (very slow GTA pedestrian shuffle)
+local walkSpeed          = 0.004    -- m/s  (very slow GTA pedestrian shuffle)
 -- Hard speed cap: teleport delta per frame is clamped so physics velocity
 -- never accumulates beyond this regardless of frame rate or walk speed setting.
 -- 5 mph = 2.235 m/s
@@ -98,10 +98,10 @@ local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
 -- Impact detection — checked on the named chest node "dummy1_thoraxtfl"
 -- (~1.45 m above ground) to avoid false positives from foot/terrain contact.
 --
--- XY threshold: 6 cm.  A car hit displaces the chest node ≥ 5-8 cm per frame;
--- normal walking residual drift ≈ 1 mm.  Z is excluded — terrain height changes
+-- XY threshold: 1 cm.  Even a light brush displaces the chest node ≥ 1 cm;
+-- normal walking residual drift ≈ 0.5 mm.  Z is excluded — terrain height changes
 -- only produce vertical displacement; XY-only check avoids false triggers.
-local IMPACT_THRESHOLD_SQ  = 0.06 * 0.06   -- metres²  (6 cm in XY)
+local IMPACT_THRESHOLD_SQ  = 0.01 * 0.01   -- metres²  (1 cm in XY)
 
 -- Grace period after spawn before the impact check is enabled.
 -- Traffic-script spawning runs physics-settling for ~2 s after init();
@@ -174,12 +174,14 @@ local function init(jbeamData)
             end
         end
         -- Pass 2: record offsets (dz = height above foot level, always >= 0).
+        -- dx and dy are negated to rotate the dummy 180° in the XY plane so
+        -- the model faces the direction it walks rather than walking backwards.
         for _, cid in ipairs(rawNodeIds) do
             local p = vec3(obj:getNodePosition(cid))
             table.insert(localOffsets, {
                 cid = cid,
-                dx  = p.x - p0.x,
-                dy  = p.y - p0.y,
+                dx  = -(p.x - p0.x),
+                dy  = -(p.y - p0.y),
                 dz  = p.z - minZ,   -- height above foot sole (>= 0)
             })
         end
@@ -278,35 +280,11 @@ local function updateGFX(dt)
             allNodes = {}
             local p0 = vec3(obj:getNodePosition(rawNodeIds[1]))
 
-            -- Road direction: player→dummy vector is road-perpendicular;
-            -- rotate 90° to get road-parallel walk direction.
-            local pp = getPlayerPos()
-            if pp and (math.abs(pp.x - p0.x) > 1.0 or math.abs(pp.y - p0.y) > 1.0) then
-                local dx = pp.x - p0.x
-                local dy = pp.y - p0.y
-                local perpDist = math.sqrt(dx*dx + dy*dy)
-                if perpDist > 1.0 then
-                    local nx = -dy / perpDist
-                    local ny =  dx / perpDist
-                    walkDir = math.atan2(nx, ny)
-                    local flip = (math.random() > 0.5) and math.pi or 0.0
-                    walkDir = walkDir + flip
-
-                    -- Sidewalk offset: shift the dummy AWAY from the player.
-                    -- The player is typically near the road centreline, so
-                    -- p0→pp (dummy-to-player direction) = toward road centre.
-                    -- Negate to get "away from road" = toward the kerb/sidewalk.
-                    walkOffsetX = (-dx / perpDist) * sidewalkOffset
-                    walkOffsetY = (-dy / perpDist) * sidewalkOffset
-                end
-            else
-                -- Fallback: player is too close to the dummy to compute road direction.
-                -- Pick a random walk direction and apply the sidewalk offset perpendicular to it.
-                walkDir = math.random() * 2 * math.pi
-                local sideSign = (math.random() > 0.5) and 1.0 or -1.0
-                walkOffsetX = math.cos(walkDir) * sidewalkOffset * sideSign
-                walkOffsetY = -math.sin(walkDir) * sidewalkOffset * sideSign
-            end
+            -- Random walk direction (full 360°) so each dummy walks independently.
+            walkDir = math.random() * 2 * math.pi
+            local sideSign = (math.random() > 0.5) and 1.0 or -1.0
+            walkOffsetX = math.cos(walkDir) * sidewalkOffset * sideSign
+            walkOffsetY = -math.sin(walkDir) * sidewalkOffset * sideSign
 
             -- Reconstruct the upright body pose.
             -- XY: use rawNodeIds[1] world XY as the horizontal anchor.
