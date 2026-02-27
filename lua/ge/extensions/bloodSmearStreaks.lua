@@ -18,17 +18,20 @@ local M = {}
 
 local CFG = {
   -- Detection thresholds
-  SMEAR_MIN_SPEED    = 2.5,    -- m/s  – dummy must be sliding faster than this
-  GROUND_MAX_DIST    = 0.7,    -- m    – raycast down must hit within this distance
+  -- NOTE: set very low so any moving dummy generates streaks (easy debug mode).
+  -- Raise SMEAR_MIN_SPEED (e.g. 2.5) and lower GROUND_MAX_DIST (e.g. 0.7) for
+  -- production tightness once streaks are confirmed working.
+  SMEAR_MIN_SPEED    = 0.1,    -- m/s  – nearly any motion triggers smearing
+  GROUND_MAX_DIST    = 3.0,    -- m    – very lenient; dummy is always "grounded"
   RAY_ORIGIN_OFFSET  = 0.5,    -- m    – raycast start above dummy position
 
   -- Emission spacing (emits one segment every DIST_STEP metres travelled while smearing)
-  DIST_STEP          = 0.25,   -- m
+  DIST_STEP          = 0.05,   -- m    – very frequent segments for debug visibility
 
   -- Decal segment size (metres)
-  SEG_LENGTH         = 0.65,   -- m  (along motion direction / UV texture length)
-  SEG_WIDTH          = 0.22,   -- m  (DecalRoad strip width)
-  SEG_ZOFFSET        = 0.015,  -- m  (above ground to avoid z-fighting)
+  SEG_LENGTH         = 1.5,    -- m  (long, easy to spot)
+  SEG_WIDTH          = 0.8,    -- m  (wide, easy to spot)
+  SEG_ZOFFSET        = 0.02,   -- m  (above ground to avoid z-fighting)
 
   -- Random variation
   SCALE_JITTER       = 0.15,   -- ±fraction of random scale jitter per segment
@@ -40,14 +43,14 @@ local CFG = {
   -- Material (must match the name in blood_smear.material.json)
   MATERIAL_NAME      = "bloodSmearDecal",
 
-  -- Debug
-  DEBUG              = false,
+  -- Debug: set true to see per-segment log lines and error details in the console
+  DEBUG              = true,
 }
 
 -- ── Internal state ─────────────────────────────────────────────────────────────
 
 -- Per-dummy tracking table, keyed by vehicle object ID.
--- Each entry: { lastEmitPos, lastEmitTime, smearing, totalEmitted }
+-- Each entry: { lastEmitPos, lastPos, smearing, totalEmitted }
 local dummyState = {}
 
 -- Ring buffer of spawned DecalRoad object IDs + creation time for TTL/cap cleanup.
@@ -66,16 +69,26 @@ local cleanupTimer  = 0   -- seconds since last cleanup pass
 local function getGroundPoint(pos)
   local rayStart = vec3(pos.x, pos.y, pos.z + CFG.RAY_ORIGIN_OFFSET)
   local rayDir   = vec3(0, 0, -1)
-  local hitDist  = castRayStatic(rayStart, rayDir, CFG.GROUND_MAX_DIST + CFG.RAY_ORIGIN_OFFSET)
+  local maxDist  = CFG.GROUND_MAX_DIST + CFG.RAY_ORIGIN_OFFSET
+  local hitDist  = castRayStatic(rayStart, rayDir, maxDist)
   if not hitDist or hitDist <= 0 then return nil end
   -- Reject if the hit is beyond our max distance from the original pos
-  local distFromPos = hitDist - CFG.RAY_ORIGIN_OFFSET
-  if distFromPos > CFG.GROUND_MAX_DIST then return nil end
-  return vec3(
-    pos.x,
-    pos.y,
-    rayStart.z - hitDist + CFG.SEG_ZOFFSET
-  )
+  if (hitDist - CFG.RAY_ORIGIN_OFFSET) > CFG.GROUND_MAX_DIST then return nil end
+  return vec3(pos.x, pos.y, rayStart.z - hitDist + CFG.SEG_ZOFFSET)
+end
+
+--- Register a vehicle for smear tracking if it hasn't been registered yet.
+local function registerVehicle(vehId)
+  if not vehId or dummyState[vehId] then return end
+  dummyState[vehId] = {
+    smearing     = false,
+    lastEmitPos  = nil,
+    lastPos      = nil,   -- previous position for speed calculation via delta
+    totalEmitted = 0,
+  }
+  if CFG.DEBUG then
+    log("I", "bloodSmearStreaks", "Registered vehicle id=" .. tostring(vehId))
+  end
 end
 
 --- Remove a DecalRoad segment by scene-object ID.
@@ -124,28 +137,53 @@ local function spawnSegment(node0, node1)
     local width  = CFG.SEG_WIDTH  * scaleJitter
     local texLen = CFG.SEG_LENGTH * scaleJitter
 
-    -- Build a unique TorqueScript name for later lookup/deletion
+    -- Build a unique TorqueScript name for later lookup/deletion.
+    -- Use a counter suffix so two segments spawned in the same millisecond are distinct.
     local segName = string.format("bsSmear_%d_%d", math.floor(gameTime * 1000), math.random(0, 999999))
 
-    -- Create the DecalRoad via TorqueScript eval so it works both in-game
-    -- and when the World Editor is open, without requiring core-file edits.
+    -- Create the DecalRoad via TorqueScript eval.
+    -- "new DecalRoad(name) { ... };" creates the object; "MissionGroup.add(name);" adds it
+    -- to the scene root; then addNode populates the two-node strip geometry.
     local tsCode = string.format(
       'new DecalRoad(%s) { material = "%s"; width = %f; textureLength = %f;'
-      .. ' breakAngle = 0; renderPriority = 10; }; MissionGroup.add(%s);'
-      .. ' %s.addNode("%f %f %f", %f); %s.addNode("%f %f %f", %f);',
+      .. ' breakAngle = 0; renderPriority = 10; };'
+      .. ' MissionGroup.add(%s);'
+      .. ' %s.addNode("%f %f %f", %f);'
+      .. ' %s.addNode("%f %f %f", %f);',
       segName, CFG.MATERIAL_NAME, width, texLen,
       segName,
       segName, node0.x, node0.y, node0.z, width,
       segName, node1.x, node1.y, node1.z, width
     )
-    TorqueScript.eval(tsCode)
+
+    if CFG.DEBUG then
+      log("D", "bloodSmearStreaks", "TorqueScript: " .. tsCode)
+    end
+
+    -- Engine.evalTorqueScript is the primary API; TorqueScript.eval is the legacy alias.
+    if Engine and Engine.evalTorqueScript then
+      Engine.evalTorqueScript(tsCode)
+    elseif TorqueScript and TorqueScript.eval then
+      TorqueScript.eval(tsCode)
+    else
+      -- Last resort: bare global, some BeamNG versions expose this directly
+      local ok3, err3 = pcall(evalTorqueScript, tsCode)
+      if not ok3 and CFG.DEBUG then
+        log("E", "bloodSmearStreaks", "All TorqueScript eval methods failed: " .. tostring(err3))
+      end
+    end
 
     local road = scenetree.findObject(segName)
-    if not road then return nil end
+    if not road then
+      if CFG.DEBUG then
+        log("W", "bloodSmearStreaks", "scenetree.findObject returned nil for " .. segName)
+      end
+      return nil
+    end
 
     if CFG.DEBUG then
       log("D", "bloodSmearStreaks",
-        string.format("Segment spawned id=%s n0=(%.2f,%.2f,%.2f) n1=(%.2f,%.2f,%.2f) w=%.3f",
+        string.format("OK id=%s  n0=(%.1f,%.1f,%.1f) n1=(%.1f,%.1f,%.1f) w=%.2f",
           tostring(road:getId()), node0.x, node0.y, node0.z,
           node1.x, node1.y, node1.z, width))
     end
@@ -164,29 +202,43 @@ end
 
 -- ── Per-dummy update ──────────────────────────────────────────────────────────
 
---- Called each tick for every tracked dummy vehicle.
---- `veh`   – BeamNG vehicle object
---- `state` – our per-dummy tracking table entry
+--- Called each tick for every tracked vehicle.
 local function updateDummy(veh, state, dt)
   if not veh then return end
 
-  -- Get current position of the vehicle's reference node (or body centre)
   local pos = veh:getPosition()
   if not pos then return end
   local posV = vec3(pos.x, pos.y, pos.z)
 
-  -- Get velocity magnitude
-  local vel = veh:getVelocity()
+  -- Speed: computed from position delta so it works on all vehicle types
+  -- (avoids relying on veh:getVelocity() which may not exist on GE-side objects).
   local speed = 0
-  if vel then
-    speed = math.sqrt(vel.x*vel.x + vel.y*vel.y + vel.z*vel.z)
+  if state.lastPos and dt > 0 then
+    local dx = posV.x - state.lastPos.x
+    local dy = posV.y - state.lastPos.y
+    local dz = posV.z - state.lastPos.z
+    speed = math.sqrt(dx*dx + dy*dy + dz*dz) / dt
   end
+  state.lastPos = posV
 
   -- Ground raycast
   local groundPt = getGroundPoint(posV)
 
   -- Smear condition: fast enough AND grounded
   local smearing = (speed >= CFG.SMEAR_MIN_SPEED) and (groundPt ~= nil)
+
+  if CFG.DEBUG then
+    -- Log every 60 frames so we can see detection state throughout the vehicle's lifecycle
+    if not state._dbgFrames then state._dbgFrames = 0 end
+    state._dbgFrames = state._dbgFrames + 1
+    if state._dbgFrames <= 5 or state._dbgFrames % 60 == 0 then
+      log("D", "bloodSmearStreaks",
+        string.format("veh %s: speed=%.2f smearing=%s groundPt=%s emitted=%d",
+          tostring(veh:getId()), speed, tostring(smearing),
+          groundPt and string.format("(%.1f,%.1f,%.1f)", groundPt.x, groundPt.y, groundPt.z) or "nil",
+          state.totalEmitted or 0))
+    end
+  end
 
   if not smearing then
     state.smearing = false
@@ -195,7 +247,7 @@ local function updateDummy(veh, state, dt)
 
   -- First frame of smearing: initialise lastEmitPos
   if not state.smearing or not state.lastEmitPos then
-    state.smearing   = true
+    state.smearing    = true
     state.lastEmitPos = groundPt
     return
   end
@@ -213,8 +265,8 @@ local function updateDummy(veh, state, dt)
     totalSegs = totalSegs + 1
     state.totalEmitted = (state.totalEmitted or 0) + 1
     if CFG.DEBUG then
-      log("D", "bloodSmearStreaks",
-        string.format("veh %s: emitted seg #%d  speed=%.1f m/s  dist=%.2f m  totalSegs=%d",
+      log("I", "bloodSmearStreaks",
+        string.format("veh %s: seg #%d  spd=%.1f m/s dist=%.2f m total=%d",
           tostring(veh:getId()), state.totalEmitted, speed, dist, totalSegs))
     end
   end
@@ -226,21 +278,7 @@ end
 
 --- Called by BeamNG when a new vehicle is spawned / loaded.
 function M.onVehicleSpawned(vehId)
-  if not vehId then return end
-  -- Only track "agenty_dummy" vehicles (our pedestrian dummies).
-  local veh = be:getObjectByID(vehId)
-  if not veh then return end
-  local jbeamName = veh:getJBeamFilename() or ""
-  if not string.find(string.lower(jbeamName), "dummy") then return end
-
-  dummyState[vehId] = {
-    smearing      = false,
-    lastEmitPos   = nil,
-    totalEmitted  = 0,
-  }
-  if CFG.DEBUG then
-    log("D", "bloodSmearStreaks", "Tracking new dummy vehId=" .. tostring(vehId))
-  end
+  registerVehicle(vehId)
 end
 
 --- Called by BeamNG when a vehicle is removed.
@@ -253,13 +291,28 @@ function M.onPreRender(dt)
   if dt <= 0 then return end
   gameTime = gameTime + dt
 
-  -- Update each tracked dummy
+  -- Fallback scan: register any vehicles that onVehicleSpawned may have missed.
+  -- be:getVehicleCount() + be:getVehicle(i) is the canonical GE iteration.
+  local ok, cnt = pcall(function() return be:getVehicleCount() end)
+  if ok and cnt and cnt > 0 then
+    for i = 0, cnt - 1 do
+      local veh = be:getVehicle(i)
+      if veh then
+        local id = veh:getId()
+        if id then registerVehicle(id) end
+      end
+    end
+  end
+
+  -- Update each tracked vehicle
   for vehId, state in pairs(dummyState) do
     local veh = be:getObjectByID(vehId)
     if veh then
-      updateDummy(veh, state, dt)
+      local ok2, err2 = pcall(updateDummy, veh, state, dt)
+      if not ok2 and CFG.DEBUG then
+        log("W", "bloodSmearStreaks", "updateDummy error veh " .. tostring(vehId) .. ": " .. tostring(err2))
+      end
     else
-      -- Vehicle gone — clean up entry
       dummyState[vehId] = nil
     end
   end
@@ -272,10 +325,11 @@ function M.onPreRender(dt)
   end
 end
 
---- Called when the extension is first loaded; can be used for one-time setup.
+--- Called when the extension is first loaded.
 function M.onExtensionLoaded()
-  log("I", "bloodSmearStreaks", "Blood smear streaks extension loaded. MAX_SEGMENTS=" ..
-    tostring(CFG.MAX_SEGMENTS) .. " TTL=" .. tostring(CFG.SEGMENT_TTL) .. "s")
+  log("I", "bloodSmearStreaks",
+    string.format("Blood smear streaks loaded  MIN_SPEED=%.1f GROUND_DIST=%.1f DIST_STEP=%.2f DEBUG=%s",
+      CFG.SMEAR_MIN_SPEED, CFG.GROUND_MAX_DIST, CFG.DIST_STEP, tostring(CFG.DEBUG)))
 end
 
 --- Called when the extension is about to be unloaded; clean up all segments.
@@ -287,7 +341,7 @@ function M.onExtensionUnloaded()
   totalSegs    = 0
   dummyState   = {}
   cleanupTimer = 0
-  log("I", "bloodSmearStreaks", "Blood smear streaks extension unloaded; all segments removed.")
+  log("I", "bloodSmearStreaks", "Blood smear streaks unloaded; all segments removed.")
 end
 
 return M
