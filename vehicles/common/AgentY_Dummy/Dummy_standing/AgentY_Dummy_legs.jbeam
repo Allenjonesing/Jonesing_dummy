@@ -749,7 +749,7 @@
     ],
     "triangles": [
         ["id1:","id2:","id3:"],
-        {"groundModel":"flesh"},
+        {"groundModel":"plastic"},
 		{"dragCoef":4},
 		
 		//left thigh
