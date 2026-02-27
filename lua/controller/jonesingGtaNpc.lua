@@ -15,8 +15,11 @@
 --              phasing through everything.
 --              Walk direction is aligned to the road (perpendicular of the
 --              player→dummy spawn vector, computed after physics settles).
---              Z tracking: each frame Z is allowed to INCREASE (uphill terrain)
---              but never decrease, preventing gravity-induced sinking.
+--              Walking animation: arms and legs are manipulated with a sinusoidal
+--              swing cycle — left arm swings opposite to left leg (natural gait).
+--              Each foot is lifted by stepHeight when swinging forward.
+--              Terrain tracking: body nodes (torso/pelvis) are used to detect
+--              rising terrain; the whole body rises with uphill terrain.
 --
 --   STANDING — All position overrides stop.  The existing stabiliser beams hold
 --              the dummy upright as a solid physics object.  A vehicle impact
@@ -39,20 +42,36 @@
 --
 -- Reference node: "dummy1_thoraxtfl" (top-left chest node, ~1.45 m above ground).
 --   Using a high chest node as reference avoids false triggers from foot/ground
---   contact and is far enough from the ground that a ≥8 cm XY displacement is
---   only caused by a vehicle or wall impact (not terrain).
+--   contact and is far enough from the ground that a ≥6 cm XY displacement is
+--   only caused by a vehicle or wall impact (not terrain or limb animation).
 --
 -- Controller params (set in the jbeam slot entry):
---   walkSpeed        (default 0.008 m/s) — very slow pedestrian shuffle in ghost mode
---   maxWalkSpeed     (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
---   walkChangePeriod (default 5.0 s)  — seconds between gentle road-parallel tweaks
---   sidewalkOffset   (default 0.0 m)  — lateral shift RIGHT of lane direction at spawn (0 = walk from spawn position)
+--   walkSpeed          (default 0.008 m/s) — very slow pedestrian shuffle in ghost mode
+--   maxWalkSpeed       (default 2.235 m/s / 5 mph) — absolute cap, prevents runaway
+--   walkChangePeriod   (default 5.0 s)   — seconds between gentle road-parallel tweaks
+--   sidewalkOffset     (default 0.0 m)   — lateral shift RIGHT of lane direction at spawn
+--   walkCyclePeriod    (default 0.8 s)   — duration of one full arm/leg swing cycle
+--   legSwingAmplitude  (default 0.12 m)  — peak forward/backward swing of each leg
+--   armSwingAmplitude  (default 0.07 m)  — peak forward/backward swing of each arm
+--   stepHeight         (default 0.05 m)  — max vertical foot lift per step
 
 local M = {}
 
 -- ── internal state ────────────────────────────────────────────────────────────
 local state              = "grace"   -- "grace", "ghost", or "standing"
-local allNodes           = {}        -- {cid, spawnX, spawnY, spawnZ} — set after baseline
+-- allNodes: set after grace expires.
+-- Each record: {cid, spawnX, spawnY, dz, group}
+--   spawnX/Y — world XY at snapshot (horizontal anchor, never changes)
+--   dz       — jbeam height above the lowest (foot) node (>= 0)
+--   group    — "body", "leftLeg", "rightLeg", "leftArm", or "rightArm"
+local allNodes           = {}
+-- bodyNodes: subset of allNodes containing only body (torso/pelvis/head) records.
+-- Pre-filtered at snapshot time to avoid iterating all nodes every frame for
+-- terrain tracking.
+local bodyNodes          = {}
+-- refNodeRec: direct reference to the allNodes record for refCid, set at
+-- snapshot time to avoid an O(n) search in every updateGFX call.
+local refNodeRec         = nil
 local refCid             = nil       -- cid of "dummy1_thoraxtfl" (chest reference node)
 local lastRefX           = 0.0      -- where we LAST teleported the reference node (X)
 local lastRefY           = 0.0      -- where we LAST teleported the reference node (Y)
@@ -76,6 +95,13 @@ local lowestCid          = nil
 -- teleports the vehicle to its world position (sudden large jump).
 local gracePrevX         = nil
 local gracePrevY         = nil
+-- terrainBaseZ: terrain height at foot level, tracked from body nodes.
+-- Only allowed to rise (uphill terrain), never decreases.
+local terrainBaseZ       = 0.0
+-- cidToName: maps node cid → name string, built during init for group classification.
+local cidToName          = {}
+-- walkCycleTimer: accumulates time for the limb animation cycle.
+local walkCycleTimer     = 0.0
 
 -- configurable params
 local walkSpeed          = 0.008    -- m/s  (very slow GTA pedestrian shuffle)
@@ -85,6 +111,11 @@ local walkSpeed          = 0.008    -- m/s  (very slow GTA pedestrian shuffle)
 local maxWalkSpeed        = 2.235    -- m/s  (~5 mph)
 local walkChangePeriod   = 5.0      -- s    (how often direction gently drifts)
 local sidewalkOffset     = 0.0      -- m    (0 = walk from spawn position, no sidewalk shift)
+-- Walking animation params
+local walkCyclePeriod    = 0.8      -- s    (duration of one full gait cycle)
+local legSwingAmplitude  = 0.12     -- m    (peak forward/backward leg swing)
+local armSwingAmplitude  = 0.07     -- m    (peak forward/backward arm swing)
+local stepHeight         = 0.05     -- m    (max foot lift per step)
 
 -- Threshold for detecting that the traffic script has teleported the vehicle to
 -- its real world position: if a node jumps more than this distance in one frame
@@ -101,6 +132,8 @@ local DIRECTION_CHANGE_MAX = math.pi / 36   -- ±5°
 -- XY threshold: 6 cm.  A car hit displaces the chest node ≥ 5-8 cm per frame;
 -- normal walking residual drift ≈ 1 mm.  Z is excluded — terrain height changes
 -- only produce vertical displacement; XY-only check avoids false triggers.
+-- Limb animation also produces only body-local XY motion, not absolute XY change
+-- on the thorax node (which is a body/torso node, not an animated limb node).
 local IMPACT_THRESHOLD_SQ  = 0.06 * 0.06   -- metres²  (6 cm in XY)
 
 -- Grace period after spawn before the impact check is enabled.
@@ -127,24 +160,66 @@ local function getPlayerPos()
     return (ok and result) or nil
 end
 
+-- Classify a node by its name into a limb group for walking animation.
+-- Returns one of: "leftLeg", "rightLeg", "leftArm", "rightArm", "body".
+local function classifyNode(name)
+    if name == nil then return "body" end
+    -- Left leg: thigh, shin, foot
+    if string.find(name, "dummy1_L_thigh",   1, true) or
+       string.find(name, "dummy1_L_legshin", 1, true) or
+       string.find(name, "dummy1_L_foot",    1, true) then
+        return "leftLeg"
+    end
+    -- Right leg: thigh, shin, foot
+    if string.find(name, "dummy1_R_thigh",   1, true) or
+       string.find(name, "dummy1_R_legshin", 1, true) or
+       string.find(name, "dummy1_R_foot",    1, true) then
+        return "rightLeg"
+    end
+    -- Left arm: upper arm, forearm, hand, fingers, thumb
+    if string.find(name, "dummy1_L_upperarm", 1, true) or
+       string.find(name, "dummy1_L_forearm",  1, true) or
+       string.find(name, "dummy1_L_hand",     1, true) or
+       string.find(name, "dummy1_L_finger",   1, true) or
+       string.find(name, "dummy1_L_thumb",    1, true) then
+        return "leftArm"
+    end
+    -- Right arm: upper arm, forearm, hand, fingers, thumb
+    if string.find(name, "dummy1_R_upperarm", 1, true) or
+       string.find(name, "dummy1_R_forearm",  1, true) or
+       string.find(name, "dummy1_R_hand",     1, true) or
+       string.find(name, "dummy1_R_finger",   1, true) or
+       string.find(name, "dummy1_R_thumb",    1, true) then
+        return "rightArm"
+    end
+    return "body"
+end
+
 
 -- ── jbeam lifecycle callbacks ─────────────────────────────────────────────────
 
 local function init(jbeamData)
-    walkSpeed        = jbeamData.walkSpeed        or walkSpeed
-    maxWalkSpeed     = jbeamData.maxWalkSpeed      or maxWalkSpeed
-    walkChangePeriod = jbeamData.walkChangePeriod or walkChangePeriod
-    sidewalkOffset   = jbeamData.sidewalkOffset   or sidewalkOffset
+    walkSpeed         = jbeamData.walkSpeed         or walkSpeed
+    maxWalkSpeed      = jbeamData.maxWalkSpeed       or maxWalkSpeed
+    walkChangePeriod  = jbeamData.walkChangePeriod  or walkChangePeriod
+    sidewalkOffset    = jbeamData.sidewalkOffset    or sidewalkOffset
+    walkCyclePeriod   = jbeamData.walkCyclePeriod   or walkCyclePeriod
+    legSwingAmplitude = jbeamData.legSwingAmplitude or legSwingAmplitude
+    armSwingAmplitude = jbeamData.armSwingAmplitude or armSwingAmplitude
+    stepHeight        = jbeamData.stepHeight        or stepHeight
 
-    -- Collect all node cids — we do NOT snapshot positions here.
-    -- Traffic scripts call init() before placing the vehicle at its world
-    -- position, so getNodePosition() returns jbeam-local coords (near origin)
-    -- which are completely wrong.  We snapshot after STARTUP_GRACE seconds.
+    -- Collect all node cids and build cid→name map.
+    -- We do NOT snapshot positions here: traffic scripts call init() before
+    -- placing the vehicle at its world position, so getNodePosition() returns
+    -- jbeam-local coords (near origin) which are completely wrong.
+    -- We snapshot after STARTUP_GRACE seconds.
     rawNodeIds = {}
     allNodes   = {}
     refCid     = nil
+    cidToName  = {}
     for _, n in pairs(v.data.nodes) do
         table.insert(rawNodeIds, n.cid)
+        cidToName[n.cid] = n.name
         -- Find the named chest reference node for impact/fall detection
         if n.name == REF_NODE_NAME then
             refCid = n.cid
@@ -191,28 +266,34 @@ local function init(jbeamData)
 
     -- Reset accumulators and startup grace timer.
     -- walkDir, walkOffsetX, walkOffsetY are computed at grace END (world coords).
-    walkOffsetX  = 0
-    walkOffsetY  = 0
-    walkDir      = 0
-    walkTimer    = 0
-    startupTimer = 0
-    gracePrevX   = nil
-    gracePrevY   = nil
+    walkOffsetX    = 0
+    walkOffsetY    = 0
+    walkDir        = 0
+    walkTimer      = 0
+    startupTimer   = 0
+    walkCycleTimer = 0
+    terrainBaseZ   = 0
+    gracePrevX     = nil
+    gracePrevY     = nil
 
     state = "grace"
 end
 
 
 local function reset()
-    allNodes     = {}
-    walkOffsetX  = 0
-    walkOffsetY  = 0
-    walkTimer    = 0
-    startupTimer = 0
-    lastRefX     = 0
-    lastRefY     = 0
-    gracePrevX   = nil
-    gracePrevY   = nil
+    allNodes       = {}
+    bodyNodes      = {}
+    refNodeRec     = nil
+    walkOffsetX    = 0
+    walkOffsetY    = 0
+    walkTimer      = 0
+    startupTimer   = 0
+    walkCycleTimer = 0
+    terrainBaseZ   = 0
+    lastRefX       = 0
+    lastRefY       = 0
+    gracePrevX     = nil
+    gracePrevY     = nil
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
@@ -315,22 +396,40 @@ local function updateGFX(dt)
             --     This ensures NO node is placed below the road surface regardless
             --     of which node rawNodeIds[1] is or how the dummy has fallen.
             local terrainZ = lowestCid and obj:getNodePosition(lowestCid).z or p0.z
+            terrainBaseZ = terrainZ
+            allNodes  = {}
+            bodyNodes = {}
+            refNodeRec = nil
             for _, off in ipairs(localOffsets) do
-                local nx = p0.x + off.dx
-                local ny = p0.y + off.dy
-                local nz = terrainZ + off.dz
-                table.insert(allNodes, {
+                local nx  = p0.x + off.dx
+                local ny  = p0.y + off.dy
+                local nz  = terrainZ + off.dz
+                local grp = classifyNode(cidToName[off.cid])
+                local rec = {
                     cid    = off.cid,
                     spawnX = nx,
                     spawnY = ny,
-                    spawnZ = nz,
-                })
+                    dz     = off.dz,
+                    group  = grp,
+                }
+                table.insert(allNodes, rec)
+                -- Build pre-filtered body list for O(bodyNodes) terrain tracking.
+                if grp == "body" then
+                    table.insert(bodyNodes, rec)
+                end
+                -- Cache direct reference to the impact-detection node.
+                if off.cid == refCid then
+                    refNodeRec = rec
+                end
                 obj:setNodePosition(off.cid, vec3(nx, ny, nz))
             end
             -- Initialize lastRefX/Y from the RECONSTRUCTED position so the first-
             -- frame impact check has zero displacement and doesn't immediately
             -- trigger a spurious "standing" transition.
-            if refCid then
+            if refNodeRec then
+                lastRefX = refNodeRec.spawnX
+                lastRefY = refNodeRec.spawnY
+            elseif refCid then
                 for _, off in ipairs(localOffsets) do
                     if off.cid == refCid then
                         lastRefX = p0.x + off.dx
@@ -339,6 +438,7 @@ local function updateGFX(dt)
                     end
                 end
             end
+            walkCycleTimer = 0
             state = "ghost"
         end
         return  -- walkDir/allNodes not ready yet; ghost teleportation starts next state
@@ -353,7 +453,10 @@ local function updateGFX(dt)
     -- holds the 5 m sidewalk shift but the nodes haven't been teleported yet —
     -- that would look like a 5 m displacement and immediately trigger "standing").
     --
-    --   • XY displacement ≥ 4 cm since last teleport  → something hit the dummy
+    -- The thorax node is a body node (not an animated limb), so its placed XY
+    -- is always spawnX + walkOffsetX — limb animation does not affect it.
+    --
+    --   • XY displacement ≥ 6 cm since last teleport  → something hit the dummy
     --
     if refCid and #allNodes > 0 then
         local cur = vec3(obj:getNodePosition(refCid))
@@ -380,36 +483,70 @@ local function updateGFX(dt)
     walkOffsetX = walkOffsetX + stepX
     walkOffsetY = walkOffsetY + stepY
 
-    -- ── 5. Teleport every node to its desired ghost position ─────────────────
-    --  Moving ALL nodes by the same XY offset keeps every beam length constant
-    --  → no spurious internal forces or vibration.
-    --  Z tracking: read current physics Z.  We only allow Z to INCREASE so the
-    --  dummy follows uphill terrain.  We never decrease spawnZ, because gravity
-    --  pulls nodes ~1 mm downward between each setNodePosition call; updating
-    --  downward would accumulate into the "sinking / sliding on ground" behaviour.
-    for _, rec in ipairs(allNodes) do
+    -- ── 5. Terrain tracking (pre-filtered body nodes only) ───────────────────────
+    -- Read physics Z of torso/body nodes.  If physics has pushed them upward
+    -- (uphill terrain), we detect that as (curZ - rec.dz) > terrainBaseZ and
+    -- raise the terrain reference.  Body nodes are used — not leg nodes — so
+    -- that foot animation lifts don't corrupt the terrain reference.
+    for _, rec in ipairs(bodyNodes) do
         local curZ = obj:getNodePosition(rec.cid).z
-        -- Uphill terrain following: allow Z to rise, never sink.
-        if curZ > rec.spawnZ then
-            rec.spawnZ = curZ
+        local impliedBase = curZ - rec.dz
+        if impliedBase > terrainBaseZ then
+            terrainBaseZ = impliedBase
         end
-        obj:setNodePosition(rec.cid, vec3(
-            rec.spawnX + walkOffsetX,
-            rec.spawnY + walkOffsetY,
-            rec.spawnZ
-        ))
+    end
+
+    -- ── 6. Walking animation cycle ────────────────────────────────────────────
+    -- Sinusoidal arm/leg swing in the forward-walk direction.
+    -- Left leg and right arm swing forward together (natural gait).
+    -- Right leg and left arm swing forward together (opposite phase).
+    walkCycleTimer = walkCycleTimer + dt
+    local phi     = walkCycleTimer * (2 * math.pi) / walkCyclePeriod
+    local rphi    = phi + math.pi   -- opposite phase (right leg / left arm)
+    local sinPhi  = math.sin(phi)
+    local sinRphi = math.sin(rphi)
+    local fwdX    = math.sin(walkDir)
+    local fwdY    = math.cos(walkDir)
+    -- Step lift: foot rises during forward swing only (sinPhi > 0).
+    local stepL   = stepHeight * (sinPhi  > 0 and sinPhi  or 0)
+    local stepR   = stepHeight * (sinRphi > 0 and sinRphi or 0)
+
+    -- ── 7. Teleport every node to its desired ghost position ─────────────────
+    -- Body nodes: placed at terrainBaseZ + dz (no animation offset).
+    -- Leg nodes:  additional forward/backward swing + vertical step lift.
+    -- Arm nodes:  additional forward/backward swing (opposite phase to legs).
+    -- Moving ALL body nodes by the same XY offset keeps every body beam length
+    -- constant → no spurious internal forces or vibration.
+    for _, rec in ipairs(allNodes) do
+        local nx = rec.spawnX + walkOffsetX
+        local ny = rec.spawnY + walkOffsetY
+        local nz = terrainBaseZ + rec.dz
+
+        if rec.group == "leftLeg" then
+            nx = nx + fwdX * legSwingAmplitude * sinPhi
+            ny = ny + fwdY * legSwingAmplitude * sinPhi
+            nz = nz + stepL
+        elseif rec.group == "rightLeg" then
+            nx = nx + fwdX * legSwingAmplitude * sinRphi
+            ny = ny + fwdY * legSwingAmplitude * sinRphi
+            nz = nz + stepR
+        elseif rec.group == "leftArm" then
+            nx = nx + fwdX * armSwingAmplitude * sinRphi
+            ny = ny + fwdY * armSwingAmplitude * sinRphi
+        elseif rec.group == "rightArm" then
+            nx = nx + fwdX * armSwingAmplitude * sinPhi
+            ny = ny + fwdY * armSwingAmplitude * sinPhi
+        end
+
+        obj:setNodePosition(rec.cid, vec3(nx, ny, nz))
     end
 
     -- Update the reference position for next frame's impact check.
-    -- This is where we ACTUALLY placed the ref node this frame.
-    if refCid then
-        for _, rec in ipairs(allNodes) do
-            if rec.cid == refCid then
-                lastRefX = rec.spawnX + walkOffsetX
-                lastRefY = rec.spawnY + walkOffsetY
-                break
-            end
-        end
+    -- The thorax node is a body node; its XY is simply spawnX + walkOffsetX.
+    -- Use the cached direct reference to avoid an O(n) search each frame.
+    if refNodeRec then
+        lastRefX = refNodeRec.spawnX + walkOffsetX
+        lastRefY = refNodeRec.spawnY + walkOffsetY
     end
 end
 

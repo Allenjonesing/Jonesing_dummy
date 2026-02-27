@@ -51,9 +51,13 @@
     "controller": [
         ["fileName"],
         ["jonesingGtaNpc", {
-            "walkSpeed":       0.008,
-            "walkChangePeriod":5.0,
-            "sidewalkOffset":  0.0
+            "walkSpeed":         0.008,
+            "walkChangePeriod":  5.0,
+            "sidewalkOffset":    0.0,
+            "walkCyclePeriod":   0.8,
+            "legSwingAmplitude": 0.12,
+            "armSwingAmplitude": 0.07,
+            "stepHeight":        0.05
         }],
     ],
 },
