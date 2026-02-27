@@ -37,11 +37,12 @@ local DUMMY_MODEL      = "agenty_dummy"
 local DUMMY_CONFIG     = "vehicles/agenty_dummy/Normal.pc"
 
 -- ── runtime state ─────────────────────────────────────────────────────────────
-local active          = false
-local hostVehicleIds  = {}   -- [vid] = true for every vehicle that activated us
-local trackedIds      = {}   -- [vid] = true for all dummies we manage
-local pendingSpawns   = 0    -- incremented per spawn request; consumed in onVehicleAdded
-local updateTimer     = 0
+local active                = false
+local hostVehicleIds        = {}   -- [vid] = true for every vehicle that activated us
+local trackedIds            = {}   -- [vid] = true for all dummies we manage
+local pendingSpawns         = 0    -- incremented per spawn request; consumed in onVehicleAdded
+local updateTimer           = 0
+local playerVehicleToRestore = nil -- vehicle object to re-focus once spawning batch completes
 
 
 -- ── helpers ───────────────────────────────────────────────────────────────────
@@ -142,6 +143,12 @@ function M.onVehicleAdded(vid)
     if pendingSpawns > 0 and not hostVehicleIds[vid] then
         pendingSpawns = pendingSpawns - 1
         trackedIds[vid] = true
+        -- Once the last queued spawn has been added, restore camera focus to
+        -- the player's original vehicle so spawning doesn't hijack the view.
+        if pendingSpawns == 0 and playerVehicleToRestore then
+            be:enterVehicle(0, playerVehicleToRestore)
+            playerVehicleToRestore = nil
+        end
     end
 end
 
@@ -193,19 +200,28 @@ function M.onUpdate(dt)
 
     -- 2. Top up the pool.
     local shortage = DUMMY_COUNT - countTracked() - pendingSpawns
-    for i = 1, math.max(0, shortage) do
-        local spawnPos = findRoadSpawnPos(pp, SPAWN_RADIUS_MIN, SPAWN_RADIUS_MAX)
-        spawnDummy(spawnPos)
+    if shortage > 0 then
+        -- Capture the player's current vehicle so we can re-focus after all
+        -- spawns complete.  Only set it once per batch so a previous pending
+        -- batch doesn't overwrite the original vehicle reference.
+        if playerVehicleToRestore == nil then
+            playerVehicleToRestore = be:getPlayerVehicle(0)
+        end
+        for i = 1, shortage do
+            local spawnPos = findRoadSpawnPos(pp, SPAWN_RADIUS_MIN, SPAWN_RADIUS_MAX)
+            spawnDummy(spawnPos)
+        end
     end
 end
 
 function M.onClientEndMission()
     -- Level unloaded — clear state without trying to delete vehicles
     -- (the engine already removes everything).
-    active         = false
-    trackedIds     = {}
-    pendingSpawns  = 0
-    hostVehicleIds = {}
+    active                  = false
+    trackedIds              = {}
+    pendingSpawns           = 0
+    hostVehicleIds          = {}
+    playerVehicleToRestore  = nil
 end
 
 return M
