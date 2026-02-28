@@ -134,7 +134,7 @@
 {"collision":true}, {"selfCollision":false},
 {"nodeMaterial":"|NM_SKIN"},
 {"nodeWeight":0.30},
-{"frictionCoef":5},
+{"frictionCoef":0.5},
 
 // INTESTINE (BASE) — reference positions
 ["oi1",  0.00, -0.030, 1.21],
@@ -218,7 +218,7 @@
 // RIGHT LUNG ////////////////////////
 {"group":"right_lung_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.28},   // was 0.14
-{"frictionCoef":5}
+{"frictionCoef":0.5}
 ["orl1","$=$adummy1scale*-0.10","$=$adummy1scale*-0.02","$=$adummy1scale*1.36"],
 ["orl2","$=$adummy1scale*-0.05","$=$adummy1scale*-0.05","$=$adummy1scale*1.33"],
 ["orl3","$=$adummy1scale*-0.08","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.33"],
@@ -228,7 +228,7 @@
 // LEFT LUNG
 {"group":"left_lung_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.28},   // was 0.14
-{"frictionCoef":5}
+{"frictionCoef":0.5}
 ["oll1","$=$adummy1scale*0.10","$=$adummy1scale*-0.02","$=$adummy1scale*1.36"],
 ["oll2","$=$adummy1scale*0.05","$=$adummy1scale*-0.05","$=$adummy1scale*1.33"],
 ["oll3","$=$adummy1scale*0.08","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.33"],
@@ -238,7 +238,7 @@
 // LIVER
 {"group":"liver_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.30},   // was 0.16
-{"frictionCoef":5}
+{"frictionCoef":0.5}
 ["olv1","$=$adummy1scale*-0.06","$=$adummy1scale*-0.02","$=$adummy1scale*1.08"],
 ["olv2","$=$adummy1scale*-0.02","$=$adummy1scale*-0.04","$=$adummy1scale*1.05"],
 ["olv3","$=$adummy1scale*-0.05","$=$adummy1scale*0.03" ,"$=$adummy1scale*1.03"],
@@ -248,7 +248,7 @@
 // HEART
 {"group":"heart_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},{"nodeWeight":0.27},   // was 0.12
-{"frictionCoef":5}
+{"frictionCoef":0.5}
 ["oht1","$=$adummy1scale*0.00","$=$adummy1scale*-0.02","$=$adummy1scale*1.32"],
 ["oht2","$=$adummy1scale*0.03","$=$adummy1scale*-0.04","$=$adummy1scale*1.29"],
 ["oht3","$=$adummy1scale*-0.03","$=$adummy1scale*-0.04","$=$adummy1scale*1.29"],
@@ -258,7 +258,7 @@
 // STOMACH
 {"group":"stomach_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},
-{"nodeWeight":0.28}, {"frictionCoef":5},
+{"nodeWeight":0.28}, {"frictionCoef":0.5},
 ["ost1","$=$adummy1scale*0.06","$=$adummy1scale*-0.03","$=$adummy1scale*1.14"],
 ["ost2","$=$adummy1scale*0.09","$=$adummy1scale*-0.05","$=$adummy1scale*1.12"],
 ["ost3","$=$adummy1scale*0.05","$=$adummy1scale*0.02" ,"$=$adummy1scale*1.10"],
@@ -268,7 +268,7 @@
 // BLADDER
 {"group":"bladder_g"},
 {"collision":true},{"selfCollision":false},{"nodeMaterial":"|NM_SKIN"},
-{"nodeWeight":0.26},{"frictionCoef":5},
+{"nodeWeight":0.26},{"frictionCoef":0.5},
 ["obd1","$=$adummy1scale*0.02","$=$adummy1scale*-0.05","$=$adummy1scale*0.98"],
 ["obd2","$=$adummy1scale*-0.02","$=$adummy1scale*-0.05","$=$adummy1scale*0.98"],
 ["obd3","$=$adummy1scale*0.02","$=$adummy1scale*0.00","$=$adummy1scale*0.94"],
