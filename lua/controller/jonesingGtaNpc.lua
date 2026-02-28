@@ -88,7 +88,7 @@ local walkSpeed          = 0.001    -- m/s  (barely perceptible GTA pedestrian s
 -- never accumulates beyond this regardless of frame rate or walk speed setting.
 -- 5 mph = 2.235 m/s
 local maxWalkSpeed        = 1.235    -- m/s  (~5 mph)
-local walkChangePeriod   = 5.0      -- s    (how often direction gently drifts)
+local walkChangePeriod   = -1.0      -- s    (how often direction gently drifts)
 local sidewalkOffset     = 0.0      -- m    (0 = walk from spawn position, no sidewalk shift)
 
 -- Threshold for detecting that the traffic script has teleported the vehicle to
@@ -117,7 +117,7 @@ local PROXIMITY_RADIUS_SQ  = 3.0 * 3.0     -- metres²  (3 m sphere radius)
 -- Grace period after spawn before the impact check is enabled.
 -- Traffic-script spawning runs physics-settling for ~2 s after init();
 -- 3.5 s provides comfortable margin for all map/PC speeds.
-local STARTUP_GRACE        = 3.0             -- seconds
+local STARTUP_GRACE        = 0.0             -- seconds
 
 -- Name of the reference body node (chest, ~1.45 m above ground).
 -- Using a high thorax node avoids false-positive falls from foot/ground contact.
