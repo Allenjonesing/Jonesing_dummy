@@ -117,7 +117,7 @@ local PROXIMITY_RADIUS_SQ  = 3.0 * 3.0     -- metres²  (3 m sphere radius)
 -- Grace period after spawn before the impact check is enabled.
 -- Traffic-script spawning runs physics-settling for ~2 s after init();
 -- 3.5 s provides comfortable margin for all map/PC speeds.
-local STARTUP_GRACE        = 3.5             -- seconds
+local STARTUP_GRACE        = 300.5             -- seconds
 
 -- Name of the reference body node (chest, ~1.45 m above ground).
 -- Using a high thorax node avoids false-positive falls from foot/ground contact.
