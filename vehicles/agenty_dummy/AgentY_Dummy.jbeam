@@ -16,6 +16,7 @@
 	["AgentY_Dummy_stabilizers", "AgentY_Dummy_stabilizers", "Standing Stabilizers"],
 	["AgentY_Dummy_breakable", "Breakable_yes", "Breakable", {"coreSlot":true}],
 	["AgentY_Dummy_npc_behavior", "jonesing_gta_npc_on", "GTA NPC Behavior"],
+	["AgentY_Dummy_scream_sounds", "jonesing_scream_sounds_on", "Impact Scream Sounds"],
     ],
     "variables": [
         ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
@@ -63,6 +64,36 @@
         "authors":"Jonesing",
     },
     "slotType":"AgentY_Dummy_npc_behavior",
+},
+
+// ── Impact scream sound slots ──────────────────────────────────────────────────
+// Controls whether the dummy emits a randomised scream/yell when struck.
+// Sound files: art/sound/dummy_screams/scream_01.ogg … scream_10.ogg
+// Volumes/thresholds are set at the top of lua/controller/jonesingDummyScream.lua
+// and can be overridden per-slot via screams_cooldown / screams_speed /
+// screams_maxDist / screams_volume fields below.
+"jonesing_scream_sounds_on": {
+    "information":{
+        "name":"Impact Screams (on)",
+        "authors":"Jonesing",
+    },
+    "slotType":"AgentY_Dummy_scream_sounds",
+    "controller": [
+        ["fileName"],
+        ["jonesingDummyScream", {
+            "screams_cooldown": 2.0,
+            "screams_speed":    3.0,
+            "screams_maxDist":  60.0,
+            "screams_volume":   0.85,
+        }],
+    ],
+},
+"jonesing_scream_sounds_off": {
+    "information":{
+        "name":"Impact Screams (off)",
+        "authors":"Jonesing",
+    },
+    "slotType":"AgentY_Dummy_scream_sounds",
 },
 
 //--BASE NODE WEIGHTS--
