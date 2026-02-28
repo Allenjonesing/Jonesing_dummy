@@ -53,7 +53,7 @@
         ["jonesingGtaNpc", {
             "walkSpeed":       0.008,
             "walkChangePeriod":5.0,
-            "sidewalkOffset":  0.0
+            "sidewalkOffset":  3.0
         }],
     ],
 },
