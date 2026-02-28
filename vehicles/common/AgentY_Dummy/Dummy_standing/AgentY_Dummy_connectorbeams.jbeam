@@ -11,7 +11,7 @@
     ],
     "beams": [
         ["id1:", "id2:"],
-     	{"beamDeform": 3000, "beamStrength":"FLT_MAX"}, 
+     	{"beamDeform": 500000, "beamStrength":"FLT_MAX"}, 
     ],
 },
 "Breakable_yes": {
@@ -30,7 +30,7 @@
     ],
     "beams": [
         ["id1:", "id2:"],
-     	{"beamDeform": 4000, "beamStrength":"25000"}, 
+     	{"beamDeform": 35000, "beamStrength":"15000"}, 
     ],
 },
 
@@ -48,9 +48,10 @@
         {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
         
 		//thorax to abdomen
-		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"30000"},
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"6000"},
 		{"deformLimitExpansion":1.1}, 
 		{"breakGroup":"dummy1_thoraxabdomen"},
+		
 		["dummy1_thoraxtfl", "dummy1_abdomentfl"],
 		["dummy1_thoraxtfr", "dummy1_abdomentfr"],
 		["dummy1_thoraxmrl", "dummy1_abdomentrl"],
@@ -73,7 +74,7 @@
 
 		
 		//pelvis to abdomen
-		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"20000"},
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"4000"},
 		{"deformLimitExpansion":1.1}, 
 		{"breakGroup":"dummy1_pelvisabdomen"},
 		
@@ -99,7 +100,7 @@
 
 		// INTESTINES //////////////////
 		//thorax to abdomen
-		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"30000"},
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"6000"},
 		{"deformLimitExpansion":1.1}, 
 		{"breakGroup":"dummy1_thoraxabdomen_intestines"},
 		
@@ -125,7 +126,7 @@
 
 		
 		//pelvis to abdomen
-		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"20000"},
+		{"beamSpring": "$=$adummy1weight*50000","beamDamp":"$=$adummy1weight*50", "beamStrength":"4000"},
 		{"deformLimitExpansion":1.1}, 
 		{"breakGroup":"dummy1_pelvisabdomen_intestines"},
 		
