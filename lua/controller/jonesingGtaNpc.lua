@@ -56,7 +56,7 @@
 local M = {}
 
 -- ── internal state ────────────────────────────────────────────────────────────
-local state              = "grace"   -- "grace", "ghost", or "standing"
+local state              = "ghost"   -- "grace", "ghost", or "standing"
 local allNodes           = {}        -- {cid, spawnX, spawnY, spawnZ} — set after baseline
 local refCid             = nil       -- cid of "dummy1_thoraxtfl" (chest reference node)
 local lastRefX           = 0.0      -- where we LAST teleported the reference node (X)
@@ -87,8 +87,8 @@ local walkSpeed          = 0.001    -- m/s  (barely perceptible GTA pedestrian s
 -- Hard speed cap: teleport delta per frame is clamped so physics velocity
 -- never accumulates beyond this regardless of frame rate or walk speed setting.
 -- 5 mph = 2.235 m/s
-local maxWalkSpeed        = 2.235    -- m/s  (~5 mph)
-local walkChangePeriod   = 5.0      -- s    (how often direction gently drifts)
+local maxWalkSpeed        = 1.235    -- m/s  (~5 mph)
+local walkChangePeriod   = -1.0      -- s    (how often direction gently drifts)
 local sidewalkOffset     = 0.0      -- m    (0 = walk from spawn position, no sidewalk shift)
 
 -- Threshold for detecting that the traffic script has teleported the vehicle to
@@ -117,7 +117,7 @@ local PROXIMITY_RADIUS_SQ  = 3.0 * 3.0     -- metres²  (3 m sphere radius)
 -- Grace period after spawn before the impact check is enabled.
 -- Traffic-script spawning runs physics-settling for ~2 s after init();
 -- 3.5 s provides comfortable margin for all map/PC speeds.
-local STARTUP_GRACE        = 3.5             -- seconds
+local STARTUP_GRACE        = 0.0             -- seconds
 
 -- Name of the reference body node (chest, ~1.45 m above ground).
 -- Using a high thorax node avoids false-positive falls from foot/ground contact.
@@ -210,7 +210,7 @@ local function init(jbeamData)
     gracePrevX   = nil
     gracePrevY   = nil
 
-    state = "grace"
+    state = "ghost"  -- start in ghost mode; we transition to standing after impact detection
 end
 
 
@@ -227,7 +227,7 @@ local function reset()
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
-    state = "grace"
+    state = "ghost"
 end
 
 
@@ -237,7 +237,7 @@ local function updateGFX(dt)
     -- STANDING state: all position overrides are OFF.
     if state == "standing" then return end
 
-    -- ── 1. Grace period: hold upright and wait for world placement ───────────────
+    -- ── 1. Ghost mode: hold upright and wait for world placement ───────────────
     -- Traffic scripts place the vehicle AFTER init().  We use localOffsets
     -- (jbeam-relative offsets captured at init) to teleport ALL nodes every frame
     -- to maintain the rigid upright body shape relative to rawNodeIds[1].
@@ -248,7 +248,7 @@ local function updateGFX(dt)
     -- upright pose there, and we transition to ghost mode.
     -- Because we are teleporting every frame, physics velocity NEVER accumulates,
     -- so the impact check cannot spuriously fire on ghost-mode entry.
-    if state == "grace" then
+    if state == "ghost" then
         startupTimer = startupTimer + dt
 
         -- Detect traffic-script vehicle placement: sudden large position jump.
@@ -457,5 +457,6 @@ end
 M.init      = init
 M.reset     = reset
 M.updateGFX = updateGFX
+
 
 return M
