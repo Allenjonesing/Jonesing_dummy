@@ -1,4 +1,5 @@
-Jonesing Pedestrians
+🚷Jonesing Pedestrians
+
 Jonesing Pedestrians is a BeamNG.drive mod that adds spawnable, moving pedestrian crash-test dummies to the world — building toward a more immersive sandbox experience.
 
 📦 Repository Contents
