@@ -1,0 +1,107 @@
+{
+"AgentY_Dummy0_mustache": {
+    "information":{
+        "name":"Mustache & Beret",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy0_extras",   
+    "flexbodies": [
+        ["mesh", "[group]:"],
+        ["AgentY_Dummy_mustache", ["agenty_dummy1_head"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+	["AgentY_Dummy_beret",    ["agenty_dummy1_head"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+    ],
+},
+"AgentY_Dummy0_beret": {
+    "information":{
+        "name":"Beret",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy0_extras",   
+    "flexbodies": [
+        ["mesh", "[group]:"],
+	["AgentY_Dummy_beret", ["agenty_dummy1_head"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+    ],
+},
+"AgentY_Dummy0_spikes": {
+    "information":{
+        "name":"Spikes",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy0_extras",   
+    "flexbodies": [
+        ["mesh", "[group]:"],
+	["AgentY_Dummy_spikes", ["agenty_dummy1_head"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+    ],
+},
+
+"AgentY_Dummy0_mustache_sit": {
+    "information":{
+        "name":"Mustache & Beret",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy0_extras_sit",   
+    "flexbodies": [
+        ["mesh", "[group]:"],
+        ["AgentY_Dummy_mustache", ["agenty_dummy1_head"]{"pos":{"x":0,"y":"$=$adummy1scale*0.02","z":"$=$adummy1scale*-0.05"},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+	["AgentY_Dummy_beret",    ["agenty_dummy1_head"]{"pos":{"x":0,"y":"$=$adummy1scale*0.02","z":"$=$adummy1scale*-0.05"},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+    ],
+},
+"AgentY_Dummy0_beret_sit": {
+    "information":{
+        "name":"Beret",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy0_extras_sit",   
+    "flexbodies": [
+        ["mesh", "[group]:"],
+	["AgentY_Dummy_beret", ["agenty_dummy1_head"]{"pos":{"x":0,"y":"$=$adummy1scale*0.02","z":"$=$adummy1scale*-0.05"},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+    ],
+},
+"AgentY_Dummy0_spikes_sit": {
+    "information":{
+        "name":"Spikes",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy0_extras_sit",   
+    "flexbodies": [
+        ["mesh", "[group]:"],
+	["AgentY_Dummy_spikes", ["agenty_dummy1_head"]{"pos":{"x":0,"y":"$=$adummy1scale*0.02","z":"$=$adummy1scale*-0.05"},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+    ],
+},
+
+"AgentY_Dummy0_mustache_lying": {
+    "information":{
+        "name":"Mustache & Beret",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy0_extras_lying",   
+    "flexbodies": [
+        ["mesh", "[group]:", "nonFlexMaterials"],
+        ["AgentY_Dummy_mustache", ["agenty_dummy1_head"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+	["AgentY_Dummy_beret",    ["agenty_dummy1_head"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+    ],
+},
+"AgentY_Dummy0_beret_lying": {
+    "information":{
+        "name":"Beret",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy0_extras_lying",   
+    "flexbodies": [
+        ["mesh", "[group]:", "nonFlexMaterials"],
+	["AgentY_Dummy_beret", ["agenty_dummy1_head"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+    ],
+},
+"AgentY_Dummy0_spikes_lying": {
+    "information":{
+        "name":"Spikes",
+        "authors":"AgentY",
+    },
+    "slotType":"AgentY_Dummy0_extras_lying",   
+    "flexbodies": [
+        ["mesh", "[group]:", "nonFlexMaterials"],
+	["AgentY_Dummy_spikes", ["agenty_dummy1_head"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+    ],
+},
+
+}

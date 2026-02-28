@@ -1,0 +1,59 @@
+{
+"AgentY_Dummy_stabilizers": {
+    "information":{
+        "name":"Standing Stabilizers",
+        "authors":"AgentY",
+
+    },
+    "slotType":"AgentY_Dummy_stabilizers",
+    
+    "variables": [
+        ["name", "type", "unit", "category", "default", "min", "max", "title", "description"],
+        ["$adummy1stabilizers", "range", "N", "Dummy", 1000, 0, 5000, "Stand Stabilizers Strength", "Min force needed to break stand stabilizers", {"stepDis":100,"subCategory":"Stand Stabilizers"}],
+    ],
+
+    "beams": [
+        ["id1:", "id2:"],
+	{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+	{"breakGroup":"dummy1_standlatch"},
+	{"beamDeform": "$adummy1stabilizers", "beamStrength": "$adummy1stabilizers"},
+	{"beamSpring": "$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*10"},
+		
+	["dummy1_R_footbrr", "dummy1_R_legshinbrr"],
+	["dummy1_R_footbrl", "dummy1_R_legshinbrl"],
+	["dummy1_L_footbrr", "dummy1_L_legshinbrr"],
+	["dummy1_L_footbrl", "dummy1_L_legshinbrl"],
+	
+	["dummy1_R_foottipr","dummy1_R_legshinmfr"],
+	["dummy1_R_foottipl","dummy1_R_legshinmfl"],
+	["dummy1_L_foottipr","dummy1_L_legshinmfr"],
+	["dummy1_L_foottipl","dummy1_L_legshinmfl"],
+
+	["dummy1_R_thightrr","dummy1_R_legshinmrr"],
+	["dummy1_R_thightrl","dummy1_R_legshinmrl"],
+	["dummy1_L_thightrr","dummy1_L_legshinmrr"],
+	["dummy1_L_thightrl","dummy1_L_legshinmrl"],
+
+	["dummy1_R_thighmfr","dummy1_R_legshinmrr"],
+	["dummy1_R_thighmfl","dummy1_R_legshinmrl"],
+	["dummy1_L_thighmfr","dummy1_L_legshinmrr"],
+	["dummy1_L_thighmfl","dummy1_L_legshinmrl"],
+
+	["dummy1_R_thightrr", "dummy1_pelvistrr"],
+	["dummy1_L_thightrl", "dummy1_pelvistrl"],
+	["dummy1_R_thightrr", "dummy1_pelvismrr"],
+	["dummy1_L_thightrl", "dummy1_pelvismrl"],
+		
+		
+	// Extra ankle stabilizers — softer spring so ankles can flex slightly on uneven ground
+	{"beamSpring": "$=$adummy1weight*15000","beamDamp":"$=$adummy1weight*50"},
+	["dummy1_L_footbmr", "dummy1_L_legshinbfr"],
+	["dummy1_L_footbml", "dummy1_L_legshinbfl"],
+	["dummy1_R_footbmr", "dummy1_R_legshinbfr"],
+	["dummy1_R_footbml", "dummy1_R_legshinbfl"],
+	{"breakGroup":""},
+
+    ],
+},
+
+},
