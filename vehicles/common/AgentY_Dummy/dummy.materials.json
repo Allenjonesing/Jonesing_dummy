@@ -384,7 +384,7 @@
   "thairoid01_lungh_part02_002-material": {
     "name": "thairoid01_lungh_part02_002-material",
     "class": "Material",
-    "mapTo": "thairoid01_lungh_part02_002",
+    "mapTo": "thairoid01:lungh_part02.002",
     "version": 1.5,
     "Stages": [
       {
@@ -431,7 +431,7 @@
   "thairoid01_lungh_part02-material": {
     "name": "thairoid01_lungh_part02-material",
     "class": "Material",
-    "mapTo": "thairoid01_lungh_part02",
+    "mapTo": "thairoid01:lungh_part02",
     "version": 1.5,
     "Stages": [
       {
@@ -529,9 +529,9 @@
     "materialTag1": "object"
   },
   "Intestines_002-material": {
-    "name": "Intestines_001-material",
+    "name": "Intestines_002-material",
     "class": "Material",
-    "mapTo": "Intestines_002",
+    "mapTo": "Intestines.002",
     "version": 1.5,
     "Stages": [
       {
@@ -555,9 +555,9 @@
     "materialTag1": "object"
   },
   "Intestines_003-material": {
-    "name": "Intestines_001-material",
+    "name": "Intestines_003-material",
     "class": "Material",
-    "mapTo": "Intestines_003",
+    "mapTo": "Intestines.003",
     "version": 1.5,
     "Stages": [
       {
@@ -581,9 +581,9 @@
     "materialTag1": "object"
   },
   "Intestines_004-material": {
-    "name": "Intestines_001-material",
+    "name": "Intestines_004-material",
     "class": "Material",
-    "mapTo": "Intestines_004",
+    "mapTo": "Intestines.004",
     "version": 1.5,
     "Stages": [
       {
@@ -607,9 +607,9 @@
     "materialTag1": "object"
   },
   "Intestines_005-material": {
-    "name": "Intestines_001-material",
+    "name": "Intestines_005-material",
     "class": "Material",
-    "mapTo": "Intestines_005",
+    "mapTo": "Intestines.005",
     "version": 1.5,
     "Stages": [
       {
@@ -633,9 +633,9 @@
     "materialTag1": "object"
   },
   "Intestines_006-material": {
-    "name": "Intestines_001-material",
+    "name": "Intestines_006-material",
     "class": "Material",
-    "mapTo": "Intestines_006",
+    "mapTo": "Intestines.006",
     "version": 1.5,
     "Stages": [
       {
@@ -659,9 +659,9 @@
     "materialTag1": "object"
   },
   "Intestines_007-material": {
-    "name": "Intestines_001-material",
+    "name": "Intestines_007-material",
     "class": "Material",
-    "mapTo": "Intestines_007",
+    "mapTo": "Intestines.007",
     "version": 1.5,
     "Stages": [
       {
@@ -685,9 +685,9 @@
     "materialTag1": "object"
   },
   "Intestines_008-material": {
-    "name": "Intestines_001-material",
+    "name": "Intestines_008-material",
     "class": "Material",
-    "mapTo": "Intestines_008",
+    "mapTo": "Intestines.008",
     "version": 1.5,
     "Stages": [
       {
@@ -711,9 +711,9 @@
     "materialTag1": "object"
   },
   "Intestines_009-material": {
-    "name": "Intestines_001-material",
+    "name": "Intestines_009-material",
     "class": "Material",
-    "mapTo": "Intestines_009",
+    "mapTo": "Intestines.009",
     "version": 1.5,
     "Stages": [
       {
@@ -737,9 +737,9 @@
     "materialTag1": "object"
   },
   "Intestines_010-material": {
-    "name": "Intestines_001-material",
+    "name": "Intestines_010-material",
     "class": "Material",
-    "mapTo": "Intestines_010",
+    "mapTo": "Intestines.010",
     "version": 1.5,
     "Stages": [
       {
