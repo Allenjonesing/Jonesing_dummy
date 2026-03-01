@@ -22,23 +22,28 @@
   ["AgentY_Dummy_abdomen", ["agenty_dummy1_abdomen"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
   ["AgentY_Dummy_pelvis",  ["agenty_dummy1_pelvis"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
 
-// Organs: visual-only, deforms with their node groups (same scaling as body)
-["AgentY_Dummy_Right_Lung",  ["right_lung_g"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Left_Lung",   ["left_lung_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Bladder",       ["bladder_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Heart",       ["heart_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Liver",    ["liver_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Stomach",  ["stomach_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine",      ["intestine_g"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.001",  ["intestine_g1"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.002",  ["intestine_g2"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.003",  ["intestine_g3"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.004",  ["intestine_g4"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.005",  ["intestine_g5"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.006",  ["intestine_g6"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.007",  ["intestine_g7"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.008",  ["intestine_g8"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-["AgentY_Dummy_Intestine.009",  ["intestine_g9"], {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}]
+// Organs: visual flexbodies referencing scene node IDs in AgentY_Dummy.dae.
+// The names MUST match the <node id="..."> in the DAE scene graph exactly.
+["AgentY_Dummy_Right_Lung",    ["right_lung_g"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Left_Lung",     ["left_lung_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Bladder",       ["bladder_g"],     {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Heart",         ["heart_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Liver",         ["liver_g"],       {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Stomach",       ["stomach_g"],     {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+// Intestines: 10 separate scene nodes in AgentY_Dummy.dae.
+// The flexbody mesh names MUST match BOTH the node id AND name in the DAE.
+// IDs are underscore-notation (AgentY_Dummy_Intestine_001 etc); we updated
+// the DAE node names to match so both id and name are underscore.
+["AgentY_Dummy_Intestine",     ["intestine_g"],   {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_001", ["intestine_g1"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_002", ["intestine_g2"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_003", ["intestine_g3"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_004", ["intestine_g4"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_005", ["intestine_g5"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_006", ["intestine_g6"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_007", ["intestine_g7"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_008", ["intestine_g8"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+["AgentY_Dummy_Intestine_009", ["intestine_g9"],  {"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}]
 
 
 ],
