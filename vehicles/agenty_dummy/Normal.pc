@@ -1,6 +1,6 @@
 {
   "format":2,
-  "model":"agenty_dummy",
+  "model":"jonesing_dummy",
   "parts":{},
   "vars":{
     "$adummy1weight":1.50967742,

@@ -9,7 +9,7 @@
 -- Purpose: when the Universal Dummy Mod is loaded (i.e. the license-plate slot
 -- is occupied by the dummy mod), this controller bridges from the Vehicle-Engine
 -- (VE) context to the Game-Engine (GE) context so that propRecycler can spawn
--- and recycle 10 agenty_dummy pedestrians around the map as traffic.
+-- and recycle 10 jonesing_dummy pedestrians around the map as traffic.
 --
 -- VE → GE bridge:
 --   init()   fires obj:queueGameEngineLua() to load propRecycler and spawn the
