@@ -1,7 +1,7 @@
 {
   "format":2,
   "mainPartName":"AgentY_Dummy",
-  "model":"agenty_dummy",
+  "model":"jonesing_dummy",
   "parts":{
     "AgentY_Dummy0_arm_L":"AgentY_Dummy0_arm_L",
     "AgentY_Dummy0_arm_R":"AgentY_Dummy0_arm_R",
