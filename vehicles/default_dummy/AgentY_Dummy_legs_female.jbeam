@@ -1,18 +1,17 @@
 {
-"AgentY_Dummy0_legs": {
+"AgentY_Dummy0_legs_female": {
     "information":{
         "name":"Legs",
         "authors":"AgentY",
     },
-    "slotType":"AgentY_Dummy0_legs",
+    "slotType":"AgentY_Dummy0_legs_female",
     
-    
-
+   
     "flexbodies": [
         ["mesh", "[group]:"],
-        ["AgentY_Dummy_thigh_l", ["agenty_dummy1_thigh_L"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+        ["AgentY_Dummy_thigh_l_female", ["agenty_dummy1_thigh_L"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
 		["AgentY_Dummy_legconnector_l", ["agenty_dummy1_thigh_L"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
-		["AgentY_Dummy_thigh_r", ["agenty_dummy1_thigh_R"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+		["AgentY_Dummy_thigh_r_female", ["agenty_dummy1_thigh_R"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
 		["AgentY_Dummy_legconnector_r", ["agenty_dummy1_thigh_R"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
 		
 		["AgentY_Dummy_legshin_l",["agenty_dummy1_legshin_L"]{"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
@@ -25,14 +24,14 @@
     ],
     "nodes": [
         ["id", "posX", "posY", "posZ"],
-		{"nodeMaterial":"|NM_SKIN"},
-        {"frictionCoef":0.8},
+		{"nodeMaterial":"|NM_PLASTIC"},
+        {"frictionCoef":0.5},
         {"collision":true},
 
 
 		//--LEFT THIGH--
         {"group":"agenty_dummy1_thigh_L"},
-		{"nodeWeight":"$=$adummy1weight*0.965"},
+		{"nodeWeight":"$=$adummy1weight*0.465"},
 		
 		{"selfCollision":false},
 		["dummy1_L_thighpelvis","$=$adummy1scale*0.02","$=$adummy1scale*-0.04","$=$adummy1scale*0.92"],
@@ -57,7 +56,7 @@
 		
 		//--RIGHT THIGH--
         {"group":"agenty_dummy1_thigh_R"},
-		{"nodeWeight":"$=$adummy1weight*0.965"},
+		{"nodeWeight":"$=$adummy1weight*0.465"},
 		
 		{"selfCollision":false},
 		["dummy1_R_thighpelvis","$=$adummy1scale*-0.02","$=$adummy1scale*-0.04","$=$adummy1scale*0.92"],
@@ -82,7 +81,7 @@
 		
 		//--LEFT LEGSHIN--
         {"group":"agenty_dummy1_legshin_L"},
-		{"nodeWeight":"$=$adummy1weight*0.64542"},
+		{"nodeWeight":"$=$adummy1weight*0.24542"},
 		
 		["dummy1_L_legshintipl","$=$adummy1scale*0.20","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
 		["dummy1_L_legshintipr","$=$adummy1scale*0.08","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
@@ -105,7 +104,7 @@
 		
 		//--RIGHT LEGSHIN--
         {"group":"agenty_dummy1_legshin_R"},
-		{"nodeWeight":"$=$adummy1weight*0.64542"},
+		{"nodeWeight":"$=$adummy1weight*0.24542"},
 		
 		["dummy1_R_legshintipr","$=$adummy1scale*-0.20","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
 		["dummy1_R_legshintipl","$=$adummy1scale*-0.08","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
@@ -128,8 +127,8 @@
 		
 		//--LEFT FOOT--
         {"group":"agenty_dummy1_foot_L"},
-		{"nodeWeight":"$=$adummy1weight*0.27388"},
-		{"frictionCoef":1},
+		{"nodeWeight":"$=$adummy1weight*0.07388"},
+		{"frictionCoef":0.8},
 		
 		["dummy1_L_foottfr", "$=$adummy1scale*0.07","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
 		["dummy1_L_foottfl", "$=$adummy1scale*0.22","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
@@ -149,8 +148,8 @@
 		
 		//--RIGHT FOOT--
         {"group":"agenty_dummy1_foot_R"},
-		{"nodeWeight":"$=$adummy1weight*0.27388"},
-		{"frictionCoef":1},
+		{"nodeWeight":"$=$adummy1weight*0.07388"},
+		{"frictionCoef":0.8},
 		
 		["dummy1_R_foottfl", "$=$adummy1scale*-0.07","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
 		["dummy1_R_foottfr", "$=$adummy1scale*-0.22","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
@@ -173,7 +172,7 @@
     "beams": [
         ["id1:", "id2:"],
         {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-     	{"beamDeform": 5000, "beamStrength":"FLT_MAX"}, 
+     	{"beamDeform": 500000, "beamStrength":"FLT_MAX"}, 
         {"breakGroup":""},
 		
 		//--LEFT THIGH--

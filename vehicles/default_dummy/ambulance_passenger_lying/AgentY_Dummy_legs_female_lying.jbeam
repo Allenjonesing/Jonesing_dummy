@@ -1,171 +1,171 @@
 {
-"AgentY_Dummy0_legs": {
+"AgentY_Dummy0_legs_female_lying": {
     "information":{
         "name":"Legs",
         "authors":"AgentY",
     },
-    "slotType":"AgentY_Dummy0_legs",
+    "slotType":"AgentY_Dummy0_legs_female_lying",
     
     
 
     "flexbodies": [
-        ["mesh", "[group]:"],
-        ["AgentY_Dummy_thigh_l", ["agenty_dummy1_thigh_L"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
-		["AgentY_Dummy_legconnector_l", ["agenty_dummy1_thigh_L"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
-		["AgentY_Dummy_thigh_r", ["agenty_dummy1_thigh_R"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
-		["AgentY_Dummy_legconnector_r", ["agenty_dummy1_thigh_R"]{"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+        ["mesh", "[group]:", "nonFlexMaterials"],
+        ["AgentY_Dummy_thigh_l_female", ["agenty_dummy1_thigh_L"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+		["AgentY_Dummy_legconnector_l", ["agenty_dummy1_thigh_L"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+		["AgentY_Dummy_thigh_r_female", ["agenty_dummy1_thigh_R"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
+		["AgentY_Dummy_legconnector_r", ["agenty_dummy1_thigh_R"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale", "y":"$adummy1scale", "z":"$adummy1scale"}}],
 		
-		["AgentY_Dummy_legshin_l",["agenty_dummy1_legshin_L"]{"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-		["AgentY_Dummy_footconnector_l",["agenty_dummy1_legshin_L"]{"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-		["AgentY_Dummy_legshin_r",["agenty_dummy1_legshin_R"]{"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-		["AgentY_Dummy_footconnector_r",["agenty_dummy1_legshin_R"]{"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+		["AgentY_Dummy_legshin_l",["agenty_dummy1_legshin_L"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+		["AgentY_Dummy_footconnector_l",["agenty_dummy1_legshin_L"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+		["AgentY_Dummy_legshin_r",["agenty_dummy1_legshin_R"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+		["AgentY_Dummy_footconnector_r",["agenty_dummy1_legshin_R"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
 		
-		["AgentY_Dummy_foot_l",  ["agenty_dummy1_foot_L"]{"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
-		["AgentY_Dummy_foot_r",  ["agenty_dummy1_foot_R"]{"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+		["AgentY_Dummy_foot_l",  ["agenty_dummy1_foot_L"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
+		["AgentY_Dummy_foot_r",  ["agenty_dummy1_foot_R"],[]{"rot":{"x":-90, "y":0,"z":0},"scale":{"x":"$adummy1scale","y":"$adummy1scale","z":"$adummy1scale"}}],
     ],
     "nodes": [
         ["id", "posX", "posY", "posZ"],
-		{"nodeMaterial":"|NM_SKIN"},
-        {"frictionCoef":0.8},
+		{"nodeMaterial":"|NM_PLASTIC"},
+        {"frictionCoef":0.5},
         {"collision":true},
 
 
 		//--LEFT THIGH--
         {"group":"agenty_dummy1_thigh_L"},
-		{"nodeWeight":"$=$adummy1weight*0.965"},
+		{"nodeWeight":"$=$adummy1weight*0.465"},
 		
 		{"selfCollision":false},
-		["dummy1_L_thighpelvis","$=$adummy1scale*0.02","$=$adummy1scale*-0.04","$=$adummy1scale*0.92"],
-		["dummy1_L_thighmid", "$=$adummy1scale*0.12", "$=$adummy1scale*-0.04", "$=$adummy1scale*0.85"],
-		//{"selfCollision":true},
+		["dummy1_L_thighpelvis","$=$adummy1scale*0.02","$=$adummy1scale*0.92","$=$adummy1scale*0.04"],
+		["dummy1_L_thighmid", "$=$adummy1scale*0.12", "$=$adummy1scale*0.85", "$=$adummy1scale*0.04"],
+		{"selfCollision":true},
 		
-		["dummy1_L_thightfl", "$=$adummy1scale*0.19","$=$adummy1scale*-0.12", "$=$adummy1scale*0.94"],
-		["dummy1_L_thightrl", "$=$adummy1scale*0.19", "$=$adummy1scale*0.05", "$=$adummy1scale*0.94"],
-		["dummy1_L_thightfr", "$=$adummy1scale*0.05","$=$adummy1scale*-0.12", "$=$adummy1scale*0.83"],
-		["dummy1_L_thightrr", "$=$adummy1scale*0.05", "$=$adummy1scale*0.05", "$=$adummy1scale*0.83"],
-		
-		["dummy1_L_thighmfl", "$=$adummy1scale*0.19","$=$adummy1scale*-0.11", "$=$adummy1scale*0.59"],
-		["dummy1_L_thighmrl", "$=$adummy1scale*0.19", "$=$adummy1scale*0.02", "$=$adummy1scale*0.59"],
-		["dummy1_L_thighmfr", "$=$adummy1scale*0.09","$=$adummy1scale*-0.11", "$=$adummy1scale*0.59"],
-		["dummy1_L_thighmrr", "$=$adummy1scale*0.09", "$=$adummy1scale*0.02", "$=$adummy1scale*0.59"],
-		
-		["dummy1_L_thighbfl", "$=$adummy1scale*0.17","$=$adummy1scale*-0.10", "$=$adummy1scale*0.55"],
-		["dummy1_L_thighbrl", "$=$adummy1scale*0.17","$=$adummy1scale*-0.03", "$=$adummy1scale*0.54"],
-		["dummy1_L_thighbfr", "$=$adummy1scale*0.11","$=$adummy1scale*-0.10", "$=$adummy1scale*0.55"],
-		["dummy1_L_thighbrr", "$=$adummy1scale*0.11","$=$adummy1scale*-0.03", "$=$adummy1scale*0.54"],
+		["dummy1_L_thightfl", "$=$adummy1scale*0.19", "$=$adummy1scale*0.94","$=$adummy1scale*0.12"],
+		["dummy1_L_thightrl", "$=$adummy1scale*0.19", "$=$adummy1scale*0.94", "$=$adummy1scale*-0.05"],
+		["dummy1_L_thightfr", "$=$adummy1scale*0.05", "$=$adummy1scale*0.83","$=$adummy1scale*0.12"],
+		["dummy1_L_thightrr", "$=$adummy1scale*0.05", "$=$adummy1scale*0.83", "$=$adummy1scale*-0.05"],
+		                                            
+		["dummy1_L_thighmfl", "$=$adummy1scale*0.19", "$=$adummy1scale*0.59","$=$adummy1scale*0.11"],
+		["dummy1_L_thighmrl", "$=$adummy1scale*0.19", "$=$adummy1scale*0.59", "$=$adummy1scale*-0.02"],
+		["dummy1_L_thighmfr", "$=$adummy1scale*0.09", "$=$adummy1scale*0.59","$=$adummy1scale*0.11"],
+		["dummy1_L_thighmrr", "$=$adummy1scale*0.09", "$=$adummy1scale*0.59", "$=$adummy1scale*-0.02"],
+		                                            
+		["dummy1_L_thighbfl", "$=$adummy1scale*0.17", "$=$adummy1scale*0.55","$=$adummy1scale*0.10"],
+		["dummy1_L_thighbrl", "$=$adummy1scale*0.17", "$=$adummy1scale*0.54","$=$adummy1scale*0.03"],
+		["dummy1_L_thighbfr", "$=$adummy1scale*0.11", "$=$adummy1scale*0.55","$=$adummy1scale*0.10"],
+		["dummy1_L_thighbrr", "$=$adummy1scale*0.11", "$=$adummy1scale*0.54","$=$adummy1scale*0.03"],
 		
 		
 		//--RIGHT THIGH--
         {"group":"agenty_dummy1_thigh_R"},
-		{"nodeWeight":"$=$adummy1weight*0.965"},
+		{"nodeWeight":"$=$adummy1weight*0.465"},
 		
 		{"selfCollision":false},
-		["dummy1_R_thighpelvis","$=$adummy1scale*-0.02","$=$adummy1scale*-0.04","$=$adummy1scale*0.92"],
-		["dummy1_R_thighmid", "$=$adummy1scale*-0.12", "$=$adummy1scale*-0.04", "$=$adummy1scale*0.85"],
-		//{"selfCollision":true},
+		["dummy1_R_thighpelvis","$=$adummy1scale*-0.02","$=$adummy1scale*0.92","$=$adummy1scale*0.04"],
+		["dummy1_R_thighmid", "$=$adummy1scale*-0.12", "$=$adummy1scale*0.85", "$=$adummy1scale*0.04"],
+		{"selfCollision":true},
 		
-		["dummy1_R_thightfr", "$=$adummy1scale*-0.19","$=$adummy1scale*-0.12", "$=$adummy1scale*0.94"],
-		["dummy1_R_thightrr", "$=$adummy1scale*-0.19", "$=$adummy1scale*0.05", "$=$adummy1scale*0.94"],
-		["dummy1_R_thightfl", "$=$adummy1scale*-0.05","$=$adummy1scale*-0.12", "$=$adummy1scale*0.83"],
-		["dummy1_R_thightrl", "$=$adummy1scale*-0.05", "$=$adummy1scale*0.05", "$=$adummy1scale*0.83"],
-		
-		["dummy1_R_thighmfr", "$=$adummy1scale*-0.19","$=$adummy1scale*-0.11", "$=$adummy1scale*0.59"],
-		["dummy1_R_thighmrr", "$=$adummy1scale*-0.19", "$=$adummy1scale*0.02", "$=$adummy1scale*0.59"],
-		["dummy1_R_thighmfl", "$=$adummy1scale*-0.09","$=$adummy1scale*-0.11", "$=$adummy1scale*0.59"],
-		["dummy1_R_thighmrl", "$=$adummy1scale*-0.09", "$=$adummy1scale*0.02", "$=$adummy1scale*0.59"],
-		
-		["dummy1_R_thighbfr", "$=$adummy1scale*-0.17","$=$adummy1scale*-0.10", "$=$adummy1scale*0.55"],
-		["dummy1_R_thighbrr", "$=$adummy1scale*-0.17","$=$adummy1scale*-0.03", "$=$adummy1scale*0.54"],
-		["dummy1_R_thighbfl", "$=$adummy1scale*-0.11","$=$adummy1scale*-0.10", "$=$adummy1scale*0.55"],
-		["dummy1_R_thighbrl", "$=$adummy1scale*-0.11","$=$adummy1scale*-0.03", "$=$adummy1scale*0.54"],
+		["dummy1_R_thightfr", "$=$adummy1scale*-0.19", "$=$adummy1scale*0.94","$=$adummy1scale*0.12"],
+		["dummy1_R_thightrr", "$=$adummy1scale*-0.19", "$=$adummy1scale*0.94", "$=$adummy1scale*-0.05"],
+		["dummy1_R_thightfl", "$=$adummy1scale*-0.05", "$=$adummy1scale*0.83","$=$adummy1scale*0.12"],
+		["dummy1_R_thightrl", "$=$adummy1scale*-0.05", "$=$adummy1scale*0.83", "$=$adummy1scale*-0.05"],
+		                                             
+		["dummy1_R_thighmfr", "$=$adummy1scale*-0.19", "$=$adummy1scale*0.59","$=$adummy1scale*0.11"],
+		["dummy1_R_thighmrr", "$=$adummy1scale*-0.19", "$=$adummy1scale*0.59", "$=$adummy1scale*-0.02"],
+		["dummy1_R_thighmfl", "$=$adummy1scale*-0.09", "$=$adummy1scale*0.59","$=$adummy1scale*0.11"],
+		["dummy1_R_thighmrl", "$=$adummy1scale*-0.09", "$=$adummy1scale*0.59", "$=$adummy1scale*-0.02"],
+		                                             
+		["dummy1_R_thighbfr", "$=$adummy1scale*-0.17", "$=$adummy1scale*0.55","$=$adummy1scale*0.10"],
+		["dummy1_R_thighbrr", "$=$adummy1scale*-0.17", "$=$adummy1scale*0.54","$=$adummy1scale*0.03"],
+		["dummy1_R_thighbfl", "$=$adummy1scale*-0.11", "$=$adummy1scale*0.55","$=$adummy1scale*0.10"],
+		["dummy1_R_thighbrl", "$=$adummy1scale*-0.11", "$=$adummy1scale*0.54","$=$adummy1scale*0.03"],
 
 		
 		//--LEFT LEGSHIN--
         {"group":"agenty_dummy1_legshin_L"},
-		{"nodeWeight":"$=$adummy1weight*0.64542"},
+		{"nodeWeight":"$=$adummy1weight*0.24542"},
 		
-		["dummy1_L_legshintipl","$=$adummy1scale*0.20","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
-		["dummy1_L_legshintipr","$=$adummy1scale*0.08","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
-		
-		["dummy1_L_legshinmfl", "$=$adummy1scale*0.20","$=$adummy1scale*-0.10", "$=$adummy1scale*0.51"],
-		["dummy1_L_legshinmfr", "$=$adummy1scale*0.08","$=$adummy1scale*-0.10", "$=$adummy1scale*0.51"],
-		["dummy1_L_legshinmrl", "$=$adummy1scale*0.20", "$=$adummy1scale*0.03", "$=$adummy1scale*0.49"],
-		["dummy1_L_legshinmrr", "$=$adummy1scale*0.08", "$=$adummy1scale*0.03", "$=$adummy1scale*0.49"],
-		
-		["dummy1_L_legshinbfl", "$=$adummy1scale*0.18","$=$adummy1scale*-0.08", "$=$adummy1scale*0.15"],
-		["dummy1_L_legshinbfr", "$=$adummy1scale*0.11","$=$adummy1scale*-0.08", "$=$adummy1scale*0.15"],
-		["dummy1_L_legshinbrl", "$=$adummy1scale*0.18", 0, "$=$adummy1scale*0.15"],
-		["dummy1_L_legshinbrr", "$=$adummy1scale*0.11", 0, "$=$adummy1scale*0.15"],
+		["dummy1_L_legshintipl","$=$adummy1scale*0.20", "$=$adummy1scale*0.53","$=$adummy1scale*0.04"],
+		["dummy1_L_legshintipr","$=$adummy1scale*0.08", "$=$adummy1scale*0.53","$=$adummy1scale*0.04"],
+		                                              
+		["dummy1_L_legshinmfl", "$=$adummy1scale*0.20", "$=$adummy1scale*0.51","$=$adummy1scale*0.10"],
+		["dummy1_L_legshinmfr", "$=$adummy1scale*0.08", "$=$adummy1scale*0.51","$=$adummy1scale*0.10"],
+		["dummy1_L_legshinmrl", "$=$adummy1scale*0.20", "$=$adummy1scale*0.49", "$=$adummy1scale*-0.03"],
+		["dummy1_L_legshinmrr", "$=$adummy1scale*0.08", "$=$adummy1scale*0.49", "$=$adummy1scale*-0.03"],
+		                                              
+		["dummy1_L_legshinbfl", "$=$adummy1scale*0.18", "$=$adummy1scale*0.15","$=$adummy1scale*0.08"],
+		["dummy1_L_legshinbfr", "$=$adummy1scale*0.11", "$=$adummy1scale*0.15","$=$adummy1scale*0.08"],
+		["dummy1_L_legshinbrl", "$=$adummy1scale*0.18", "$=$adummy1scale*0.15",0],
+		["dummy1_L_legshinbrr", "$=$adummy1scale*0.11", "$=$adummy1scale*0.15",0],
 		
 		{"selfCollision":false},
-		["dummy1_L_legshinmid", "$=$adummy1scale*0.147", "$=$adummy1scale*-0.04", "$=$adummy1scale*0.30"],
-		["dummy1_L_legshinfoot","$=$adummy1scale*0.147", "$=$adummy1scale*-0.04", "$=$adummy1scale*0.08"],
-		//{"selfCollision":true},
+		["dummy1_L_legshinmid", "$=$adummy1scale*0.147", "$=$adummy1scale*0.30", "$=$adummy1scale*0.04"],
+		["dummy1_L_legshinfoot","$=$adummy1scale*0.147", "$=$adummy1scale*0.08", "$=$adummy1scale*0.04"],
+		{"selfCollision":true},
 		
 		
 		//--RIGHT LEGSHIN--
         {"group":"agenty_dummy1_legshin_R"},
-		{"nodeWeight":"$=$adummy1weight*0.64542"},
+		{"nodeWeight":"$=$adummy1weight*0.24542"},
 		
-		["dummy1_R_legshintipr","$=$adummy1scale*-0.20","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
-		["dummy1_R_legshintipl","$=$adummy1scale*-0.08","$=$adummy1scale*-0.04", "$=$adummy1scale*0.53"],
-		
-		["dummy1_R_legshinmfr", "$=$adummy1scale*-0.20","$=$adummy1scale*-0.10", "$=$adummy1scale*0.51"],
-		["dummy1_R_legshinmfl", "$=$adummy1scale*-0.08","$=$adummy1scale*-0.10", "$=$adummy1scale*0.51"],
-		["dummy1_R_legshinmrr", "$=$adummy1scale*-0.20", "$=$adummy1scale*0.03", "$=$adummy1scale*0.49"],
-		["dummy1_R_legshinmrl", "$=$adummy1scale*-0.08", "$=$adummy1scale*0.03", "$=$adummy1scale*0.49"],
-		
-		["dummy1_R_legshinbfr", "$=$adummy1scale*-0.18","$=$adummy1scale*-0.08", "$=$adummy1scale*0.15"],
-		["dummy1_R_legshinbfl", "$=$adummy1scale*-0.11","$=$adummy1scale*-0.08", "$=$adummy1scale*0.15"],
-		["dummy1_R_legshinbrr", "$=$adummy1scale*-0.18", 0, "$=$adummy1scale*0.15"],
-		["dummy1_R_legshinbrl", "$=$adummy1scale*-0.11", 0, "$=$adummy1scale*0.15"],
+		["dummy1_R_legshintipr","$=$adummy1scale*-0.20", "$=$adummy1scale*0.53","$=$adummy1scale*0.04"],
+		["dummy1_R_legshintipl","$=$adummy1scale*-0.08", "$=$adummy1scale*0.53","$=$adummy1scale*0.04"],
+		                                               
+		["dummy1_R_legshinmfr", "$=$adummy1scale*-0.20", "$=$adummy1scale*0.51","$=$adummy1scale*0.10"],
+		["dummy1_R_legshinmfl", "$=$adummy1scale*-0.08", "$=$adummy1scale*0.51","$=$adummy1scale*0.10"],
+		["dummy1_R_legshinmrr", "$=$adummy1scale*-0.20", "$=$adummy1scale*0.49", "$=$adummy1scale*-0.03"],
+		["dummy1_R_legshinmrl", "$=$adummy1scale*-0.08", "$=$adummy1scale*0.49", "$=$adummy1scale*-0.03"],
+		                                               
+		["dummy1_R_legshinbfr", "$=$adummy1scale*-0.18", "$=$adummy1scale*0.15","$=$adummy1scale*0.08"],
+		["dummy1_R_legshinbfl", "$=$adummy1scale*-0.11", "$=$adummy1scale*0.15","$=$adummy1scale*0.08"],
+		["dummy1_R_legshinbrr", "$=$adummy1scale*-0.18", "$=$adummy1scale*0.15",0],
+		["dummy1_R_legshinbrl", "$=$adummy1scale*-0.11", "$=$adummy1scale*0.15",0],
 		
 		{"selfCollision":false},
-		["dummy1_R_legshinmid", "$=$adummy1scale*-0.147", "$=$adummy1scale*-0.04", "$=$adummy1scale*0.30"],
-		["dummy1_R_legshinfoot","$=$adummy1scale*-0.147", "$=$adummy1scale*-0.04", "$=$adummy1scale*0.08"],
-		//{"selfCollision":true},
+		["dummy1_R_legshinmid", "$=$adummy1scale*-0.147", "$=$adummy1scale*0.30", "$=$adummy1scale*0.04"],
+		["dummy1_R_legshinfoot","$=$adummy1scale*-0.147", "$=$adummy1scale*0.08", "$=$adummy1scale*0.04"],
+		{"selfCollision":true},
 		
 		
 		//--LEFT FOOT--
         {"group":"agenty_dummy1_foot_L"},
-		{"nodeWeight":"$=$adummy1weight*0.27388"},
-		{"frictionCoef":1},
+		{"nodeWeight":"$=$adummy1weight*0.07388"},
+		{"frictionCoef":0.8},
 		
-		["dummy1_L_foottfr", "$=$adummy1scale*0.07","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
-		["dummy1_L_foottfl", "$=$adummy1scale*0.22","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
-		["dummy1_L_foottrr", "$=$adummy1scale*0.07", 0, "$=$adummy1scale*0.11"],
-		["dummy1_L_foottrl", "$=$adummy1scale*0.22", 0, "$=$adummy1scale*0.11"],
+		["dummy1_L_foottfr", "$=$adummy1scale*0.07", "$=$adummy1scale*0.11","$=$adummy1scale*0.10"],
+		["dummy1_L_foottfl", "$=$adummy1scale*0.22", "$=$adummy1scale*0.11","$=$adummy1scale*0.10"],
+		["dummy1_L_foottrr", "$=$adummy1scale*0.07", "$=$adummy1scale*0.11",0],
+		["dummy1_L_foottrl", "$=$adummy1scale*0.22", "$=$adummy1scale*0.11",0],
 		
-		["dummy1_L_footbfr", "$=$adummy1scale*0.07","$=$adummy1scale*-0.10", 0],
-		["dummy1_L_footbfl", "$=$adummy1scale*0.22","$=$adummy1scale*-0.10", 0],
+		["dummy1_L_footbfr", "$=$adummy1scale*0.07",0,"$=$adummy1scale*0.10"],
+		["dummy1_L_footbfl", "$=$adummy1scale*0.22",0,"$=$adummy1scale*0.10"],
 		["dummy1_L_footbmr", "$=$adummy1scale*0.07", 0, 0],
 		["dummy1_L_footbml", "$=$adummy1scale*0.22", 0, 0],
 		
-		["dummy1_L_footbrr", "$=$adummy1scale*0.07", "$=$adummy1scale*0.05", 0],
-		["dummy1_L_footbrl", "$=$adummy1scale*0.22", "$=$adummy1scale*0.05", 0],	
-		["dummy1_L_foottipr","$=$adummy1scale*0.07","$=$adummy1scale*-0.30", 0],
-		["dummy1_L_foottipl","$=$adummy1scale*0.22","$=$adummy1scale*-0.30", 0],
+		["dummy1_L_footbrr", "$=$adummy1scale*0.07",0, "$=$adummy1scale*-0.05"],
+		["dummy1_L_footbrl", "$=$adummy1scale*0.22",0, "$=$adummy1scale*-0.05"],	
+		["dummy1_L_foottipr","$=$adummy1scale*0.07",0,"$=$adummy1scale*0.30"],
+		["dummy1_L_foottipl","$=$adummy1scale*0.22",0,"$=$adummy1scale*0.30"],
 		
 		
 		//--RIGHT FOOT--
         {"group":"agenty_dummy1_foot_R"},
-		{"nodeWeight":"$=$adummy1weight*0.27388"},
-		{"frictionCoef":1},
+		{"nodeWeight":"$=$adummy1weight*0.07388"},
+		{"frictionCoef":0.8},
 		
-		["dummy1_R_foottfl", "$=$adummy1scale*-0.07","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
-		["dummy1_R_foottfr", "$=$adummy1scale*-0.22","$=$adummy1scale*-0.10", "$=$adummy1scale*0.11"],
-		["dummy1_R_foottrl", "$=$adummy1scale*-0.07", 0, "$=$adummy1scale*0.11"],
-		["dummy1_R_foottrr", "$=$adummy1scale*-0.22", 0, "$=$adummy1scale*0.11"],
+		["dummy1_R_foottfl", "$=$adummy1scale*-0.07", "$=$adummy1scale*0.11","$=$adummy1scale*0.10"],
+		["dummy1_R_foottfr", "$=$adummy1scale*-0.22", "$=$adummy1scale*0.11","$=$adummy1scale*0.10"],
+		["dummy1_R_foottrl", "$=$adummy1scale*-0.07", "$=$adummy1scale*0.11",0],
+		["dummy1_R_foottrr", "$=$adummy1scale*-0.22", "$=$adummy1scale*0.11",0],
 		
-		["dummy1_R_footbfl", "$=$adummy1scale*-0.07","$=$adummy1scale*-0.10", 0],
-		["dummy1_R_footbfr", "$=$adummy1scale*-0.22","$=$adummy1scale*-0.10", 0],
+		["dummy1_R_footbfl", "$=$adummy1scale*-0.07",0,"$=$adummy1scale*0.10"],
+		["dummy1_R_footbfr", "$=$adummy1scale*-0.22",0,"$=$adummy1scale*0.10"],
 		["dummy1_R_footbml", "$=$adummy1scale*-0.07", 0, 0],
 		["dummy1_R_footbmr", "$=$adummy1scale*-0.22", 0, 0],
 		
-		["dummy1_R_footbrl", "$=$adummy1scale*-0.07", "$=$adummy1scale*0.05", 0],
-		["dummy1_R_footbrr", "$=$adummy1scale*-0.22", "$=$adummy1scale*0.05", 0],	
-		["dummy1_R_foottipl","$=$adummy1scale*-0.07","$=$adummy1scale*-0.30", 0],
-		["dummy1_R_foottipr","$=$adummy1scale*-0.22","$=$adummy1scale*-0.30", 0],
+		["dummy1_R_footbrl", "$=$adummy1scale*-0.07",0, "$=$adummy1scale*-0.05"],
+		["dummy1_R_footbrr", "$=$adummy1scale*-0.22",0, "$=$adummy1scale*-0.05"],	
+		["dummy1_R_foottipl","$=$adummy1scale*-0.07",0,"$=$adummy1scale*0.30"],
+		["dummy1_R_foottipr","$=$adummy1scale*-0.22",0,"$=$adummy1scale*0.30"],
 		
 		
 		{"group":""},
@@ -173,7 +173,7 @@
     "beams": [
         ["id1:", "id2:"],
         {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-     	{"beamDeform": 5000, "beamStrength":"FLT_MAX"}, 
+     	{"beamDeform": 500000, "beamStrength":"FLT_MAX"}, 
         {"breakGroup":""},
 		
 		//--LEFT THIGH--
@@ -393,7 +393,7 @@
 		
 		
 		//--LEFT LEGSHIN--
-		{"beamSpring": "$=$adummy1weight*95000","beamDamp":"$=$adummy1weight*45"},
+		{"beamSpring": "$=$adummy1weight*75000","beamDamp":"$=$adummy1weight*25"},
 		{"deformLimitExpansion":1.005}, 
 		
 		//main shape
@@ -485,7 +485,7 @@
 		
 		
 		//--RIGHT LEGSHIN--
-		{"beamSpring": "$=$adummy1weight*95000","beamDamp":"$=$adummy1weight*45"},
+		{"beamSpring": "$=$adummy1weight*75000","beamDamp":"$=$adummy1weight*25"},
 		{"deformLimitExpansion":1.005}, 
 		
 		//main shape
