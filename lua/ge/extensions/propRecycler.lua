@@ -262,7 +262,7 @@ end
 local function spawnDummyAt(pos, q)
     local qx, qy, qz, qw = toQuat(q)
     if core_vehicles and core_vehicles.spawnNewVehicle then
-        local ok, id = pcall(core_vehicles.spawnNewVehicle, "agenty_dummy", {
+        local ok, id = pcall(core_vehicles.spawnNewVehicle, "jonesing_dummy", {
             pos = toVec3(pos),
             rot = quat(qx, qy, qz, qw),
             paint = nil,
@@ -276,13 +276,13 @@ local function spawnDummyAt(pos, q)
     end
     -- (fallbacks unchanged)
     if spawn and spawn.spawnVehicle then
-        local ok, id = pcall(spawn.spawnVehicle, "agenty_dummy",
+        local ok, id = pcall(spawn.spawnVehicle, "jonesing_dummy",
                              {pos = toVec3(pos), rot = quat(qx, qy, qz, qw)})
         if ok and id then return id end
     end
     if be and be.spawnVehicle then
         local ok, id = pcall(function()
-            return be:spawnVehicle("agenty_dummy", toVec3(pos),
+            return be:spawnVehicle("jonesing_dummy", toVec3(pos),
                                    quat(qx, qy, qz, qw))
         end)
         if ok and id then return id end
