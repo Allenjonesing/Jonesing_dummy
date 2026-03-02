@@ -2,25 +2,24 @@
 -- Vehicle Explosion System — GE (global) manager
 --
 -- Listens for "onVehicleExploded" notifications queued by explosionSystem.lua
--- (via obj:queueGameEngineLua) and triggers chain explosions on nearby vehicles
--- using the SAME path as the radial-menu "Fun Stuff → Boom!" action:
+-- (via obj:queueGameEngineLua) and triggers the BeamNG built-in explosion using:
 --
---   be:getVehicle(id):queueLuaCommand("obj:explode()")
+--   core_explosion.createExplosion(pos, power, radius)
+--
+-- This is the same internal call used by the "Fun Stuff → Boom!" radial menu action.
+-- Chain reactions on nearby vehicles are also fired via core_explosion.createExplosion.
 --
 -- NOTE on GE vehicle iteration:
 --   In GE Lua context, be:getVehicleCount() / be:getVehicle(i) do NOT exist
 --   (those are VE-context methods).  GE extensions iterate vehicles using
 --   scenetree.findClassObjects('BeamNGVehicle') instead.
 --
--- BOOM! IMPLEMENTATION NOTES:
---   The freeroam radial menu "Boom!" button triggers vehicle explosion by
---   queuing  obj:explode()  in the target vehicle's VE Lua context.
---   In GE Lua the call is:  be:getVehicle(id):queueLuaCommand("obj:explode()")
---   This manager uses that exact path so chain-reaction explosions are
---   identical to a player clicking Boom! on each nearby vehicle.
+-- NOTE: obj:explode() does NOT exist in BeamNG VE Lua — using core_explosion
+--   from GE Lua is the correct approach.
 --
 -- This module is entirely optional.  If not loaded, explosionSystem still
--- explodes the source vehicle; only chain reactions are skipped.
+-- fires the ignite + GE explosion on the source vehicle only; chain reactions
+-- are skipped.
 --
 -- USAGE (console):
 --   extensions.load("explosionManager")
@@ -34,6 +33,7 @@ local TAG = "explosionManager"
 local cfg = {
     debug               = true,   -- verbose logging
     chainReactionRadius = 12,     -- metres; vehicles inside this radius are chained
+    explosionPower      = 5,      -- default power for core_explosion.createExplosion
 }
 
 -- ── helpers ───────────────────────────────────────────────────────────────────
@@ -88,21 +88,17 @@ local function getAllVehiclesGE()
     return result
 end
 
--- Queue obj:explode() on a nearby vehicle — same path as Boom! radial menu.
--- This is the SAME call the "Fun Stuff → Boom!" button ultimately issues.
-local function chainDetonate(vehicleObj, vid)
+-- Trigger core_explosion.createExplosion on a nearby vehicle's position.
+-- This is the BeamNG built-in explosion — same as "Fun Stuff → Boom!" action.
+local function chainDetonate(vehicleObj, vid, power, radius)
     local ok, err = pcall(function()
-        if not (vehicleObj and vehicleObj.queueLuaCommand) then
-            dbg("chain: vehicle %s has no queueLuaCommand — skipping", tostring(vid))
-            return
-        end
-        -- Trigger the built-in Boom! explosion in the target vehicle's VE context.
-        -- obj:explode() is what the radial menu "Fun Stuff → Boom!" ultimately calls.
-        vehicleObj:queueLuaCommand("obj:explode()")
-        info("Chain Boom! queued for vehicle %s via queueLuaCommand('obj:explode()')", tostring(vid))
+        local vpos = vehicleObj:getPosition()
+        core_explosion.createExplosion(vpos, power, radius)
+        info("Chain explosion via core_explosion.createExplosion for vehicle %s (power=%.0f radius=%.1f)",
+            tostring(vid), power, radius)
     end)
     if not ok then
-        dbg("chainDetonate pcall error for vehicle %s: %s", tostring(vid), tostring(err))
+        dbg("chainDetonate error for vehicle %s: %s", tostring(vid), tostring(err))
     end
 end
 
@@ -118,12 +114,25 @@ function M.onVehicleExploded(vehicleId, event)
 
     local blastPos = { x = event.x or 0, y = event.y or 0, z = event.z or 0 }
     local radius   = event.radius or cfg.chainReactionRadius
+    local power    = event.power  or cfg.explosionPower
     local doChain  = event.chain ~= false
     local r2       = radius * radius
 
-    info("Explosion event from vehicle %s at (%.1f, %.1f, %.1f) r=%.1f chain=%s",
+    info("Explosion event from vehicle %s at (%.1f, %.1f, %.1f) r=%.1f power=%.0f chain=%s",
         tostring(vehicleId), blastPos.x, blastPos.y, blastPos.z,
-        radius, tostring(doChain))
+        radius, power, tostring(doChain))
+
+    -- Trigger the explosion effect using BeamNG's built-in core_explosion API.
+    -- This is the same call used by the "Fun Stuff → Boom!" radial menu action.
+    local explodeOk, explodeErr = pcall(function()
+        local pos = vec3(blastPos.x, blastPos.y, blastPos.z)
+        core_explosion.createExplosion(pos, power, radius)
+        info("core_explosion.createExplosion(pos=(%.1f,%.1f,%.1f), power=%.0f, radius=%.1f) for vehicle %s",
+            blastPos.x, blastPos.y, blastPos.z, power, radius, tostring(vehicleId))
+    end)
+    if not explodeOk then
+        info("core_explosion.createExplosion failed for vehicle %s: %s", tostring(vehicleId), tostring(explodeErr))
+    end
 
     if not doChain then
         dbg("Chain reactions disabled for this explosion — done")
@@ -150,7 +159,7 @@ function M.onVehicleExploded(vehicleId, event)
 
             if d2 <= r2 then
                 info("Chain: triggering vehicle %s (%.1f m from blast)", tostring(vid), dist)
-                chainDetonate(veh, vid)
+                chainDetonate(veh, vid, power, radius)
                 affected = affected + 1
             end
         end)
@@ -182,8 +191,8 @@ end
 
 function M.onExtensionLoaded()
     info("explosionManager loaded — listening for vehicle explosion events")
-    info("Chain radius=%.1f m  debug=%s", cfg.chainReactionRadius, tostring(cfg.debug))
-    info("Chain explosions use: be:getVehicle(id):queueLuaCommand('obj:explode()') — same as Boom! radial menu")
+    info("Chain radius=%.1f m  power=%.0f  debug=%s", cfg.chainReactionRadius, cfg.explosionPower, tostring(cfg.debug))
+    info("Explosions use: core_explosion.createExplosion(pos, power, radius) — same as Boom! radial menu")
 end
 
 return M

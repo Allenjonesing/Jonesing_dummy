@@ -8,18 +8,11 @@
 --               and suddenly stops (engineRunning == 0 or rpm drops to 0)
 --
 -- When any failure signal fires the sequence is:
---   1. obj:ignite()           — start engine fire visually
+--   1. obj:ignite()           — start engine fire visually (VE context)
 --   2. Wait explodeDelaySeconds (default 5 s, configurable)
---   3. obj:explode()          — BeamNG's built-in explosion (same API as
---                               the radial-menu "Fun Stuff → Boom!" action)
---   4. Notify GE explosionManager for optional chain reactions
---
--- BOOM! IMPLEMENTATION NOTE (researched from BeamNG source / community mods):
---   The radial-menu "Boom!" button ultimately calls  obj:explode()  in the
---   vehicle-engine (VE) Lua context of the target vehicle.  From the game-engine
---   (GE) side this is reached via:
---       be:getVehicle(id):queueLuaCommand("obj:explode()")
---   explosionManager.lua uses exactly this path for chain reactions.
+--   3. Notify GE explosionManager via obj:queueGameEngineLua — GE then calls
+--        core_explosion.createExplosion(pos, power, radius)
+--      which is the BeamNG built-in explosion used by the "Fun Stuff → Boom!" menu.
 --
 -- USAGE (console while in-game):
 --   extensions.load("explosionSystem")              -- load on current vehicle
@@ -34,10 +27,11 @@ local cfg = {
     enabled                = true,   -- master on/off switch
     debug                  = true,   -- verbose every-frame logging
     armDelaySeconds        = 3.0,    -- seconds after init before monitoring starts
-    explodeDelaySeconds    = 5.0,    -- seconds between ignition and obj:explode()
+    explodeDelaySeconds    = 5.0,    -- seconds between ignition and explosion
     engineDeviceName       = "mainEngine", -- powertrain device name to inspect
     stallRpmThreshold      = 400,    -- RPM below which engine is considered stalled
     stallWasRunningRpm     = 600,    -- RPM above which we mark engine as "was running"
+    explosionPower         = 5,      -- power passed to core_explosion.createExplosion
     explosionRadius        = 12,     -- metres passed to explosionManager for chains
     chainReaction          = true,   -- allow GE manager to chain to nearby vehicles
     statusLogInterval      = 2.0,    -- seconds between periodic status log lines
@@ -89,20 +83,23 @@ local function startFire()
 end
 
 local function notifyGE()
-    -- Queue a call to explosionManager in GE context (chain reactions only).
+    -- Queue a call to explosionManager in GE context.
+    -- GE will call core_explosion.createExplosion(pos, power, radius) — the
+    -- BeamNG built-in explosion used by the "Fun Stuff → Boom!" radial menu.
     local ok, err = pcall(function()
         local pid = obj:getId()
         local pos = obj:getPosition()
         local cmd = string.format(
             "local m = extensions and extensions.explosionManager;" ..
             "if m and m.onVehicleExploded then" ..
-            "  m.onVehicleExploded(%d,{x=%f,y=%f,z=%f,radius=%d,chain=%s})" ..
+            "  m.onVehicleExploded(%d,{x=%f,y=%f,z=%f,power=%f,radius=%d,chain=%s})" ..
             "end",
             pid, pos.x, pos.y, pos.z,
-            cfg.explosionRadius, tostring(cfg.chainReaction)
+            cfg.explosionPower, cfg.explosionRadius, tostring(cfg.chainReaction)
         )
         obj:queueGameEngineLua(cmd)
-        info("Queued GE explosionManager notification (vehicle %d)", pid)
+        info("Queued GE core_explosion.createExplosion notification (vehicle %d power=%.0f radius=%d)",
+            pid, cfg.explosionPower, cfg.explosionRadius)
     end)
     if not ok then info("notifyGE error: %s", tostring(err)) end
 end
@@ -120,21 +117,11 @@ local function doExplode(reason)
     info("  thermals at trigger: headGasketBlown=%s pistonRingsDamaged=%s connectingRodBearingsDamaged=%s",
         tostring(state.lastHgb), tostring(state.lastPrd), tostring(state.lastCrbd))
 
-    -- obj:explode() is the VE-side built-in explosion —
-    -- the SAME function called by the radial-menu "Fun Stuff → Boom!" action.
-    -- From GE Lua the equivalent call is: be:getVehicle(id):queueLuaCommand("obj:explode()")
-    -- (see explosionManager.lua which uses that path for chain reactions).
-    -- NOTE: obj is C++ userdata; methods may be exposed via __index metamethod only,
-    -- so checking obj.explode as a field returns nil even if obj:explode() works.
-    -- We always attempt the call via pcall and fall back only on actual error.
-    local explodeOk, explodeErr = pcall(function()
-        obj:explode()
-        info("obj:explode() called — built-in Boom triggered (vehicle %d)", obj:getId())
-    end)
-    if not explodeOk then
-        info("obj:explode() failed (%s); falling back to obj:ignite()", tostring(explodeErr))
-        pcall(function() obj:ignite() end)
-    end
+    -- obj:ignite() starts the visual engine fire.
+    -- The actual explosion effect is handled by explosionManager.lua in GE context
+    -- via notifyGE() → core_explosion.createExplosion(pos, power, radius).
+    -- Note: obj:explode() does NOT exist in BeamNG VE Lua.
+    pcall(function() obj:ignite() end)
 
     notifyGE()
 end
@@ -259,7 +246,7 @@ function M.updateGFX(dt)
         return
     end
 
-    -- ── 2. Fire countdown: wait then call obj:explode() ────────────────────────
+    -- ── 2. Fire countdown: wait then notify GE to call core_explosion ─────────────
     if state.engineFire then
         state.explodeTimer = state.explodeTimer + dt
         state.statusTimer  = state.statusTimer  + dt
