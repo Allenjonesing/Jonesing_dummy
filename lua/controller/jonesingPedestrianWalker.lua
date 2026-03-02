@@ -129,18 +129,21 @@ local function obstacleAhead(fromPos, dirX, dirY)
     if ok and rayHit then return true end
 
     -- 2. Dynamic objects: other vehicles in the forward cone
-    local myId  = obj:getId()
-    local count = be:getVehicleCount()
-    for i = 0, count - 1 do
-        local veh = be:getVehicle(i)
-        if veh and veh:getID() ~= myId then
-            local vp  = veh:getPosition()
-            local ex  = vp.x - fromPos.x
-            local ey  = vp.y - fromPos.y
-            local dot   = ex * dirX + ey * dirY       -- projection onto forward
-            local cross = ex * dirY - ey * dirX       -- signed lateral offset
-            if dot > 0 and dot < TURN_DIST and math.abs(cross) < TURN_CONE_HALF then
-                return true
+    --    'be' (BeamEngine) is only available in GE context; guard for safety.
+    if be then
+        local myId  = obj:getId()
+        local count = be:getVehicleCount()
+        for i = 0, count - 1 do
+            local veh = be:getVehicle(i)
+            if veh and veh:getID() ~= myId then
+                local vp  = veh:getPosition()
+                local ex  = vp.x - fromPos.x
+                local ey  = vp.y - fromPos.y
+                local dot   = ex * dirX + ey * dirY       -- projection onto forward
+                local cross = ex * dirY - ey * dirX       -- signed lateral offset
+                if dot > 0 and dot < TURN_DIST and math.abs(cross) < TURN_CONE_HALF then
+                    return true
+                end
             end
         end
     end
