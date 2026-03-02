@@ -51,6 +51,9 @@ local DEFAULTS = {
         "roadsurfer_police",
         "midsize_police",
     },
+    -- Lua pattern matched (case-insensitive) against each vehicle's model/jbeam
+    -- filename to identify police vehicles in the scene.
+    policeNamePattern = "police",
 }
 
 -- ---------------------------------------------------------------------------
@@ -72,6 +75,9 @@ local state = {
 
 local UPDATE_INTERVAL   = 0.25   -- run main logic 4× per second
 local REFRESH_INTERVAL  = 2.0    -- re-issue pursuit commands every N seconds
+-- Distance threshold (metres) for passive native-police detection when hooks
+-- don't fire.  Kept short to avoid false-positives from parked roadside cars.
+local NATIVE_DETECT_RADIUS = 80
 
 -- ---------------------------------------------------------------------------
 -- Config loader
@@ -371,10 +377,67 @@ local function _countActivePolice()
     return count
 end
 
+-- Scan all scene vehicles and return a set of IDs whose model/name contains 'police'.
+-- This includes native game police AND any vehicles we spawned.
+local function _getAllScenePoliceIds()
+    local ids = {}
+    if not be then return ids end
+    local n = 0
+    local ok0, err = pcall(function() n = be:getVehicleCount() end)
+    if not ok0 then logD("getVehicleCount failed: %s", tostring(err)) end
+    local pattern = (cfg.policeNamePattern or "police"):lower()
+    for i = 0, n - 1 do
+        pcall(function()
+            local veh = be:getVehicle(i)
+            if not veh then return end
+            local name = ""
+            -- getJBeamFilename() returns the model folder name (e.g. "fullsize_police")
+            local ok1, jn = pcall(function() return veh:getJBeamFilename() end)
+            if ok1 and type(jn) == "string" then name = jn end
+            -- Fallback: getName()
+            if name == "" then
+                local ok2, sn = pcall(function() return veh:getName() end)
+                if ok2 and type(sn) == "string" then name = sn end
+            end
+            if name:lower():find(pattern) then
+                local ok3, vid = pcall(function() return veh:getID() end)
+                if ok3 and vid then ids[tonumber(vid)] = true end
+            end
+        end)
+    end
+    return ids
+end
+
+local function _countAllScenePolice()
+    local n = 0
+    for _ in pairs(_getAllScenePoliceIds()) do n = n + 1 end
+    return n
+end
+
 local function _managePolice(now)
     local level = state.wantedLevel
     if level < 1 then
-        -- Ensure all police are despawned
+        -- Passive detection fallback: if a police vehicle is within 80 m of the
+        -- player and the native pursuit hooks haven't fired yet, treat as start.
+        local ppos = _playerPos()
+        if ppos then
+            for id in pairs(_getAllScenePoliceIds()) do
+                local o = be and be:getObjectByID(id)
+                if o then
+                    local ok, opos = pcall(function() return o:getPosition() end)
+                    if ok and opos then
+                        local dx = opos.x - ppos.x
+                        local dy = opos.y - ppos.y
+                        if (dx*dx + dy*dy) < (NATIVE_DETECT_RADIUS * NATIVE_DETECT_RADIUS) then
+                            logI("Native police detected nearby – setting wanted 1.")
+                            M.addWanted(1, "native_police_nearby")
+                            break
+                        end
+                    end
+                end
+            end
+        end
+        -- Ensure our own spawned extras are despawned
         if next(state.spawnedPoliceIds) then
             logI("Wanted dropped to 0 – despawning police.")
             M._despawnAll()
@@ -408,7 +471,9 @@ local function _managePolice(now)
 
     local desired    = rule.units     or 1
     local aggression = rule.aggression or 0.5
-    local current    = _countActivePolice()
+    -- Count ALL police in the scene (native game + our extras) so we don't
+    -- over-spawn when the native system already has units chasing the player.
+    local current    = _countAllScenePolice()
 
     if current >= desired then return end
 
@@ -625,8 +690,26 @@ end
 -- ---------------------------------------------------------------------------
 function M.getWantedLevel()  return state.wantedLevel end
 function M.getWantedHeat()   return state.wantedHeat end
-function M.getPoliceCount()  return _countActivePolice() end
+-- Count ALL police vehicles in the scene (native game + any we spawned).
+function M.getPoliceCount()  return _countAllScenePolice() end
 function M.getConfig()       return cfg end
+
+-- ---------------------------------------------------------------------------
+-- Native pursuit hooks (fired by BeamNG's built-in police/traffic system)
+-- Hook names vary between BeamNG versions; register all known variants.
+-- ---------------------------------------------------------------------------
+local function _onNativePursuitStart()
+    if not cfg.enabled or state.inCareer then return end
+    if state.wantedLevel < 1 then
+        logI("Native pursuit started – setting wanted 1.")
+        M.addWanted(1, "native_pursuit_started")
+    end
+end
+
+-- Hook names seen across BeamNG versions
+function M.onPlayerPursuitStart()  _onNativePursuitStart() end
+function M.onPursuitStarted()      _onNativePursuitStart() end
+function M.onPlayerWanted()        _onNativePursuitStart() end
 
 -- ---------------------------------------------------------------------------
 -- Hot-reload support: re-init cleanly
