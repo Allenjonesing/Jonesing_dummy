@@ -1,12 +1,21 @@
 -- lua/ge/extensions/explosionManager.lua
 -- Vehicle Explosion System — GE (global) manager
 --
--- Listens for "vehicle exploded" notifications sent by explosionSystem.lua
--- and applies optional chain-reaction explosions to nearby vehicles by queuing
--- a detonate() call on their own explosionSystem extension.
+-- Listens for "onVehicleExploded" notifications queued by explosionSystem.lua
+-- (via obj:queueGameEngineLua) and triggers chain explosions on nearby vehicles
+-- using the SAME path as the radial-menu "Fun Stuff → Boom!" action:
 --
--- This module is entirely optional.  If it is not loaded, explosionSystem.lua
--- still explodes the source vehicle locally.
+--   be:getVehicle(id):queueLuaCommand("obj:explode()")
+--
+-- BOOM! IMPLEMENTATION NOTES:
+--   The freeroam radial menu "Boom!" button triggers vehicle explosion by
+--   queuing  obj:explode()  in the target vehicle's VE Lua context.
+--   In GE Lua the call is:  be:getVehicle(id):queueLuaCommand("obj:explode()")
+--   This manager uses that exact path so chain-reaction explosions are
+--   identical to a player clicking Boom! on each nearby vehicle.
+--
+-- This module is entirely optional.  If not loaded, explosionSystem still
+-- explodes the source vehicle; only chain reactions are skipped.
 --
 -- USAGE (console):
 --   extensions.load("explosionManager")
@@ -42,23 +51,18 @@ end
 
 -- ── chain reaction ─────────────────────────────────────────────────────────────
 
--- Queue a detonate() call on a nearby vehicle's explosionSystem extension.
+-- Queue obj:explode() on a nearby vehicle — same path as Boom! radial menu.
+-- This is the SAME call the "Fun Stuff → Boom!" button ultimately issues.
 local function chainDetonate(vehicleObj, vid)
     local ok, err = pcall(function()
         if not (vehicleObj and vehicleObj.queueLuaCommand) then
-            dbg("chain: vehicle %s has no queueLuaCommand", tostring(vid))
+            dbg("chain: vehicle %s has no queueLuaCommand — skipping", tostring(vid))
             return
         end
-        local cmd = [[
-local ext = extensions and extensions.explosionSystem
-if ext and ext._chainDamage then
-    pcall(ext._chainDamage, 100)
-elseif ext and ext.detonate then
-    pcall(ext.detonate)
-end
-        ]]
-        vehicleObj:queueLuaCommand(cmd)
-        dbg("chainDetonate queued for vehicle %s", tostring(vid))
+        -- Trigger the built-in Boom! explosion in the target vehicle's VE context.
+        -- obj:explode() is what the radial menu "Fun Stuff → Boom!" ultimately calls.
+        vehicleObj:queueLuaCommand("obj:explode()")
+        info("Chain Boom! queued for vehicle %s via queueLuaCommand('obj:explode()')", tostring(vid))
     end)
     if not ok then
         dbg("chainDetonate pcall error for vehicle %s: %s", tostring(vid), tostring(err))
@@ -145,6 +149,7 @@ end
 function M.onExtensionLoaded()
     info("explosionManager loaded — listening for vehicle explosion events")
     info("Chain radius=%.1f m  debug=%s", cfg.chainReactionRadius, tostring(cfg.debug))
+    info("Chain explosions use: be:getVehicle(id):queueLuaCommand('obj:explode()') — same as Boom! radial menu")
 end
 
 return M

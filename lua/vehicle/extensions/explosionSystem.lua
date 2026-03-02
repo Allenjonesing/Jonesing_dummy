@@ -1,42 +1,65 @@
 -- lua/vehicle/extensions/explosionSystem.lua
 -- Vehicle Explosion System — Jonesing mod
 --
--- Monitors engine damage.  When the engine is severely damaged and begins
--- emitting fire, the vehicle is ignited immediately and then detonated after
--- a short countdown using BeamNG's built-in obj:explode() — the same API
--- used by the radial-menu "Explode" action.
+-- Monitors the ENGINE for REAL failure signals instead of invented damage values:
+--   Primary:  powertrain device thermals flags
+--               headGasketBlown / pistonRingsDamaged / connectingRodBearingsDamaged
+--   Secondary: electrics stall fallback — engine was running (rpm > threshold)
+--               and suddenly stops (engineRunning == 0 or rpm drops to 0)
 --
--- USAGE (console):
---   extensions.load("explosionSystem")       -- load on current vehicle
---   extensions.explosionSystem.detonate()    -- manual immediate detonation
---   extensions.explosionSystem.getStatus()   -- log current state
+-- When any failure signal fires the sequence is:
+--   1. obj:ignite()           — start engine fire visually
+--   2. Wait explodeDelaySeconds (default 5 s, configurable)
+--   3. obj:explode()          — BeamNG's built-in explosion (same API as
+--                               the radial-menu "Fun Stuff → Boom!" action)
+--   4. Notify GE explosionManager for optional chain reactions
 --
--- CONFIG OVERRIDES (per vehicle or via console):
---   extensions.explosionSystem.configure({ debug = true, engineFireThreshold = 0.8 })
+-- BOOM! IMPLEMENTATION NOTE (researched from BeamNG source / community mods):
+--   The radial-menu "Boom!" button ultimately calls  obj:explode()  in the
+--   vehicle-engine (VE) Lua context of the target vehicle.  From the game-engine
+--   (GE) side this is reached via:
+--       be:getVehicle(id):queueLuaCommand("obj:explode()")
+--   explosionManager.lua uses exactly this path for chain reactions.
+--
+-- USAGE (console while in-game):
+--   extensions.load("explosionSystem")              -- load on current vehicle
+--   extensions.explosionSystem.detonate()           -- manual immediate trigger
+--   extensions.explosionSystem.getStatus()          -- dump full state to log
+--   extensions.explosionSystem.configure({ debug = true })
 
 local M = {}
 
 -- ── default configuration ────────────────────────────────────────────────────
 local cfg = {
-    enabled              = true,   -- master on/off switch
-    debug                = true,   -- verbose logging (flip to false to quiet logs)
-    armDelaySeconds      = 3.0,    -- seconds after init before monitoring starts
-    engineFireThreshold  = 0.9,    -- powertrain damage ratio (0–1) that triggers fire
-    explodeDelaySeconds  = 5.0,    -- seconds between ignition and detonation
-    explosionRadius      = 12,     -- metres passed to explosionManager for chain reactions (12 m = city-block scale)
-    chainReaction        = true,   -- allow manager to chain to nearby vehicles
-    statusLogInterval    = 2.0,    -- seconds between periodic status logs (debug mode)
+    enabled                = true,   -- master on/off switch
+    debug                  = true,   -- verbose every-frame logging
+    armDelaySeconds        = 3.0,    -- seconds after init before monitoring starts
+    explodeDelaySeconds    = 5.0,    -- seconds between ignition and obj:explode()
+    engineDeviceName       = "mainEngine", -- powertrain device name to inspect
+    stallRpmThreshold      = 400,    -- RPM below which engine is considered stalled
+    stallWasRunningRpm     = 600,    -- RPM above which we mark engine as "was running"
+    explosionRadius        = 12,     -- metres passed to explosionManager for chains
+    chainReaction          = true,   -- allow GE manager to chain to nearby vehicles
+    statusLogInterval      = 2.0,    -- seconds between periodic status log lines
 }
 
 -- ── state ────────────────────────────────────────────────────────────────────
 local state = {
-    exploded          = false,   -- detonation already fired
-    armed             = false,   -- arming delay elapsed
-    armTimer          = 0,       -- counts up to cfg.armDelaySeconds
-    engineFire        = false,   -- engine fire phase entered
-    explodeTimer      = 0,       -- counts down from cfg.explodeDelaySeconds
-    lastEngineDamage  = 0,       -- most recent powertrain damage reading
-    statusTimer       = 0,       -- throttle for periodic debug logs
+    exploded         = false,   -- detonation already fired — single-shot guard
+    armed            = false,   -- arming delay elapsed
+    armTimer         = 0,       -- accumulates up to cfg.armDelaySeconds
+    engineFire       = false,   -- ignition phase entered
+    explodeTimer     = 0,       -- accumulates up to cfg.explodeDelaySeconds
+    statusTimer      = 0,       -- throttles periodic debug lines
+    triggerReason    = "",      -- which signal fired the trigger
+    engineWasRunning = false,   -- stall-fallback: was engine running above threshold?
+    -- last sampled values (for logging)
+    lastRpm          = 0,
+    lastThrottle     = 0,
+    lastEngineRunning = -1,
+    lastHgb          = false,
+    lastPrd          = false,
+    lastCrbd         = false,
 }
 
 -- ── helpers ──────────────────────────────────────────────────────────────────
@@ -51,90 +74,87 @@ local function info(fmt, ...)
     log("I", TAG, string.format(fmt, ...))
 end
 
--- ── fire + explode sequence ──────────────────────────────────────────────────
+-- ── engine fire + explosion sequence ─────────────────────────────────────────
 
-local function startEngineFire()
-    -- Ignite the vehicle visually using BeamNG's built-in ignite API.
+local function startFire()
     local ok, err = pcall(function()
         if obj and obj.ignite then
             obj:ignite()
-            dbg("obj:ignite() called — engine fire started")
+            info("obj:ignite() called — engine fire started")
         else
-            dbg("obj.ignite not available on this build")
+            info("obj.ignite not available — skipping visual fire")
         end
     end)
-    if not ok then
-        dbg("startEngineFire pcall error: %s", tostring(err))
-    end
+    if not ok then info("startFire error: %s", tostring(err)) end
 end
 
-local function notifyManager(pos)
-    -- Queue a call to the GE-side explosionManager (if loaded).
+local function notifyGE()
+    -- Queue a call to explosionManager in GE context (chain reactions only).
     local ok, err = pcall(function()
+        local pid = obj:getId()
+        local pos = obj:getPosition()
         local cmd = string.format(
             "local m = extensions and extensions.explosionManager;" ..
             "if m and m.onVehicleExploded then" ..
-            "  m.onVehicleExploded(%d, {x=%f,y=%f,z=%f,radius=%d,chain=%s})" ..
+            "  m.onVehicleExploded(%d,{x=%f,y=%f,z=%f,radius=%d,chain=%s})" ..
             "end",
-            obj:getId(), pos.x, pos.y, pos.z,
+            pid, pos.x, pos.y, pos.z,
             cfg.explosionRadius, tostring(cfg.chainReaction)
         )
         obj:queueGameEngineLua(cmd)
-        dbg("Queued explosionManager notification to GE")
+        info("Queued GE explosionManager notification (vehicle %d)", pid)
     end)
-    if not ok then
-        dbg("notifyManager pcall error: %s", tostring(err))
-    end
+    if not ok then info("notifyGE error: %s", tostring(err)) end
 end
 
 local function doExplode(reason)
     if state.exploded then
-        dbg("doExplode called but already exploded — ignoring")
+        dbg("doExplode(%s) ignored — already exploded", reason or "?")
         return
     end
-    state.exploded = true
+    state.exploded    = true
+    state.triggerReason = reason or "unknown"
 
-    info("*** EXPLODING *** reason='%s' engineDamage=%.3f", reason or "unknown", state.lastEngineDamage)
+    info("*** BOOM *** reason='%s'  rpm=%.0f throttle=%.2f engineRunning=%s",
+        reason, state.lastRpm, state.lastThrottle, tostring(state.lastEngineRunning))
+    info("  thermals at trigger: headGasketBlown=%s pistonRingsDamaged=%s connectingRodBearingsDamaged=%s",
+        tostring(state.lastHgb), tostring(state.lastPrd), tostring(state.lastCrbd))
 
-    -- Use BeamNG's built-in vehicle explosion (same as radial-menu "Explode").
+    -- obj:explode() is the VE-side built-in explosion —
+    -- the SAME function called by the radial-menu "Fun Stuff → Boom!" action.
+    -- From GE Lua the equivalent call is: be:getVehicle(id):queueLuaCommand("obj:explode()")
+    -- (see explosionManager.lua which uses that path for chain reactions).
     local ok, err = pcall(function()
         if obj and obj.explode then
             obj:explode()
-            info("obj:explode() called — built-in explosion triggered")
+            info("obj:explode() called — built-in Boom triggered (vehicle %d)", obj:getId())
         else
             info("obj.explode not available; falling back to obj:ignite()")
             if obj and obj.ignite then obj:ignite() end
         end
     end)
-    if not ok then
-        info("doExplode pcall error: %s", tostring(err))
-    end
+    if not ok then info("doExplode pcall error: %s", tostring(err)) end
 
-    -- Notify GE manager for chain reactions.
-    local pos = obj:getPosition()
-    notifyManager(pos)
+    notifyGE()
 end
 
 -- ── public API ───────────────────────────────────────────────────────────────
 
--- Manual detonation (console: extensions.explosionSystem.detonate())
 function M.detonate()
     if state.exploded then
-        info("Already exploded; detonate() ignored")
+        info("detonate() called but already exploded — ignoring")
         return
     end
     info("Manual detonate() called")
-    doExplode("manual")
+    doExplode("manual_detonate")
 end
 
--- Chain-reaction entry point (called by explosionManager on nearby vehicles).
 function M._chainDamage(amount)
     if not cfg.enabled or state.exploded then return end
-    dbg("_chainDamage called amount=%.1f — triggering chain explosion", amount or 0)
+    info("_chainDamage(%.1f) received — triggering chain explosion", amount or 0)
     doExplode("chain_reaction")
 end
 
--- Override config at runtime.
 function M.configure(overrides)
     if type(overrides) ~= "table" then return end
     for k, v in pairs(overrides) do
@@ -146,24 +166,26 @@ function M.configure(overrides)
     info("Config updated")
 end
 
--- Status dump (console: extensions.explosionSystem.getStatus())
 function M.getStatus()
-    info("enabled=%s armed=%s engineFire=%s exploded=%s engineDamage=%.3f armTimer=%.1f explodeTimer=%.1f threshold=%.2f",
-        tostring(cfg.enabled),
-        tostring(state.armed),
-        tostring(state.engineFire),
-        tostring(state.exploded),
-        state.lastEngineDamage,
-        state.armTimer,
-        state.explodeTimer,
-        cfg.engineFireThreshold)
+    info("=== explosionSystem status ===")
+    info("  enabled=%s  debug=%s  armed=%s  engineFire=%s  exploded=%s",
+        tostring(cfg.enabled), tostring(cfg.debug),
+        tostring(state.armed), tostring(state.engineFire), tostring(state.exploded))
+    info("  armTimer=%.2f / %.2f s  explodeTimer=%.2f / %.2f s",
+        state.armTimer, cfg.armDelaySeconds,
+        state.explodeTimer, cfg.explodeDelaySeconds)
+    info("  triggerReason='%s'  engineWasRunning=%s",
+        state.triggerReason, tostring(state.engineWasRunning))
+    info("  last rpm=%.0f  throttle=%.2f  engineRunning=%s",
+        state.lastRpm, state.lastThrottle, tostring(state.lastEngineRunning))
+    info("  last thermals: headGasketBlown=%s  pistonRingsDamaged=%s  connectingRodBearingsDamaged=%s",
+        tostring(state.lastHgb), tostring(state.lastPrd), tostring(state.lastCrbd))
+    info("=================================")
 end
 
 -- ── extension lifecycle ──────────────────────────────────────────────────────
 
 function M.init(jbeamData)
-    -- Accept per-vehicle jbeam config overrides: iterate cfg keys and copy
-    -- matching values from jbeamData so the vehicle's jbeam can tune thresholds.
     if type(jbeamData) == "table" then
         for k in pairs(cfg) do
             if jbeamData[k] ~= nil then
@@ -173,33 +195,45 @@ function M.init(jbeamData)
         end
     end
 
-    -- Reset state.
-    state.exploded         = false
-    state.armed            = false
-    state.armTimer         = 0
-    state.engineFire       = false
-    state.explodeTimer     = 0
-    state.lastEngineDamage = 0
-    state.statusTimer      = 0
+    state.exploded          = false
+    state.armed             = false
+    state.armTimer          = 0
+    state.engineFire        = false
+    state.explodeTimer      = 0
+    state.statusTimer       = 0
+    state.triggerReason     = ""
+    state.engineWasRunning  = false
+    state.lastRpm           = 0
+    state.lastThrottle      = 0
+    state.lastEngineRunning = -1
+    state.lastHgb           = false
+    state.lastPrd           = false
+    state.lastCrbd          = false
 
-    info("explosionSystem init — enabled=%s debug=%s armDelay=%.1fs fireThreshold=%.2f explodeDelay=%.1fs",
+    info("explosionSystem init — enabled=%s debug=%s armDelay=%.1fs explodeDelay=%.1fs device='%s'",
         tostring(cfg.enabled), tostring(cfg.debug),
-        cfg.armDelaySeconds, cfg.engineFireThreshold, cfg.explodeDelaySeconds)
-
+        cfg.armDelaySeconds, cfg.explodeDelaySeconds, cfg.engineDeviceName)
     if not cfg.enabled then
-        info("explosionSystem disabled by config — no monitoring will occur")
+        info("explosionSystem disabled by config — monitoring will NOT run")
     end
 end
 
 function M.onReset()
-    state.exploded         = false
-    state.armed            = false
-    state.armTimer         = 0
-    state.engineFire       = false
-    state.explodeTimer     = 0
-    state.lastEngineDamage = 0
-    state.statusTimer      = 0
-    info("onReset — state cleared, arming delay restarted")
+    state.exploded          = false
+    state.armed             = false
+    state.armTimer          = 0
+    state.engineFire        = false
+    state.explodeTimer      = 0
+    state.statusTimer       = 0
+    state.triggerReason     = ""
+    state.engineWasRunning  = false
+    state.lastRpm           = 0
+    state.lastThrottle      = 0
+    state.lastEngineRunning = -1
+    state.lastHgb           = false
+    state.lastPrd           = false
+    state.lastCrbd          = false
+    info("onReset — state cleared, arming restarted")
 end
 
 -- ── per-frame update ─────────────────────────────────────────────────────────
@@ -207,70 +241,144 @@ end
 function M.updateGFX(dt)
     if not cfg.enabled or state.exploded then return end
 
-    -- ── 1. Arming delay ────────────────────────────────────────────────────
+    -- ── 1. Arming delay ────────────────────────────────────────────────────────
     if not state.armed then
         state.armTimer = state.armTimer + dt
+        state.statusTimer = state.statusTimer + dt
         if state.armTimer >= cfg.armDelaySeconds then
             state.armed = true
-            info("Armed after %.2f s — now monitoring engine damage", state.armTimer)
+            state.statusTimer = 0
+            info("Armed after %.2f s — now monitoring engine thermals", state.armTimer)
         else
-            -- Log arming progress once per second during debug.
-            state.statusTimer = state.statusTimer + dt
             if cfg.debug and state.statusTimer >= 1.0 then
                 state.statusTimer = 0
-                dbg("Arming… %.1f / %.1f s", state.armTimer, cfg.armDelaySeconds)
+                dbg("Arming %.1f / %.1f s", state.armTimer, cfg.armDelaySeconds)
             end
         end
         return
     end
 
-    -- ── 2. Engine-fire countdown (post-ignition) ───────────────────────────
+    -- ── 2. Fire countdown: wait then call obj:explode() ────────────────────────
     if state.engineFire then
         state.explodeTimer = state.explodeTimer + dt
-
-        -- Periodic countdown log so user can see it ticking.
-        state.statusTimer = state.statusTimer + dt
+        state.statusTimer  = state.statusTimer  + dt
         if cfg.debug and state.statusTimer >= 1.0 then
             state.statusTimer = 0
-            dbg("Engine fire — exploding in %.1f s (elapsed %.1f / %.1f s)",
+            dbg("Engine fire — BOOM in %.1f s (elapsed %.1f / %.1f s)",
                 cfg.explodeDelaySeconds - state.explodeTimer,
                 state.explodeTimer, cfg.explodeDelaySeconds)
         end
-
         if state.explodeTimer >= cfg.explodeDelaySeconds then
             doExplode("engine_fire_countdown")
         end
         return
     end
 
-    -- ── 3. Monitor engine damage ───────────────────────────────────────────
-    local ok, err = pcall(function()
-        local dmg = 0
-        if powertrain and powertrain.getEngineDamage then
-            dmg = powertrain.getEngineDamage() or 0
-        end
-        state.lastEngineDamage = dmg
-
-        -- Periodic status log so user can confirm the extension is running.
-        state.statusTimer = state.statusTimer + dt
-        if cfg.debug and state.statusTimer >= cfg.statusLogInterval then
-            state.statusTimer = 0
-            dbg("Status — engineDamage=%.3f threshold=%.2f engineFire=%s exploded=%s",
-                dmg, cfg.engineFireThreshold,
-                tostring(state.engineFire), tostring(state.exploded))
-        end
-
-        if dmg >= cfg.engineFireThreshold then
-            state.engineFire  = true
-            state.explodeTimer = 0
-            state.statusTimer  = 0
-            info("Engine damage %.3f >= threshold %.2f — IGNITING, will explode in %.1f s",
-                dmg, cfg.engineFireThreshold, cfg.explodeDelaySeconds)
-            startEngineFire()
+    -- ── 3. Sample electrics values (used by both primary and fallback) ─────────
+    local rpm          = 0
+    local throttle     = 0
+    local engineRunning = -1
+    pcall(function()
+        local ev = electrics and electrics.values
+        if ev then
+            rpm          = ev.rpmTacho or ev.rpm or 0
+            throttle     = ev.throttle or ev.engineThrottle or 0
+            engineRunning = ev.engineRunning or -1
         end
     end)
-    if not ok then
-        dbg("updateGFX engine-check pcall error: %s", tostring(err))
+    state.lastRpm           = rpm
+    state.lastThrottle      = throttle
+    state.lastEngineRunning = engineRunning
+
+    -- Track whether engine was running (for stall fallback).
+    if rpm >= cfg.stallWasRunningRpm then
+        state.engineWasRunning = true
+    end
+
+    -- ── 4. PRIMARY: powertrain thermals flags ───────────────────────────────────
+    local triggered = false
+    local trigReason = ""
+    pcall(function()
+        -- Try the configured device name first.
+        local dev = powertrain and powertrain.getDevice and
+                    powertrain.getDevice(cfg.engineDeviceName)
+
+        -- Fallback: iterate all devices and pick the first one with thermals.
+        if not (dev and dev.thermals) and powertrain and powertrain.getDeviceNames then
+            local names = powertrain.getDeviceNames()
+            if names then
+                for _, name in ipairs(names) do
+                    local d = powertrain.getDevice(name)
+                    if d and d.thermals then
+                        dev = d
+                        dbg("Using powertrain device '%s' (configured name '%s' had no thermals)",
+                            name, cfg.engineDeviceName)
+                        break
+                    end
+                end
+            end
+        end
+
+        if dev and dev.thermals then
+            local t = dev.thermals
+            -- Store latest values for logging.
+            state.lastHgb  = t.headGasketBlown             or false
+            state.lastPrd  = t.pistonRingsDamaged           or false
+            state.lastCrbd = t.connectingRodBearingsDamaged or false
+
+            local reasons = {}
+            if state.lastHgb  then table.insert(reasons, "headGasketBlown") end
+            if state.lastPrd  then table.insert(reasons, "pistonRingsDamaged") end
+            if state.lastCrbd then table.insert(reasons, "connectingRodBearingsDamaged") end
+            if #reasons > 0 then
+                triggered  = true
+                trigReason = table.concat(reasons, "+")
+            end
+        else
+            dbg("powertrain device '%s' not found or has no thermals table",
+                cfg.engineDeviceName)
+        end
+    end)
+
+    -- ── 5. SECONDARY FALLBACK: engine stall detection via electrics ────────────
+    -- If thermals flags are not available (device missing / older vehicle jbeam),
+    -- detect a catastrophic stall: engine was running above threshold and RPM
+    -- has now dropped to zero while the engine is flagged as not running.
+    if not triggered and state.engineWasRunning then
+        local stallDetected = false
+        if engineRunning == 0 and rpm < cfg.stallRpmThreshold then
+            stallDetected = true
+        elseif engineRunning == -1 and rpm < cfg.stallRpmThreshold then
+            -- engineRunning field absent; use RPM alone.
+            stallDetected = true
+        end
+        if stallDetected then
+            triggered  = true
+            trigReason = string.format("stall_fallback(rpm=%.0f engineRunning=%s)", rpm, tostring(engineRunning))
+        end
+    end
+
+    -- ── 6. Periodic status log ─────────────────────────────────────────────────
+    state.statusTimer = state.statusTimer + dt
+    if cfg.debug and state.statusTimer >= cfg.statusLogInterval then
+        state.statusTimer = 0
+        dbg("Status | rpm=%.0f throttle=%.2f engineRunning=%s | hgb=%s prd=%s crbd=%s | wasRunning=%s triggered=%s",
+            rpm, throttle, tostring(engineRunning),
+            tostring(state.lastHgb), tostring(state.lastPrd), tostring(state.lastCrbd),
+            tostring(state.engineWasRunning), tostring(triggered))
+    end
+
+    -- ── 7. Enter fire phase if triggered ───────────────────────────────────────
+    if triggered then
+        state.engineFire   = true
+        state.explodeTimer = 0
+        state.statusTimer  = 0
+        info("ENGINE FAILURE DETECTED — reason: %s", trigReason)
+        info("  rpm=%.0f throttle=%.2f engineRunning=%s", rpm, throttle, tostring(engineRunning))
+        info("  thermals: headGasketBlown=%s pistonRingsDamaged=%s connectingRodBearingsDamaged=%s",
+            tostring(state.lastHgb), tostring(state.lastPrd), tostring(state.lastCrbd))
+        info("  Will ignite now, explode in %.1f s", cfg.explodeDelaySeconds)
+        startFire()
     end
 end
 
