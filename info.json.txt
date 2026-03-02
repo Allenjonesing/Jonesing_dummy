@@ -2,7 +2,7 @@
   "name": "Jonesing Pedestrians",
   "description": "Adds dummy pedestrians with organs.",
   "author": "Jonesing Studio",
-  "version": "0.5",
+  "version": "0.4.1",
   "game_version": "0.38.4",
   "category": "Gameplay"
 }
