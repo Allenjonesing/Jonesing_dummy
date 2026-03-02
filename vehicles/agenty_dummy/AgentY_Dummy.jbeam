@@ -34,6 +34,17 @@
     },
 },
 
+"jonesing_gta_npc_on": {
+    "information":{
+        "name":"Pedestrian Walker (Active)",
+        "authors":"Jonesing",
+    },
+    "slotType":"AgentY_Dummy_npc_behavior",
+    "controller": [
+        ["fileName"],
+        ["jonesingPedestrianWalker", {}],
+    ],
+},
 
 //--BASE NODE WEIGHTS--
 
