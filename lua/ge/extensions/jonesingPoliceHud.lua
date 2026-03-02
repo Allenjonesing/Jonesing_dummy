@@ -7,6 +7,9 @@
 local M = {}
 local TAG = "jonesingPoliceHud"
 
+-- In BeamNG GE extensions imgui is the global 'ui_imgui', not 'im'.
+local im = ui_imgui
+
 -- Layout
 local HUD_W      = 230   -- window width  (px)
 local HUD_H      = 75    -- window height (px)
