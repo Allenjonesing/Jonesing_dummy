@@ -20,16 +20,16 @@ local M = {}
 -- ── default configuration ────────────────────────────────────────────────────
 local cfg = {
     enabled                 = true,   -- master on/off switch
-    debug                   = false,  -- verbose logging
-    startHealth             = 100,    -- initial explosion health (0–100)
+    debug                   = true,  -- verbose logging
+    startHealth             = 1,    -- initial explosion health (0–100)
     armDelaySeconds         = 3,      -- seconds after init before arming
     collisionDamageScale    = 1.0,    -- multiplier on collision damage
-    minCollisionSpeed       = 3,      -- m/s — slower impacts are ignored
-    engineDamageThreshold   = 0.8,    -- engine damage fraction that deals 20 hp
+    minCollisionSpeed       = 1,      -- m/s — slower impacts are ignored
+    engineDamageThreshold   = 0.1,    -- engine damage fraction that deals 20 hp
     electricsDamagePerTick  = 0.5,    -- hp lost per second when electrics fail
     explodeOnFuelLeak       = false,  -- trigger on detected fuel leak
-    explosionImpulse        = 60000,  -- Newton·s applied to vehicle nodes
-    explosionRadius         = 12,     -- metres — sent to explosionManager
+    explosionImpulse        = 600000,  -- Newton·s applied to vehicle nodes
+    explosionRadius         = 120,     -- metres — sent to explosionManager
     chainReaction           = true,   -- allow manager to chain to nearby vehicles
     fireDurationSeconds     = 10,
     soundPath               = nil,    -- optional OGG path; nil = use built-in
@@ -37,9 +37,9 @@ local cfg = {
 
 -- ── state ────────────────────────────────────────────────────────────────────
 local state = {
-    health          = 100,
+    health          = 1,
     exploded        = false,
-    armed           = false,
+    armed           = true,
     armTimer        = 0,
     lastDamageEvent = "none",
     lastDamageAmt   = 0,
