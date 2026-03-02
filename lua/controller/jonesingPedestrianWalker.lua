@@ -71,9 +71,10 @@ local walkTimer      = 0.0  -- accumulator for periodic direction drift
 local rayTimer       = 0.0  -- accumulator for obstacle checks
 local walkGraceTimer = 0.0  -- brief no-ragdoll window right after WALKING begins
 
--- SETUP: previous head node position for jump detection
-local prevHeadX = nil
-local prevHeadY = nil
+-- SETUP: previous head node position for jump detection + fallback timer
+local prevHeadX  = nil
+local prevHeadY  = nil
+local setupTimer = 0.0  -- counts up in SETUP state; forces WALKING after SETUP_TIMEOUT
 
 -- WALKING: previous thorax XY for velocity estimation
 local prevThoraxX = nil
@@ -87,6 +88,10 @@ local TURN_DIST        = 4.0   -- m    obstacle turn-trigger distance
 local TURN_CONE_HALF   = 1.5   -- m    lateral half-width of the forward cone
 local RAGDOLL_VEL      = 5.0   -- m/s  thorax per-frame speed that means "got hit"
 local WALK_GRACE       = 0.4   -- s    grace period after WALKING start (no ragdoll check)
+-- If no traffic-script teleport jump is detected within this many seconds of
+-- init(), assume the vehicle was already placed at world position (direct spawn)
+-- and start walking anyway.
+local SETUP_TIMEOUT    = 2.0   -- s
 
 -- Distance² threshold for detecting the traffic-script world teleport
 local PLACED_JUMP_SQ = 2.0 * 2.0  -- (2 m)²
@@ -195,6 +200,7 @@ local function init(jbeamData)
     prevHeadY      = nil
     prevThoraxX    = nil
     prevThoraxY    = nil
+    setupTimer     = 0.0
     state          = "setup"
 end
 
@@ -213,6 +219,7 @@ local function reset()
     prevHeadY      = nil
     prevThoraxX    = nil
     prevThoraxY    = nil
+    setupTimer     = 0.0
     state          = "setup"
 end
 
@@ -227,48 +234,63 @@ local function updateGFX(dt)
     local hp = vec3(obj:getNodePosition(headCid))
 
     -- ── SETUP: wait for the traffic-script world-placement teleport ───────────
+    -- We also accept the current position after SETUP_TIMEOUT seconds so that
+    -- directly-spawned dummies (no traffic-script teleport jump) still walk.
     if state == "setup" then
+        setupTimer = setupTimer + dt
+
+        local doStart = false
         if prevHeadX ~= nil then
             local ddx = hp.x - prevHeadX
             local ddy = hp.y - prevHeadY
             if (ddx * ddx + ddy * ddy) >= PLACED_JUMP_SQ then
                 -- Vehicle was just teleported to its world spawn position.
-                -- Initialise the head anchor from the current real position.
-                headTargetX    = hp.x
-                headTargetY    = hp.y
-                headTargetZ    = hp.z
-                walkOffsetX    = 0
-                walkOffsetY    = 0
-
-                -- Seed an initial walk direction aligned with the road:
-                -- player→dummy vector is roughly road-perpendicular; rotate 90°
-                -- to get road-parallel, then randomly flip to pick a lane.
-                local pp = getPlayerPos()
-                if pp and (math.abs(pp.x - hp.x) > 1.0 or
-                           math.abs(pp.y - hp.y) > 1.0) then
-                    local dx = pp.x - hp.x
-                    local dy = pp.y - hp.y
-                    local d  = math.sqrt(dx * dx + dy * dy)
-                    -- Perpendicular-to-player vector = road-parallel direction
-                    local nx = -dy / d
-                    local ny =  dx / d
-                    walkDir = math.atan2(nx, ny)
-                    if math.random() > 0.5 then walkDir = walkDir + math.pi end
-                end
-                -- else: keep the random direction chosen at init()
-
-                -- Capture initial thorax position for velocity tracking
-                if thoraxCid then
-                    local tp = vec3(obj:getNodePosition(thoraxCid))
-                    prevThoraxX = tp.x
-                    prevThoraxY = tp.y
-                end
-
-                walkGraceTimer = WALK_GRACE
-                state          = "walking"
-                return
+                doStart = true
             end
         end
+        -- Fallback: if no teleport jump within SETUP_TIMEOUT, start walking from
+        -- wherever we are.  This handles direct-spawn (no jump ever occurs).
+        if setupTimer >= SETUP_TIMEOUT then
+            doStart = true
+        end
+
+        if doStart then
+            -- Initialise the head anchor from the current real position.
+            headTargetX    = hp.x
+            headTargetY    = hp.y
+            headTargetZ    = hp.z
+            walkOffsetX    = 0
+            walkOffsetY    = 0
+
+            -- Seed an initial walk direction aligned with the road:
+            -- player→dummy vector is roughly road-perpendicular; rotate 90°
+            -- to get road-parallel, then randomly flip to pick a lane.
+            local pp = getPlayerPos()
+            if pp and (math.abs(pp.x - hp.x) > 1.0 or
+                       math.abs(pp.y - hp.y) > 1.0) then
+                local dx = pp.x - hp.x
+                local dy = pp.y - hp.y
+                local d  = math.sqrt(dx * dx + dy * dy)
+                -- Perpendicular-to-player vector = road-parallel direction
+                local nx = -dy / d
+                local ny =  dx / d
+                walkDir = math.atan2(nx, ny)
+                if math.random() > 0.5 then walkDir = walkDir + math.pi end
+            end
+            -- else: keep the random direction chosen at init()
+
+            -- Capture initial thorax position for velocity tracking
+            if thoraxCid then
+                local tp = vec3(obj:getNodePosition(thoraxCid))
+                prevThoraxX = tp.x
+                prevThoraxY = tp.y
+            end
+
+            walkGraceTimer = WALK_GRACE
+            state          = "walking"
+            return
+        end
+
         prevHeadX = hp.x
         prevHeadY = hp.y
         return
