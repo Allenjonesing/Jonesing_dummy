@@ -517,6 +517,31 @@
   "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
 }}
 
+{ "INTESTINE_ROPE": {
+  "beamType":"|ANISOTROPIC",
+
+  // Spawn at normal length; don't do 0.001 hacks
+  "beamPrecompression":1,
+  "beamPrecompressionTime":0.15,
+
+  // Compression behavior (rope should NOT push much)
+  "beamSpring":150,
+  "beamDamp":25,
+
+  // Tension behavior (rope should resist stretching)
+  "springExpansion":12000,
+  "dampExpansion":120,
+
+  // Smooth ramp into tension behavior
+  "transitionZone":0.05,
+
+  // Prevent crazy stretching; tune 1.05–1.25 typically
+  "deformLimitExpansion":1.12,
+
+  // Optional: keep unbreakable while you tune
+  "beamDeform":"FLT_MAX",
+  "beamStrength":"FLT_MAX"
+}}
 // ===============================================================================
 // INTESTINE
 // ===============================================================================
@@ -603,7 +628,7 @@
 
 // ---- ROPE LINKS (tight chain, no gaps) ----
 {"breakGroup":""},
-{"$ref":"ROPE_LINK_CHAIN_TIGHT"},
+{"$ref":"INTESTINE_ROPE"},
 
 ["oi1",  "oi4_1"],
 ["oi1_1","oi4_2"],
