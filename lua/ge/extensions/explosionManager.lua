@@ -67,7 +67,7 @@ local function getAllVehiclesGE()
     end)
     if ok and type(names) == 'table' then
         for _, name in ipairs(names) do
-            local veh = scenetree:findObject(name)
+            local veh = scenetree.findObject(name)
             if veh then
                 table.insert(result, veh)
             end

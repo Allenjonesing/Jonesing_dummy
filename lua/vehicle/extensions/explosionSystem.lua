@@ -124,16 +124,17 @@ local function doExplode(reason)
     -- the SAME function called by the radial-menu "Fun Stuff → Boom!" action.
     -- From GE Lua the equivalent call is: be:getVehicle(id):queueLuaCommand("obj:explode()")
     -- (see explosionManager.lua which uses that path for chain reactions).
-    local ok, err = pcall(function()
-        if obj and obj.explode then
-            obj:explode()
-            info("obj:explode() called — built-in Boom triggered (vehicle %d)", obj:getId())
-        else
-            info("obj.explode not available; falling back to obj:ignite()")
-            if obj and obj.ignite then obj:ignite() end
-        end
+    -- NOTE: obj is C++ userdata; methods may be exposed via __index metamethod only,
+    -- so checking obj.explode as a field returns nil even if obj:explode() works.
+    -- We always attempt the call via pcall and fall back only on actual error.
+    local explodeOk, explodeErr = pcall(function()
+        obj:explode()
+        info("obj:explode() called — built-in Boom triggered (vehicle %d)", obj:getId())
     end)
-    if not ok then info("doExplode pcall error: %s", tostring(err)) end
+    if not explodeOk then
+        info("obj:explode() failed (%s); falling back to obj:ignite()", tostring(explodeErr))
+        pcall(function() obj:ignite() end)
+    end
 
     notifyGE()
 end
