@@ -71,13 +71,11 @@ local state = {
     inCareer       = false,  -- true if career/scenario detected
     updateAccum    = 0.0,    -- dt accumulator for throttling
     eventsExt      = nil,    -- reference to jonesingPoliceEvents module
+    detectorExt    = nil,    -- reference to jonesingPolicePursuitDetector module
 }
 
 local UPDATE_INTERVAL   = 0.25   -- run main logic 4× per second
 local REFRESH_INTERVAL  = 2.0    -- re-issue pursuit commands every N seconds
--- Distance threshold (metres) for passive native-police detection when hooks
--- don't fire.  Kept short to avoid false-positives from parked roadside cars.
-local NATIVE_DETECT_RADIUS = 80
 
 -- ---------------------------------------------------------------------------
 -- Config loader
@@ -417,27 +415,17 @@ end
 local function _managePolice(now)
     local level = state.wantedLevel
     if level < 1 then
-        -- Passive detection fallback: if a police vehicle is within 80 m of the
-        -- player and the native pursuit hooks haven't fired yet, treat as start.
-        local ppos = _playerPos()
-        if ppos then
-            for id in pairs(_getAllScenePoliceIds()) do
-                local o = be and be:getObjectByID(id)
-                if o then
-                    local ok, opos = pcall(function() return o:getPosition() end)
-                    if ok and opos then
-                        local dx = opos.x - ppos.x
-                        local dy = opos.y - ppos.y
-                        if (dx*dx + dy*dy) < (NATIVE_DETECT_RADIUS * NATIVE_DETECT_RADIUS) then
-                            logI("Native police detected nearby – setting wanted 1.")
-                            M.addWanted(1, "native_police_nearby")
-                            break
-                        end
-                    end
-                end
+        -- Ask the pursuit detector whether a native police unit is actively
+        -- chasing the player right now.  This reads real traffic role state
+        -- instead of relying on hook names that may never fire.
+        if state.detectorExt then
+            local pursuing = state.detectorExt.isPlayerBeingPursued()
+            if pursuing then
+                logI("Pursuit detector: native police pursuing – setting wanted 1.")
+                M.addWanted(1, "native_pursuit_detected")
             end
         end
-        -- Ensure our own spawned extras are despawned
+        -- Ensure our own spawned extras are despawned when quiet
         if next(state.spawnedPoliceIds) then
             logI("Wanted dropped to 0 – despawning police.")
             M._despawnAll()
@@ -594,6 +582,17 @@ function M.onExtensionLoaded()
         logI("jonesingPoliceEvents not available; running in basic mode.")
     end
 
+    -- Load the pursuit detector (reads real traffic role state)
+    local ok2, det = pcall(function()
+        return extensions.load("jonesingPolicePursuitDetector")
+    end)
+    if ok2 and det then
+        state.detectorExt = det
+        logI("jonesingPolicePursuitDetector loaded.")
+    else
+        logI("jonesingPolicePursuitDetector not available; using fallback.")
+    end
+
     logI("jonesingPoliceManager loaded. enabled=%s debugLog=%s",
         tostring(cfg.enabled), tostring(cfg.debugLog))
 
@@ -667,6 +666,12 @@ function M.onUpdate(dtReal, dtSim, dtRaw)
     _detectCareer()
     if state.inCareer then return end
 
+    -- Run the pursuit detector (reads traffic.getTraffic() role state and any
+    -- real GE hooks that fired since last tick).
+    if state.detectorExt then
+        state.detectorExt.update(state.playerVehId)
+    end
+
     -- Trigger: speeding – only escalates an existing pursuit, never starts one
     if state.wantedLevel > 0 then
         _tickSpeeding(dt)
@@ -700,27 +705,17 @@ function M.getPoliceCount()  return _countAllScenePolice() end
 function M.getConfig()       return cfg end
 
 -- ---------------------------------------------------------------------------
--- Native pursuit hooks (fired by BeamNG's built-in police/traffic system)
--- Hook names vary between BeamNG versions; register all known variants.
+-- NOTE: pursuit detection is handled by jonesingPolicePursuitDetector.
 -- ---------------------------------------------------------------------------
-local function _onNativePursuitStart()
-    if not cfg.enabled or state.inCareer then return end
-    if state.wantedLevel < 1 then
-        logI("Native pursuit started – setting wanted 1.")
-        M.addWanted(1, "native_pursuit_started")
-    end
-end
-
--- Hook names seen across BeamNG versions
-function M.onPlayerPursuitStart()  _onNativePursuitStart() end
-function M.onPursuitStarted()      _onNativePursuitStart() end
-function M.onPlayerWanted()        _onNativePursuitStart() end
 
 -- ---------------------------------------------------------------------------
 -- Hot-reload support: re-init cleanly
 -- ---------------------------------------------------------------------------
 function M.onExtensionUnloaded()
     M._despawnAll()
+    if state.detectorExt and state.detectorExt.resetHookFlag then
+        state.detectorExt.resetHookFlag()
+    end
     logI("Unloaded – police despawned.")
 end
 
