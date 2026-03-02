@@ -99,30 +99,32 @@ end
 
 -- Build the in-vehicle AI Lua command string for GTA-like pursuit.
 -- aggression 0..1: 0 = polite traffic, 1 = full GTA ramming.
+-- At aggression >= 0.6: ignore lanes, remove speed cap, chase target.
+-- At aggression >= 0.85: disable car avoidance, enable ramming flags.
 local function _buildPursuitCmd(targetVehId, aggression)
     aggression = aggression or 1.0
-    -- At aggression >= 0.6 cops ignore lane discipline and drive at any speed.
-    -- At aggression >= 0.85 they also activate ramming / no-traffic-respect flags.
-    local lines = {
-        'if ai then',
-        '  ai.setMode("chase")',
-        string.format("  ai.setTargetObjectID(%d)", targetVehId),
-        string.format("  ai.setAggression(%.2f)", aggression),
-    }
-    if aggression >= 0.6 then
-        -- Ignore lane markings – drive off-road straight at the target
-        table.insert(lines, "  if ai.driveInLane   then ai.driveInLane(false) end")
-        -- Remove the speed cap so cops can go as fast as physics allows
-        table.insert(lines, "  if ai.setSpeedMode  then ai.setSpeedMode('limit', 999) end")
-    end
-    if aggression >= 0.85 then
-        -- Treat other vehicles as obstacles to ram through, not avoid
-        table.insert(lines, "  if ai.setAvoidCars  then ai.setAvoidCars(false) end")
-        -- Some BeamNG builds expose direct flags
-        table.insert(lines, "  if ai.setParameters then ai.setParameters({avoidCars=false, aggressive=true}) end")
-    end
-    table.insert(lines, "end")
-    return table.concat(lines, "\n")
+    -- Clamp to [0,1] and scale to BeamNG's internal 0..1 range
+    local ag = math.max(0, math.min(1, aggression))
+    -- Speed limit: 60 m/s (~134 mph) for lower aggression; 100 m/s (~224 mph)
+    -- above 0.6, staying within physics-stable bounds.
+    local speedLim = (ag >= 0.6) and 100 or 60
+    local avoidCars = (ag >= 0.85) and "false" or "true"
+    local aggressive = (ag >= 0.85) and "true" or "false"
+    local laneIgnore = (ag >= 0.6) and "false" or "true"
+    local cmd = string.format([[
+if ai then
+  ai.setMode("chase")
+  ai.setTargetObjectID(%d)
+  ai.setAggression(%.2f)
+  if ai.driveInLane  then ai.driveInLane(%s) end
+  if ai.setSpeedMode then ai.setSpeedMode("limit", %d) end
+  if ai.setAvoidCars then ai.setAvoidCars(%s) end
+  if ai.setParameters then
+    ai.setParameters({avoidCars=%s, aggressive=%s, driveInLane=%s})
+  end
+end
+]], targetVehId, ag, laneIgnore, speedLim, avoidCars, avoidCars, aggressive, laneIgnore)
+    return cmd
 end
 
 -- Try to make a vehicle AI pursue a target vehicle id.

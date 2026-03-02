@@ -33,7 +33,7 @@ local C_RING   = rgba(105, 105, 105, 200)  -- inactive ring
 local _ft  = 0   -- flash accumulator
 local _pl  = 0   -- previous wanted level (for blink-on-gain)
 
-function M.renderTick(dt)
+function M.onPreRender(dt)
     local pm = extensions and extensions.jonesingPoliceManager
     if not pm then return end
 
@@ -68,7 +68,7 @@ function M.renderTick(dt)
 
     im.SetNextWindowPos(im.ImVec2(sw - HUD_W - HUD_MARGIN, HUD_MARGIN), im.Cond_Always)
     im.SetNextWindowSize(im.ImVec2(HUD_W, HUD_H), im.Cond_Always)
-    im.SetNextWindowBgAlpha(0.80)
+    im.SetNextWindowBgAlpha(0.85)
 
     local wflags = bit.bor(
         im.WindowFlags_NoTitleBar,

@@ -71,7 +71,7 @@ local state = {
 }
 
 local UPDATE_INTERVAL   = 0.25   -- run main logic 4× per second
-local REFRESH_INTERVAL  = 5.0    -- re-issue pursuit commands every N seconds
+local REFRESH_INTERVAL  = 2.0    -- re-issue pursuit commands every N seconds
 
 -- ---------------------------------------------------------------------------
 -- Config loader
@@ -186,6 +186,18 @@ function M.addWanted(amount, reason)
     if state.wantedLevel ~= prev then
         logI("Wanted changed %d → %d (reason: %s)", prev, state.wantedLevel,
             tostring(reason or "unknown"))
+        -- Toast notification so it's unmissable regardless of HUD state
+        local msg
+        if state.wantedLevel == 0 then
+            msg = "Wanted level cleared"
+        else
+            msg = string.format("WANTED: %d star%s",
+                state.wantedLevel, state.wantedLevel == 1 and "" or "s")
+        end
+        pcall(function()
+            guihooks.trigger("Message",
+                { msg = msg, category = "wanted", icon = "warning" })
+        end)
     elseif amount ~= 0 then
         logD("addWanted %.2f (heat=%.2f stars=%d) reason=%s",
             amount, state.wantedHeat, state.wantedLevel,
@@ -198,12 +210,22 @@ function M.setWanted(level, reason)
     state.wantedHeat  = level
     state.wantedLevel = level
     logI("Wanted set to %d (reason: %s)", level, tostring(reason or "manual"))
+    local msg = level == 0 and "Wanted level cleared"
+        or string.format("WANTED: %d star%s", level, level == 1 and "" or "s")
+    pcall(function()
+        guihooks.trigger("Message",
+            { msg = msg, category = "wanted", icon = "warning" })
+    end)
 end
 
 function M.clearWanted(reason)
     state.wantedHeat  = 0
     state.wantedLevel = 0
     logI("Wanted cleared (reason: %s)", tostring(reason or "manual"))
+    pcall(function()
+        guihooks.trigger("Message",
+            { msg = "Wanted level cleared", category = "wanted", icon = "info" })
+    end)
     -- Despawn all police immediately
     M._despawnAll()
 end
