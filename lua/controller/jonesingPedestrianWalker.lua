@@ -6,20 +6,21 @@
 -- Fresh pedestrian walking controller for the Jonesing agenty_dummy.
 -- Replaces the previous jonesingGtaNpc.lua approach.
 --
--- Core mechanic — "head anchor":
---   The dummy's topmost node (head crown) is teleported each frame to a slowly
---   advancing target position. Every other body node is fully physics-simulated,
---   so vehicles, projectiles, and explosions hit the body normally. The
---   stabiliser beams in AgentY_Dummy_stabilizers.jbeam keep the dummy upright;
---   a strong impact will overwhelm / break those beams and send the body flying.
---   Once the thorax velocity spikes above RAGDOLL_VEL the head override stops
---   and the dummy enters full ragdoll (RAGDOLL state) forever.
+-- Core mechanic — "all-node locomotion":
+--   Every body node is teleported each frame by the same XY walk-offset so all
+--   beam lengths remain constant (no stretching / snapping).  This keeps the
+--   dummy rigid and upright while walking and prevents the head-detach that
+--   occurred when only the head node was moved.
+--   A strong impact (car, explosion, etc.) will displace the thorax node away
+--   from where we placed it; once that deviation exceeds IMPACT_THRESHOLD_SQ the
+--   controller stops all overrides and the dummy enters full ragdoll forever.
 --
 -- Walk movement:
---   After world-placement is detected the head target advances by
---   (walkSpeed * dt) in the current walk direction every frame.  Terrain
---   following on Z: the target Z is only allowed to rise (tracks uphill),
---   never forced down (prevents sinking / fighting gravity).
+--   After world-placement is detected every node's spawn position is captured.
+--   Each frame the walk offset advances by (walkSpeed * dt) in the current
+--   direction and every node is placed at spawnPos + walkOffset.
+--   Terrain following on Z: each node's Z is only allowed to rise (tracks
+--   uphill), never forced down (prevents sinking / fighting gravity).
 --
 -- Obstacle avoidance (raycasting):
 --   Every RAY_INTERVAL seconds the controller probes the path ahead.
@@ -31,19 +32,20 @@
 --
 -- World-placement detection (SETUP → WALKING):
 --   Traffic scripts call init() before placing the vehicle at its final world
---   position. We wait until the topmost (head) node jumps more than 2 m in one
---   frame, which reliably signals the traffic-script world teleport, then
---   capture the initial head anchor position and begin walking.
+--   position. We wait until the head node jumps more than 2 m in one frame
+--   (traffic-script teleport), or until SETUP_TIMEOUT seconds have elapsed
+--   (direct spawn — no jump ever occurs), then capture all node positions and
+--   begin walking.
 --
 -- Ragdoll detection (WALKING → RAGDOLL):
---   The thorax node position is tracked each frame; a per-frame XY displacement
---   larger than (RAGDOLL_VEL * dt) means the torso was given a large external
---   impulse — i.e. something physically hit the dummy — and we stop all
+--   Because we teleport ALL nodes together, the thorax should remain exactly
+--   where we placed it unless an external force acted on the body.  A deviation
+--   larger than IMPACT_THRESHOLD_SQ (3 cm) signals a physical hit; we stop all
 --   overrides so the dummy tumbles/flies naturally.
 --
 -- States:  SETUP → WALKING → RAGDOLL
 --   SETUP   — waiting for the traffic-script world-placement teleport
---   WALKING — head anchor active; body is free physics
+--   WALKING — all nodes moved together; body is rigid but fully collidable
 --   RAGDOLL — no overrides; full physics forever
 
 local M = {}
@@ -52,16 +54,16 @@ local M = {}
 local state = "setup"   -- "setup", "walking", "ragdoll"
 
 -- node IDs
-local headCid   = nil   -- topmost node at init time (head crown / headtip)
-local thoraxCid = nil   -- chest reference node for hit-velocity detection
-local allCids   = {}    -- all node cids (used only during init scan)
+local headCid   = nil   -- topmost node (head crown / headtip) — used as forward probe origin
+local thoraxCid = nil   -- chest reference node for hit detection
+-- All-node records: {cid, spawnX, spawnY, spawnZ} — populated at SETUP→WALKING transition.
+-- Moving every node by the same XY offset keeps all beam lengths constant, preventing
+-- the head-detach / beam-snap that occurred when only the head node was teleported.
+local nodeRecs  = {}
+-- Direct reference to the thorax entry in nodeRecs (avoids O(n) search every frame).
+local thoraxRec = nil
 
--- head anchor (world position the head node is placed at each frame)
-local headTargetX = 0.0
-local headTargetY = 0.0
-local headTargetZ = 0.0
-
--- accumulated walk offset (added to the spawn-time anchor each frame)
+-- accumulated walk offset (added to every node's spawn position each frame)
 local walkOffsetX = 0.0
 local walkOffsetY = 0.0
 
@@ -76,9 +78,11 @@ local prevHeadX  = nil
 local prevHeadY  = nil
 local setupTimer = 0.0  -- counts up in SETUP state; forces WALKING after SETUP_TIMEOUT
 
--- WALKING: previous thorax XY for velocity estimation
-local prevThoraxX = nil
-local prevThoraxY = nil
+-- WALKING: world position of the thorax as placed last frame (for hit detection).
+-- If the thorax deviates more than IMPACT_THRESHOLD_SQ from where we placed it, a
+-- physical impact has occurred and we drop into ragdoll.
+local lastThoraxPlacedX = nil
+local lastThoraxPlacedY = nil
 
 -- ── tuneable parameters (overridable from jbeam slot data) ────────────────────
 local walkSpeed        = 1.2   -- m/s  pedestrian pace
@@ -86,12 +90,18 @@ local walkChangePeriod = 6.0   -- s    seconds between random direction tweaks
 local RAY_INTERVAL     = 0.30  -- s    seconds between forward obstacle probes
 local TURN_DIST        = 4.0   -- m    obstacle turn-trigger distance
 local TURN_CONE_HALF   = 1.5   -- m    lateral half-width of the forward cone
-local RAGDOLL_VEL      = 5.0   -- m/s  thorax per-frame speed that means "got hit"
+local RAGDOLL_VEL      = 5.0   -- m/s  kept for jbeam override compat; unused internally
 local WALK_GRACE       = 0.4   -- s    grace period after WALKING start (no ragdoll check)
 -- If no traffic-script teleport jump is detected within this many seconds of
 -- init(), assume the vehicle was already placed at world position (direct spawn)
 -- and start walking anyway.
 local SETUP_TIMEOUT    = 2.0   -- s
+
+-- Displacement² from our last node placement that signals a physical impact.
+-- Moving all nodes together means the only way the thorax deviates from where we
+-- placed it is if an external force (car hit, explosion, etc.) acted on the body.
+-- 3 cm covers vehicle impacts cleanly while ignoring normal physics drift.
+local IMPACT_THRESHOLD_SQ = 0.03 * 0.03  -- (3 cm)²
 
 -- Distance² threshold for detecting the traffic-script world teleport
 local PLACED_JUMP_SQ = 2.0 * 2.0  -- (2 m)²
@@ -159,15 +169,17 @@ local function init(jbeamData)
     TURN_DIST        = jbeamData.turnDist         or TURN_DIST
     RAGDOLL_VEL      = jbeamData.ragdollVel       or RAGDOLL_VEL
 
-    -- Scan all nodes: find the topmost (head anchor) and named thorax node
+    -- Scan all nodes: find the topmost (head anchor) and named thorax node.
+    -- nodeRecs is populated later at the SETUP→WALKING transition (world coords
+    -- are not valid at init() time for traffic-script-placed vehicles).
     headCid   = nil
     thoraxCid = nil
-    allCids   = {}
+    nodeRecs  = {}
+    thoraxRec = nil
     local maxZ = -math.huge
 
     for _, n in pairs(v.data.nodes) do
         local cid = n.cid
-        table.insert(allCids, cid)
 
         if n.name == THORAX_NODE_NAME then
             thoraxCid = cid
@@ -199,12 +211,12 @@ local function init(jbeamData)
     walkTimer      = 0
     rayTimer       = 0
     walkGraceTimer = 0
-    prevHeadX      = nil
-    prevHeadY      = nil
-    prevThoraxX    = nil
-    prevThoraxY    = nil
-    setupTimer     = 0.0
-    state          = "setup"
+    prevHeadX           = nil
+    prevHeadY           = nil
+    lastThoraxPlacedX   = nil
+    lastThoraxPlacedY   = nil
+    setupTimer          = 0.0
+    state               = "setup"
 end
 
 
@@ -212,18 +224,20 @@ local function reset()
     -- Re-randomise direction and restart from SETUP on vehicle reset.
     -- Mix in os.time() so repeated resets produce different directions.
     math.randomseed(obj:getId() + os.time())
-    walkDir        = math.random() * 2 * math.pi
-    walkOffsetX    = 0
-    walkOffsetY    = 0
-    walkTimer      = 0
-    rayTimer       = 0
-    walkGraceTimer = 0
-    prevHeadX      = nil
-    prevHeadY      = nil
-    prevThoraxX    = nil
-    prevThoraxY    = nil
-    setupTimer     = 0.0
-    state          = "setup"
+    walkDir             = math.random() * 2 * math.pi
+    walkOffsetX         = 0
+    walkOffsetY         = 0
+    walkTimer           = 0
+    rayTimer            = 0
+    walkGraceTimer      = 0
+    prevHeadX           = nil
+    prevHeadY           = nil
+    lastThoraxPlacedX   = nil
+    lastThoraxPlacedY   = nil
+    nodeRecs            = {}
+    thoraxRec           = nil
+    setupTimer          = 0.0
+    state               = "setup"
 end
 
 
@@ -258,10 +272,17 @@ local function updateGFX(dt)
         end
 
         if doStart then
-            -- Initialise the head anchor from the current real position.
-            headTargetX    = hp.x
-            headTargetY    = hp.y
-            headTargetZ    = hp.z
+            -- Capture current world positions for ALL nodes.
+            -- Moving every node by the same XY offset keeps all beam lengths
+            -- constant → no stretching, no snapping, no head detachment.
+            nodeRecs  = {}
+            thoraxRec = nil
+            for _, n in pairs(v.data.nodes) do
+                local p   = vec3(obj:getNodePosition(n.cid))
+                local rec = {cid=n.cid, spawnX=p.x, spawnY=p.y, spawnZ=p.z}
+                table.insert(nodeRecs, rec)
+                if n.cid == thoraxCid then thoraxRec = rec end
+            end
             walkOffsetX    = 0
             walkOffsetY    = 0
 
@@ -282,11 +303,11 @@ local function updateGFX(dt)
             end
             -- else: keep the random direction chosen at init()
 
-            -- Capture initial thorax position for velocity tracking
-            if thoraxCid then
-                local tp = vec3(obj:getNodePosition(thoraxCid))
-                prevThoraxX = tp.x
-                prevThoraxY = tp.y
+            -- Initialise lastThoraxPlaced so the first-frame hit check has zero
+            -- displacement and doesn't spuriously trigger ragdoll.
+            if thoraxRec then
+                lastThoraxPlacedX = thoraxRec.spawnX
+                lastThoraxPlacedY = thoraxRec.spawnY
             end
 
             walkGraceTimer = WALK_GRACE
@@ -306,23 +327,17 @@ local function updateGFX(dt)
         walkGraceTimer = walkGraceTimer - dt
     end
 
-    -- 1. Hit detection: estimate thorax XY velocity from position deltas.
-    --    A large velocity means an external impulse hit the body → ragdoll.
-    if walkGraceTimer <= 0 and thoraxCid and prevThoraxX ~= nil then
-        local tp  = vec3(obj:getNodePosition(thoraxCid))
-        local spd = math.sqrt(
-            (tp.x - prevThoraxX) * (tp.x - prevThoraxX) +
-            (tp.y - prevThoraxY) * (tp.y - prevThoraxY)) / dt
-        if spd > RAGDOLL_VEL then
+    -- 1. Hit detection: compare thorax current position vs where we placed it last
+    --    frame.  Because we teleport ALL nodes together each frame, the only way the
+    --    thorax deviates from its placed position is an external physical impulse.
+    if walkGraceTimer <= 0 and thoraxRec and lastThoraxPlacedX ~= nil then
+        local tp  = vec3(obj:getNodePosition(thoraxRec.cid))
+        local ddx = tp.x - lastThoraxPlacedX
+        local ddy = tp.y - lastThoraxPlacedY
+        if (ddx * ddx + ddy * ddy) > IMPACT_THRESHOLD_SQ then
             state = "ragdoll"
             return
         end
-        prevThoraxX = tp.x
-        prevThoraxY = tp.y
-    elseif thoraxCid then
-        local tp = vec3(obj:getNodePosition(thoraxCid))
-        prevThoraxX = tp.x
-        prevThoraxY = tp.y
     end
 
     -- 2. Obstacle check: probe the path ahead; turn around if blocked.
@@ -331,9 +346,7 @@ local function updateGFX(dt)
         rayTimer = 0
         local dirX    = math.sin(walkDir)
         local dirY    = math.cos(walkDir)
-        local fromPos = vec3(headTargetX + walkOffsetX,
-                             headTargetY + walkOffsetY,
-                             headTargetZ)
+        local fromPos = vec3(obj:getNodePosition(headCid))
         if obstacleAhead(fromPos, dirX, dirY) then
             -- Reverse with a ±30° random kick so the dummy doesn't just oscillate
             walkDir = walkDir + math.pi + (math.random() - 0.5) * math.pi / 3
@@ -352,19 +365,27 @@ local function updateGFX(dt)
     walkOffsetX = walkOffsetX + math.sin(walkDir) * effSpeed * dt
     walkOffsetY = walkOffsetY + math.cos(walkDir) * effSpeed * dt
 
-    -- 5. Terrain-following Z: allow the head anchor to rise (uphill) but
-    --    never force it down (prevents fighting gravity / sinking into terrain).
-    if hp.z > headTargetZ then
-        headTargetZ = hp.z
+    -- 5. Move ALL nodes by the same walk offset.
+    --    Constant beam lengths → no internal stretching forces → no snapping.
+    --    Z tracking: allow each node to rise with uphill terrain; never force
+    --    it down (prevents gravity-accumulation / sinking into the ground).
+    for _, rec in ipairs(nodeRecs) do
+        local curZ = obj:getNodePosition(rec.cid).z
+        if curZ > rec.spawnZ then rec.spawnZ = curZ end
+        obj:setNodePosition(rec.cid, vec3(
+            rec.spawnX + walkOffsetX,
+            rec.spawnY + walkOffsetY,
+            rec.spawnZ
+        ))
     end
 
-    -- 6. Place the head anchor node at the desired world position.
-    --    All other nodes are free physics — car hits, ball throws, etc. all work.
-    obj:setNodePosition(headCid, vec3(
-        headTargetX + walkOffsetX,
-        headTargetY + walkOffsetY,
-        headTargetZ
-    ))
+    -- 6. Record where we placed the thorax this frame so the next frame's hit
+    --    check has a valid baseline.  thoraxRec is a direct reference set once
+    --    at WALKING start — no per-frame search needed.
+    if thoraxRec then
+        lastThoraxPlacedX = thoraxRec.spawnX + walkOffsetX
+        lastThoraxPlacedY = thoraxRec.spawnY + walkOffsetY
+    end
 end
 
 
