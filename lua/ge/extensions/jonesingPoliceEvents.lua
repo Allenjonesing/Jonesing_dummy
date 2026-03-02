@@ -97,44 +97,78 @@ end
 -- Safe AI pursuit helpers
 -- ---------------------------------------------------------------------------
 
+-- Build the in-vehicle AI Lua command string for GTA-like pursuit.
+-- aggression 0..1: 0 = polite traffic, 1 = full GTA ramming.
+local function _buildPursuitCmd(targetVehId, aggression)
+    aggression = aggression or 1.0
+    -- At aggression >= 0.6 cops ignore lane discipline and drive at any speed.
+    -- At aggression >= 0.85 they also activate ramming / no-traffic-respect flags.
+    local lines = {
+        'if ai then',
+        '  ai.setMode("chase")',
+        string.format("  ai.setTargetObjectID(%d)", targetVehId),
+        string.format("  ai.setAggression(%.2f)", aggression),
+    }
+    if aggression >= 0.6 then
+        -- Ignore lane markings – drive off-road straight at the target
+        table.insert(lines, "  if ai.driveInLane   then ai.driveInLane(false) end")
+        -- Remove the speed cap so cops can go as fast as physics allows
+        table.insert(lines, "  if ai.setSpeedMode  then ai.setSpeedMode('limit', 999) end")
+    end
+    if aggression >= 0.85 then
+        -- Treat other vehicles as obstacles to ram through, not avoid
+        table.insert(lines, "  if ai.setAvoidCars  then ai.setAvoidCars(false) end")
+        -- Some BeamNG builds expose direct flags
+        table.insert(lines, "  if ai.setParameters then ai.setParameters({avoidCars=false, aggressive=true}) end")
+    end
+    table.insert(lines, "end")
+    return table.concat(lines, "\n")
+end
+
 -- Try to make a vehicle AI pursue a target vehicle id.
 -- Returns true if any method succeeded.
 function M.assignPursuit(policeVehId, targetVehId, aggression)
     if not policeVehId or not targetVehId then return false end
+    aggression = aggression or 1.0
 
     -- Method 1: traffic high-level pursuit API
     if M.caps.hasPolicePursuit then
         local ok = pcall(function()
             if traffic.requestPursuit then
-                traffic.requestPursuit(policeVehId, targetVehId, aggression or 0.5)
+                traffic.requestPursuit(policeVehId, targetVehId, aggression)
             elseif traffic.setPursuitTarget then
                 traffic.setPursuitTarget(policeVehId, targetVehId)
             elseif traffic.startPursuit then
                 traffic.startPursuit(policeVehId, targetVehId)
             end
         end)
-        if ok then return true end
+        if ok then
+            -- Also queue the direct AI command so aggression/speed flags apply
+            local veh = be and be:getObjectByID(policeVehId)
+            if veh then
+                pcall(function()
+                    veh:queueLuaCommand(_buildPursuitCmd(targetVehId, aggression))
+                end)
+            end
+            return true
+        end
     end
 
-    -- Method 2: direct vehicle AI commands
-    local veh = be:getObjectByID(policeVehId)
+    -- Method 2: direct vehicle AI commands (primary fallback)
+    local veh = be and be:getObjectByID(policeVehId)
     if not veh then return false end
 
-    local ok2, err2 = pcall(function()
-        -- Queue a Lua command inside the vehicle's VM to set AI mode
-        local targetVeh = be:getObjectByID(targetVehId)
-        if not targetVeh then return end
-        local tv = targetVeh:getPosition()
-        veh:queueLuaCommand(string.format(
-            'if ai then ai.setMode("chase") ai.setTargetObjectID(%d) end',
-            targetVehId))
+    local ok2 = pcall(function()
+        veh:queueLuaCommand(_buildPursuitCmd(targetVehId, aggression))
     end)
     if ok2 then
         M.caps.hasAiSetMode = true
+        logD("assignPursuit: queued GTA-mode chase on vehicle %d (aggression=%.2f)",
+            policeVehId, aggression)
         return true
     end
 
-    -- Method 3: just set AI to traffic mode so at least it drives
+    -- Method 3: last resort – basic traffic mode so at least it drives
     pcall(function()
         veh:queueLuaCommand('if ai then ai.setMode("traffic") end')
     end)

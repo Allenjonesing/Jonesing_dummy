@@ -1,7 +1,8 @@
 {
   "enabled": true,
   "debugLog": false,
-  "wantedDecayPerSecond": 0.05,
+  "gtaMode": true,
+  "wantedDecayPerSecond": 0.02,
   "wantedMax": 5,
   "thresholds": {
     "speedingMph": 85,
@@ -10,10 +11,10 @@
     "trafficHitWanted": 1
   },
   "spawnRules": {
-    "1": { "units": 1, "aggression": 0.3 },
-    "2": { "units": 2, "aggression": 0.5 },
-    "3": { "units": 3, "aggression": 0.7, "roadblockRequest": true },
-    "4": { "units": 4, "aggression": 0.85, "spikeStripRequest": true },
+    "1": { "units": 1, "aggression": 0.75 },
+    "2": { "units": 2, "aggression": 0.88 },
+    "3": { "units": 3, "aggression": 0.95, "roadblockRequest": true },
+    "4": { "units": 4, "aggression": 1.0,  "spikeStripRequest": true },
     "5": { "units": 6, "aggression": 1.0 }
   },
   "spawnCooldownSeconds": 8.0,

@@ -60,6 +60,7 @@ local state = {
     wantedLevel    = 0,      -- 0..wantedMax  (discrete stars)
     wantedHeat     = 0.0,    -- float accumulator; stars = floor(heat)
     lastSpawnTime  = 0,
+    lastRefreshTime = 0,     -- last time pursuit was refreshed on existing cops
     spawnedPoliceIds = {},   -- set: [numericId] = true
     playerVehId    = nil,    -- numeric id of current player vehicle
     speedingTimer  = 0.0,    -- seconds above speed threshold
@@ -69,7 +70,8 @@ local state = {
     eventsExt      = nil,    -- reference to jonesingPoliceEvents module
 }
 
-local UPDATE_INTERVAL = 0.25  -- run main logic 4× per second
+local UPDATE_INTERVAL   = 0.25   -- run main logic 4× per second
+local REFRESH_INTERVAL  = 5.0    -- re-issue pursuit commands every N seconds
 
 -- ---------------------------------------------------------------------------
 -- Config loader
@@ -361,6 +363,18 @@ local function _managePolice(now)
     -- Despawn police that are too far
     _despawnFarPolice()
 
+    -- Periodically re-issue pursuit commands so cops don't drift out of chase mode
+    if (now - state.lastRefreshTime) >= REFRESH_INTERVAL then
+        local rule = cfg.spawnRules and cfg.spawnRules[tostring(level)]
+        local aggr = (rule and rule.aggression) or 1.0
+        for id, _ in pairs(state.spawnedPoliceIds) do
+            if state.eventsExt and state.eventsExt.assignPursuit then
+                state.eventsExt.assignPursuit(id, state.playerVehId, aggr)
+            end
+        end
+        state.lastRefreshTime = now
+    end
+
     -- Check if it's time to spawn more
     if (now - state.lastSpawnTime) < cfg.spawnCooldownSeconds then return end
 
@@ -493,6 +507,9 @@ function M.onExtensionLoaded()
 
     logI("jonesingPoliceManager loaded. enabled=%s debugLog=%s",
         tostring(cfg.enabled), tostring(cfg.debugLog))
+
+    -- Auto-load the HUD overlay (graceful if absent)
+    pcall(function() extensions.load("jonesingPoliceHud") end)
 end
 
 function M.onInit()
