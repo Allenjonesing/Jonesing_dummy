@@ -7,13 +7,14 @@
 local M = {}
 local TAG = "jonesingPoliceHud"
 
--- In BeamNG GE extensions imgui is the global 'ui_imgui', not 'im'.
-local im = ui_imgui
+-- NOTE: ui_imgui is NOT available at module-load time in BeamNG GE extensions.
+-- It is resolved lazily inside onPreRender instead.
 
 -- Layout
 local HUD_W      = 230   -- window width  (px)
 local HUD_H      = 75    -- window height (px)
-local HUD_MARGIN = 20    -- distance from screen edges (px)
+local HUD_MARGIN = 20    -- distance from left/right screen edges (px)
+local HUD_TOP    = 70    -- distance from top edge (px) – clear native UI bars
 local STAR_R     = 13    -- star circle radius (px)
 local STAR_STEP  = 42    -- horizontal gap between star centres (px)
 local STAR_Y     = 24    -- star centre Y offset from window top (px)
@@ -37,6 +38,10 @@ local _ft  = 0   -- flash accumulator
 local _pl  = 0   -- previous wanted level (for blink-on-gain)
 
 function M.onPreRender(dt)
+    -- Resolve ui_imgui lazily – it is not available at module-load time.
+    local im = ui_imgui
+    if not im then return end
+
     local pm = extensions and extensions.jonesingPoliceManager
     if not pm then return end
 
@@ -69,7 +74,7 @@ function M.onPreRender(dt)
         sw = io_.DisplaySize.x or sw
     end
 
-    im.SetNextWindowPos(im.ImVec2(sw - HUD_W - HUD_MARGIN, HUD_MARGIN), im.Cond_Always)
+    im.SetNextWindowPos(im.ImVec2(sw - HUD_W - HUD_MARGIN, HUD_TOP), im.Cond_Always)
     im.SetNextWindowSize(im.ImVec2(HUD_W, HUD_H), im.Cond_Always)
     im.SetNextWindowBgAlpha(0.85)
 

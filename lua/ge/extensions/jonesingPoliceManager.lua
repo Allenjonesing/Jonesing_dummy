@@ -377,31 +377,31 @@ local function _countActivePolice()
     return count
 end
 
--- Scan all scene vehicles and return a set of IDs whose model/name contains 'police'.
--- This includes native game police AND any vehicles we spawned.
+-- Scan all scene vehicles and return a set of IDs whose jbeam field contains 'police'.
+-- Uses scenetree which is the reliable BeamNG GE Lua API for object enumeration.
 local function _getAllScenePoliceIds()
     local ids = {}
-    if not be then return ids end
-    local n = 0
-    local ok0, err = pcall(function() n = be:getVehicleCount() end)
-    if not ok0 then logD("getVehicleCount failed: %s", tostring(err)) end
+    if not scenetree then return ids end
     local pattern = (cfg.policeNamePattern or "police"):lower()
-    for i = 0, n - 1 do
+
+    local ok, objNames = pcall(function()
+        return scenetree.findClassObjects("BeamNGVehicle")
+    end)
+    if not ok or not objNames then
+        logD("scenetree.findClassObjects failed: %s", tostring(objNames))
+        return ids
+    end
+
+    for _, objName in ipairs(objNames) do
         pcall(function()
-            local veh = be:getVehicle(i)
-            if not veh then return end
-            local name = ""
-            -- getJBeamFilename() returns the model folder name (e.g. "fullsize_police")
-            local ok1, jn = pcall(function() return veh:getJBeamFilename() end)
-            if ok1 and type(jn) == "string" then name = jn end
-            -- Fallback: getName()
-            if name == "" then
-                local ok2, sn = pcall(function() return veh:getName() end)
-                if ok2 and type(sn) == "string" then name = sn end
-            end
-            if name:lower():find(pattern) then
-                local ok3, vid = pcall(function() return veh:getID() end)
-                if ok3 and vid then ids[tonumber(vid)] = true end
+            local obj = scenetree.findObject(objName)
+            if not obj then return end
+            -- 'jbeam' field holds the model folder name (e.g. "fullsize_police")
+            local ok1, jbeam = pcall(function() return obj:getField('jbeam', '') end)
+            if not ok1 or type(jbeam) ~= "string" then return end
+            if jbeam:lower():find(pattern) then
+                local ok2, vid = pcall(function() return obj:getID() end)
+                if ok2 and vid then ids[tonumber(vid)] = true end
             end
         end)
     end
@@ -559,6 +559,8 @@ end
 function M.onVehicleTakenDamage(vid, damage)
     if not cfg.enabled or state.inCareer then return end
     if vid ~= state.playerVehId then return end
+    -- Only escalate an active pursuit, never create one from damage alone
+    if state.wantedLevel < 1 then return end
     if state.eventsExt then
         state.eventsExt.caps.hasVehicleDamageEvt = true
     end
@@ -665,11 +667,14 @@ function M.onUpdate(dtReal, dtSim, dtRaw)
     _detectCareer()
     if state.inCareer then return end
 
-    -- Trigger: speeding
-    _tickSpeeding(dt)
+    -- Trigger: speeding – only escalates an existing pursuit, never starts one
+    if state.wantedLevel > 0 then
+        _tickSpeeding(dt)
+    end
 
-    -- Trigger: damage polling (backup for when the event hook isn't available)
-    if not (state.eventsExt and state.eventsExt.caps and
+    -- Trigger: damage polling – only escalates an existing pursuit
+    if state.wantedLevel > 0 and
+       not (state.eventsExt and state.eventsExt.caps and
             state.eventsExt.caps.hasVehicleDamageEvt) then
         _tickDamage()
     end
