@@ -471,61 +471,6 @@
 
 //// ---------- ORGANS: SHARED DEFAULTS (NUMERIC, NO VARIABLES) ----------
 
-// Local rigid “cage” (kept as-is, just literal)
-{ "CAGE_DEFAULT":{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.20, "beamShortBound":0.80,
-  "beamSpring":16000, "beamDamp":22,
-  "beamLimitSpring":30000, "beamLimitDamp":150,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
-}},
-
-{"TETHER_TOOTHPICK_DEFAULT":{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.012, "beamShortBound":0.988,
-  "beamSpring":65000, "beamDamp":140,
-  "beamLimitSpring":180000, "beamLimitDamp":600,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX",
-  "beamPrecompression":1.0, "beamPrecompressionRange":1.0,
-  "deformLimitExpansion":1.01
-}},
-
-{"ROPE_LINK_LEGACY":{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.001, "beamShortBound":0.999,
-  "beamSpring":1200, "beamDamp":30,
-  "beamLimitSpring":800, "beamLimitDamp":50,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX",
-  "beamPrecompression":1.00, "beamPrecompressionRange":0.00
-}},
-
-// Near-rigid “toothpick” pins — tuned from connectors scale
-{ "TETHER_TOOTHPICK_SOLID":{
-    "beamType":"|NORMAL",
-  "beamLongBound":1.0010, "beamShortBound":0.9990,   // essentially fixed length
-  "beamSpring":130000,        // ≈ $adummy1weight*100000
-  "beamDamp":400,             // high damping to kill shake (connectors are ~65–131)
-  "beamLimitSpring":300000,   // hard limit to avoid snap-back
-  "beamLimitDamp":1500,
-  "beamDeform":500,
-  "beamStrength":"FLT_MAX",
-  "beamPrecompression":1.0, "beamPrecompressionRange":0.0,
-  "deformLimitExpansion":1.001
-  }},
-
-// Near-rigid “toothpick” pins — tuned from connectors scale
-{ "TETHER_TOOTHPICK_SOLID_AF":{
-  "beamType":"|NORMAL",
-  "beamPrecompression":1,
-  "beamLongBound":1.0,
-  "beamShortBound":1.0,
-  "beamSpring":1210940,      // stiff like rollcage tubing
-  "beamDamp":80,
-  "beamDeform":"FLT_MAX",
-  "beamStrength":"FLT_MAX",
-  "deformLimitExpansion":1.2
-  }},
-
 // Near-rigid “toothpick” pins — tuned from connectors scale
 { "TETHER_TOOTHPICK_SOLID_AF2":{
   "beamType":"|SUPPORT",
@@ -551,57 +496,6 @@
   "deformLimitExpansion":1.0
   }},
 
-// Near-rigid “toothpick” pins — tuned from connectors scale
-{ "INTESTINAL_TETHER":{
-  "beamType":"|SUPPORT",
-  "beamPrecompression":1,
-  "beamLongBound":1,
-  "beamShortBound":1.0,
-  "beamSpring":50210940,
-  "beamDamp":5,
-  "beamDeform":"FLT_MAX",
-  "beamStrength":"FLT_MAX",
-  "deformLimitExpansion":1.0
-  }},
-
-// Intestine rope links: loose but not rubbery
-{ "ROPE_LINK_DEFAULT":{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.000, "beamShortBound":1.000,
-  "beamSpring":12000, "beamDamp":30,
-  "beamLimitSpring":80000, "beamLimitDamp":500,
-  "beamDeform":"FLT_MAX", "beamStrength":12000,
-  "beamPrecompression":1.00, "beamPrecompressionRange":0.00
-}}
-
-{ "ROPE_LINK_TAPE":{
-  "beamType":"|ANISOTROPIC",
-  "beamPrecompression":0.97,
-  "beamLongBound":1.0, "beamShortBound":1.0,
-
-  // low axial stiffness (floppy along length), stable damping
-  "beamSpring":0, "beamDamp":50,
-
-  // anisotropic expansion settings (like the hazard tape)
-  "springExpansion":25000, "dampExpansion":50, "transitionZone":0.04,
-
-  // can tear, not indestructible
-  "beamDeform":"FLT_MAX", "beamStrength":1400,
-
-  "deformLimitExpansion":1.2
-}}
-
-{ "ROPE_LINK_DEFAULT_LIMP":{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.002, "beamShortBound":0.998,  // small give removes rubber-band
-  "beamSpring":6000,               // was 12000
-  "beamDamp":90,                   // was 30
-  "beamLimitSpring":80000, "beamLimitDamp":600,
-  "beamDeform":"FLT_MAX", "beamStrength":10000,  // can tear under serious load
-  "beamPrecompression":1.00, "beamPrecompressionRange":0.00
-}},
-
-
 { "CAGE_LIMP":{
   "beamType":"|NORMAL",
   "beamLongBound":1.20, "beamShortBound":0.80,
@@ -611,83 +505,43 @@
   "beamDeform":"500", "beamStrength":"FLT_MAX"
 }},
 
-// TETHER_TOOTHPICK_DEFAULT_LIMP — calmer pins
-{ "TETHER_TOOTHPICK_DEFAULT_LIMP":{
+// Rope chain for intestine — near-zero rest length (beamPrecompression=0.001 → ~1.4 mm)
+// so segment ends are actively pulled to touch each other when deployed.
+// beamLongBound:999 means the normal spring zone extends to ~1000x rest (≈14 cm),
+// accommodating the initial stacked state without exploding.
+{ "INTESTINE_LINK": {
   "beamType":"|NORMAL",
-  "beamLongBound":1.012, "beamShortBound":0.988,
-  "beamSpring":35000,            // was 65000
-  "beamDamp":220,                // was 140
-  "beamLimitSpring":200000, "beamLimitDamp":700,
-  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX",
-  "beamPrecompression":0.995,    // was 1.0 (always “loaded”)
-  "beamPrecompressionRange":0.05,
-  "deformLimitExpansion":1.02
-}},
+  "beamPrecompression":0.001,
+  "beamLongBound":999, "beamShortBound":1,
+  "beamSpring":200, "beamDamp":50,
+  "beamDeform":"FLT_MAX", "beamStrength":"FLT_MAX"
+}}
 
-// TETHER_TOOTHPICK_SOLID_LIMP — still “solid”, but not over-tight
-{ "TETHER_TOOTHPICK_SOLID_LIMP":{
-  "beamType":"|NORMAL",
-  "beamLongBound":1.002, "beamShortBound":0.998,  // allow micro float
-  "beamSpring":90000,             // was 130000
-  "beamDamp":600,                 // was 400
-  "beamLimitSpring":300000, "beamLimitDamp":1500,
-  "beamDeform":500, "beamStrength":"FLT_MAX",
-  "beamPrecompression":0.997,     // was 1.0
-  "beamPrecompressionRange":0.02,
-  "deformLimitExpansion":1.005
-}},
-
-{ "ROPE_LINK_TAPE_WEAK": {
+{ "INTESTINE_ROPE": {
   "beamType":"|ANISOTROPIC",
 
-  // Make it start a touch shorter than rest (built-in slack)
-  "beamPrecompression":0.95,                // was 0.97
+  // Spawn at normal length; don't do 0.001 hacks
+  "beamPrecompression":1,
+  "beamPrecompressionTime":0.15,
 
-  // Allow a wide dead-zone where NOTHING fights you
-  "beamShortBound":0.95,                    // can shorten to 65% before any push
-  "beamLongBound":1.01,                     // can stretch to 108% before any pull
+  // Compression behavior (rope should NOT push much)
+  "beamSpring":150,
+  "beamDamp":25,
 
-  // No axial stiffness in the neutral zone
-  "beamSpring":0,
-  "beamDamp":12,                            // low damping so it doesn't feel stiff
+  // Tension behavior (rope should resist stretching)
+  "springExpansion":12000,
+  "dampExpansion":120,
 
-  // When it finally goes taut, use gentle expansion forces
-  "springExpansion":6000,                   // was 25000 (too tight)
-  "dampExpansion":30,                       // was 50
-  "transitionZone":0.10,                    // smoother ramp into tension
+  // Smooth ramp into tension behavior
+  "transitionZone":0.05,
 
-  // It can tear, but not paper-thin
+  // Prevent crazy stretching; tune 1.05–1.25 typically
+  "deformLimitExpansion":1.12,
+
+  // Optional: keep unbreakable while you tune
   "beamDeform":"FLT_MAX",
-  "beamStrength":1600,                      // 1400–2000 is a nice range
-
-  "deformLimitExpansion":1.05              // keep limit expansion conservative
+  "beamStrength":"FLT_MAX"
 }}
-
-{ "ROPE_LINK_CHAIN": {
-"beamType":"|NORMAL",
-        "beamPrecompression":1, "beamLongBound":1, "beamShortBound":1,
-  "beamSpring":6000000, "beamDamp":1600,      // stout but not crazy-stiff
-  "beamLimitSpring":30000000, "beamLimitDamp":2000,
-  "deformLimitExpansion":1.02,
-  "beamDeform":500000, "beamStrength":"FLT_MAX"
-            }}
-
-{ "ROPE_LINK_CHAIN2": {
-"beamType":"|NORMAL",
-        "beamPrecompression":1, "beamLongBound":1, "beamShortBound":1,
-  "beamSpring":10001000, "beamDamp":1000,      // stout but not crazy-stiff
-  "beamDeform":500000, "beamStrength":"FLT_MAX"
-            }}
-
-{ "ROPE_LINK_CHAIN_TIGHT": {
-  "beamType":"|NORMAL",
-  "beamPrecompression":1.00,          // no slack; bump to 1.02 for slight pre-tension
-  "beamLongBound":1.0, "beamShortBound":1.0, // no lengthening/shortening
-  "beamSpring":10000000, "beamDamp":1200,    // stout & well-damped
-  "beamLimitSpring":50000000, "beamLimitDamp":2500, // hard limits to kill bounce
-  "beamDeform":500000, "beamStrength":"FLT_MAX"
-}}
-
 // ===============================================================================
 // INTESTINE
 // ===============================================================================
@@ -774,7 +628,7 @@
 
 // ---- ROPE LINKS (tight chain, no gaps) ----
 {"breakGroup":""},
-{"$ref":"ROPE_LINK_CHAIN_TIGHT"},
+{"$ref":"INTESTINE_ROPE"},
 
 ["oi1",  "oi4_1"],
 ["oi1_1","oi4_2"],
