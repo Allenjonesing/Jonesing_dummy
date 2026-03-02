@@ -1,49 +1,42 @@
 -- lua/vehicle/extensions/explosionSystem.lua
 -- Vehicle Explosion System — Jonesing mod
 --
--- Standalone extension that gives any vehicle a destructible "explosion health"
--- bar.  When health reaches zero (from collisions, beam breaks, or engine/
--- electrics damage) the vehicle explodes once: parts detach, an impulse is
--- applied, fire/smoke starts, a sound plays, and a GE event is fired so the
--- optional explosionManager can apply chain-reaction damage to nearby vehicles.
+-- Monitors engine damage.  When the engine is severely damaged and begins
+-- emitting fire, the vehicle is ignited immediately and then detonated after
+-- a short countdown using BeamNG's built-in obj:explode() — the same API
+-- used by the radial-menu "Explode" action.
 --
 -- USAGE (console):
 --   extensions.load("explosionSystem")       -- load on current vehicle
---   extensions.explosionSystem.detonate()    -- manual trigger
---   extensions.explosionSystem.getStatus()   -- print current health / state
+--   extensions.explosionSystem.detonate()    -- manual immediate detonation
+--   extensions.explosionSystem.getStatus()   -- log current state
 --
--- CONFIG OVERRIDES (per vehicle, in jbeam or via console):
---   extensions.explosionSystem.configure({ debug = true, startHealth = 50 })
+-- CONFIG OVERRIDES (per vehicle or via console):
+--   extensions.explosionSystem.configure({ debug = true, engineFireThreshold = 0.8 })
 
 local M = {}
 
 -- ── default configuration ────────────────────────────────────────────────────
 local cfg = {
-    enabled                 = true,   -- master on/off switch
-    debug                   = true,  -- verbose logging
-    startHealth             = 1,    -- initial explosion health (0–100)
-    armDelaySeconds         = 3,      -- seconds after init before arming
-    collisionDamageScale    = 1.0,    -- multiplier on collision damage
-    minCollisionSpeed       = 1,      -- m/s — slower impacts are ignored
-    engineDamageThreshold   = 0.1,    -- engine damage fraction that deals 20 hp
-    electricsDamagePerTick  = 0.5,    -- hp lost per second when electrics fail
-    explodeOnFuelLeak       = false,  -- trigger on detected fuel leak
-    explosionImpulse        = 600000,  -- Newton·s applied to vehicle nodes
-    explosionRadius         = 120,     -- metres — sent to explosionManager
-    chainReaction           = true,   -- allow manager to chain to nearby vehicles
-    fireDurationSeconds     = 10,
-    soundPath               = nil,    -- optional OGG path; nil = use built-in
+    enabled              = true,   -- master on/off switch
+    debug                = true,   -- verbose logging (flip to false to quiet logs)
+    armDelaySeconds      = 3.0,    -- seconds after init before monitoring starts
+    engineFireThreshold  = 0.9,    -- powertrain damage ratio (0–1) that triggers fire
+    explodeDelaySeconds  = 5.0,    -- seconds between ignition and detonation
+    explosionRadius      = 12,     -- metres passed to explosionManager for chain reactions (12 m = city-block scale)
+    chainReaction        = true,   -- allow manager to chain to nearby vehicles
+    statusLogInterval    = 2.0,    -- seconds between periodic status logs (debug mode)
 }
 
 -- ── state ────────────────────────────────────────────────────────────────────
 local state = {
-    health          = 1,
-    exploded        = false,
-    armed           = true,
-    armTimer        = 0,
-    lastDamageEvent = "none",
-    lastDamageAmt   = 0,
-    engineWasDamaged = false,
+    exploded          = false,   -- detonation already fired
+    armed             = false,   -- arming delay elapsed
+    armTimer          = 0,       -- counts up to cfg.armDelaySeconds
+    engineFire        = false,   -- engine fire phase entered
+    explodeTimer      = 0,       -- counts down from cfg.explodeDelaySeconds
+    lastEngineDamage  = 0,       -- most recent powertrain damage reading
+    statusTimer       = 0,       -- throttle for periodic debug logs
 }
 
 -- ── helpers ──────────────────────────────────────────────────────────────────
@@ -58,160 +51,68 @@ local function info(fmt, ...)
     log("I", TAG, string.format(fmt, ...))
 end
 
-local function warn(fmt, ...)
-    log("W", TAG, string.format(fmt, ...))
-end
+-- ── fire + explode sequence ──────────────────────────────────────────────────
 
--- Clamp a value into [lo, hi].
-local function clamp(v, lo, hi)
-    if v < lo then return lo end
-    if v > hi then return hi end
-    return v
-end
-
--- Apply hp damage and log the source; returns new health.
-local function applyDamage(amount, source)
-    if state.exploded or not state.armed then return state.health end
-    amount = math.max(0, amount)
-    if amount <= 0 then return state.health end
-    state.health = clamp(state.health - amount, 0, cfg.startHealth)
-    state.lastDamageEvent = source or "unknown"
-    state.lastDamageAmt   = amount
-    dbg("Damage %.1f from [%s] → health %.1f", amount, source, state.health)
-    return state.health
-end
-
--- ── explosion effects (all wrapped in pcall so missing APIs don't crash) ─────
-
-local function breakParts()
-    -- Try to break all known breakgroups to scatter parts.
+local function startEngineFire()
+    -- Ignite the vehicle visually using BeamNG's built-in ignite API.
     local ok, err = pcall(function()
-        if v and v.data and v.data.breakGroupLinks then
-            for name, _ in pairs(v.data.breakGroupLinks) do
-                if obj.breakBreakGroup then
-                    obj:breakBreakGroup(name)
-                end
-            end
-        end
-    end)
-    if not ok then dbg("breakParts error: %s", tostring(err)) end
-end
-
-local function applyBlastImpulse()
-    -- Scatter nodes outward from vehicle centre with random impulse.
-    local ok, err = pcall(function()
-        if not (v and v.data and v.data.nodes) then return end
-        local nodeCount = 0
-        for _, _ in pairs(v.data.nodes) do nodeCount = nodeCount + 1 end
-        if nodeCount == 0 then return end
-
-        -- Compute rough centroid.
-        local cx, cy, cz = 0, 0, 0
-        for _, n in pairs(v.data.nodes) do
-            local p = obj:getNodePosition(n.cid)
-            cx = cx + p.x; cy = cy + p.y; cz = cz + p.z
-        end
-        cx = cx / nodeCount; cy = cy / nodeCount; cz = cz / nodeCount
-
-        -- Apply outward impulse per node.
-        local impulsePerNode = cfg.explosionImpulse / nodeCount
-        for _, n in pairs(v.data.nodes) do
-            local p = obj:getNodePosition(n.cid)
-            local dx = p.x - cx
-            local dy = p.y - cy
-            local dz = p.z - cz + 0.3  -- bias upward
-            local len = math.sqrt(dx*dx + dy*dy + dz*dz)
-            if len < 0.01 then len = 0.01 end
-            local ix = (dx / len) * impulsePerNode
-            local iy = (dy / len) * impulsePerNode
-            local iz = (dz / len) * impulsePerNode
-            if obj.addNodeForce then
-                obj:addNodeForce(n.cid, ix, iy, iz)
-            end
-        end
-    end)
-    if not ok then dbg("applyBlastImpulse error: %s", tostring(err)) end
-end
-
-local function startFire()
-    -- Use built-in vehicle fire API if available; graceful no-op otherwise.
-    local ok, err = pcall(function()
-        if obj.ignite then
+        if obj and obj.ignite then
             obj:ignite()
-            dbg("Vehicle ignited via obj:ignite()")
-            return
-        end
-        -- Some builds expose a fire controller via electrics.
-        if electrics and electrics.values and electrics.values.isOnFire ~= nil then
-            electrics.values.isOnFire = 1
-            dbg("Fire set via electrics.values.isOnFire")
+            dbg("obj:ignite() called — engine fire started")
+        else
+            dbg("obj.ignite not available on this build")
         end
     end)
-    if not ok then dbg("startFire error: %s", tostring(err)) end
+    if not ok then
+        dbg("startEngineFire pcall error: %s", tostring(err))
+    end
 end
 
-local function playExplosionSound()
-    -- Prefer a custom OGG if configured; fall back to built-in crash sound.
+local function notifyManager(pos)
+    -- Queue a call to the GE-side explosionManager (if loaded).
     local ok, err = pcall(function()
-        if cfg.soundPath then
-            if obj.playSoundOnce then
-                obj:playSoundOnce(cfg.soundPath)
-                dbg("Played custom sound: %s", cfg.soundPath)
-                return
-            end
-        end
-        -- Built-in: trigger the vehicle's existing damage/crash sound event.
-        if sounds and sounds.playSoundOnceFollowObject then
-            sounds.playSoundOnceFollowObject("event:>Vehicle>Damage>explosion", obj)
-            dbg("Played built-in explosion sound via sounds API")
-            return
-        end
-        if obj.playSound then
-            obj:playSound("explosion")
-            dbg("Played built-in explosion sound via obj:playSound")
-        end
+        local cmd = string.format(
+            "local m = extensions and extensions.explosionManager;" ..
+            "if m and m.onVehicleExploded then" ..
+            "  m.onVehicleExploded(%d, {x=%f,y=%f,z=%f,radius=%d,chain=%s})" ..
+            "end",
+            obj:getId(), pos.x, pos.y, pos.z,
+            cfg.explosionRadius, tostring(cfg.chainReaction)
+        )
+        obj:queueGameEngineLua(cmd)
+        dbg("Queued explosionManager notification to GE")
     end)
-    if not ok then dbg("playExplosionSound error: %s", tostring(err)) end
+    if not ok then
+        dbg("notifyManager pcall error: %s", tostring(err))
+    end
 end
-
--- ── GE notification ──────────────────────────────────────────────────────────
-
-local function notifyManager()
-    -- Send event to explosionManager (if loaded) so it can apply chain damage.
-    local ok, err = pcall(function()
-        local mgr = extensions and extensions.explosionManager
-        if mgr and mgr.onVehicleExploded then
-            local pos = obj:getPosition()
-            mgr.onVehicleExploded(obj:getId(), {
-                x      = pos.x, y = pos.y, z = pos.z,
-                radius = cfg.explosionRadius,
-                chain  = cfg.chainReaction,
-            })
-            dbg("Notified explosionManager")
-        end
-    end)
-    if not ok then dbg("notifyManager error: %s", tostring(err)) end
-end
-
--- ── core explode routine ─────────────────────────────────────────────────────
 
 local function doExplode(reason)
-    if state.exploded then return end  -- fire only once
+    if state.exploded then
+        dbg("doExplode called but already exploded — ignoring")
+        return
+    end
     state.exploded = true
 
-    info("EXPLODING — reason: %s (health was %.1f)", reason or "unknown", state.health)
+    info("*** EXPLODING *** reason='%s' engineDamage=%.3f", reason or "unknown", state.lastEngineDamage)
 
-    breakParts()
-    applyBlastImpulse()
-    startFire()
-    playExplosionSound()
-    notifyManager()
-end
-
-local function checkHealth(reason)
-    if state.health <= 0 and not state.exploded then
-        doExplode(reason or "health depleted")
+    -- Use BeamNG's built-in vehicle explosion (same as radial-menu "Explode").
+    local ok, err = pcall(function()
+        if obj and obj.explode then
+            obj:explode()
+            info("obj:explode() called — built-in explosion triggered")
+        else
+            info("obj.explode not available; falling back to obj:ignite()")
+            if obj and obj.ignite then obj:ignite() end
+        end
+    end)
+    if not ok then
+        info("doExplode pcall error: %s", tostring(err))
     end
+
+    -- Notify GE manager for chain reactions.
+    local pos = obj:getPosition()
+    notifyManager(pos)
 end
 
 -- ── public API ───────────────────────────────────────────────────────────────
@@ -219,30 +120,27 @@ end
 -- Manual detonation (console: extensions.explosionSystem.detonate())
 function M.detonate()
     if state.exploded then
-        info("Already exploded; ignoring detonate()")
+        info("Already exploded; detonate() ignored")
         return
     end
-    state.health = 0
-    doExplode("manual detonate")
+    info("Manual detonate() called")
+    doExplode("manual")
 end
 
--- Chain-reaction damage entry point (called by explosionManager on nearby vehicles).
--- Bypasses arming delay so chain explosions propagate even on fresh vehicles.
+-- Chain-reaction entry point (called by explosionManager on nearby vehicles).
 function M._chainDamage(amount)
     if not cfg.enabled or state.exploded then return end
-    state.health = clamp(state.health - (amount or 0), 0, cfg.startHealth)
-    dbg("Chain damage %.1f → health %.1f", amount or 0, state.health)
-    if state.health <= 0 then
-        doExplode("chain_reaction")
-    end
+    dbg("_chainDamage called amount=%.1f — triggering chain explosion", amount or 0)
+    doExplode("chain_reaction")
 end
 
--- Override config at runtime (console: extensions.explosionSystem.configure({...}))
+-- Override config at runtime.
 function M.configure(overrides)
     if type(overrides) ~= "table" then return end
     for k, v in pairs(overrides) do
         if cfg[k] ~= nil then
             cfg[k] = v
+            dbg("configure: %s = %s", tostring(k), tostring(v))
         end
     end
     info("Config updated")
@@ -250,145 +148,130 @@ end
 
 -- Status dump (console: extensions.explosionSystem.getStatus())
 function M.getStatus()
-    info("health=%.1f exploded=%s armed=%s lastEvent=%s lastDmg=%.1f",
-        state.health, tostring(state.exploded), tostring(state.armed),
-        state.lastDamageEvent, state.lastDamageAmt)
+    info("enabled=%s armed=%s engineFire=%s exploded=%s engineDamage=%.3f armTimer=%.1f explodeTimer=%.1f threshold=%.2f",
+        tostring(cfg.enabled),
+        tostring(state.armed),
+        tostring(state.engineFire),
+        tostring(state.exploded),
+        state.lastEngineDamage,
+        state.armTimer,
+        state.explodeTimer,
+        cfg.engineFireThreshold)
 end
 
 -- ── extension lifecycle ──────────────────────────────────────────────────────
 
 function M.init(jbeamData)
-    -- Allow per-vehicle jbeam overrides.
+    -- Accept per-vehicle jbeam config overrides: iterate cfg keys and copy
+    -- matching values from jbeamData so the vehicle's jbeam can tune thresholds.
     if type(jbeamData) == "table" then
-        for k, _ in pairs(cfg) do
+        for k in pairs(cfg) do
             if jbeamData[k] ~= nil then
                 cfg[k] = jbeamData[k]
+                dbg("init jbeam override: %s = %s", k, tostring(jbeamData[k]))
             end
         end
     end
 
     -- Reset state.
-    state.health           = cfg.startHealth
     state.exploded         = false
     state.armed            = false
     state.armTimer         = 0
-    state.lastDamageEvent  = "none"
-    state.lastDamageAmt    = 0
-    state.engineWasDamaged = false
+    state.engineFire       = false
+    state.explodeTimer     = 0
+    state.lastEngineDamage = 0
+    state.statusTimer      = 0
+
+    info("explosionSystem init — enabled=%s debug=%s armDelay=%.1fs fireThreshold=%.2f explodeDelay=%.1fs",
+        tostring(cfg.enabled), tostring(cfg.debug),
+        cfg.armDelaySeconds, cfg.engineFireThreshold, cfg.explodeDelaySeconds)
 
     if not cfg.enabled then
-        dbg("explosionSystem disabled by config")
-        return
+        info("explosionSystem disabled by config — no monitoring will occur")
     end
-
-    dbg("init — startHealth=%d armDelay=%.1fs debug=%s",
-        cfg.startHealth, cfg.armDelaySeconds, tostring(cfg.debug))
 end
 
 function M.onReset()
-    -- Vehicle reset (teleport, quick-reset): re-arm cleanly.
-    state.health           = cfg.startHealth
     state.exploded         = false
     state.armed            = false
     state.armTimer         = 0
-    state.lastDamageEvent  = "none"
-    state.lastDamageAmt    = 0
-    state.engineWasDamaged = false
-    dbg("onReset — health restored")
+    state.engineFire       = false
+    state.explodeTimer     = 0
+    state.lastEngineDamage = 0
+    state.statusTimer      = 0
+    info("onReset — state cleared, arming delay restarted")
 end
 
--- ── per-frame update (arming timer + electrics/fuel damage) ─────────────────
+-- ── per-frame update ─────────────────────────────────────────────────────────
 
 function M.updateGFX(dt)
     if not cfg.enabled or state.exploded then return end
 
-    -- Arming countdown.
+    -- ── 1. Arming delay ────────────────────────────────────────────────────
     if not state.armed then
         state.armTimer = state.armTimer + dt
         if state.armTimer >= cfg.armDelaySeconds then
             state.armed = true
-            dbg("Armed (%.1f s elapsed)", state.armTimer)
+            info("Armed after %.2f s — now monitoring engine damage", state.armTimer)
+        else
+            -- Log arming progress once per second during debug.
+            state.statusTimer = state.statusTimer + dt
+            if cfg.debug and state.statusTimer >= 1.0 then
+                state.statusTimer = 0
+                dbg("Arming… %.1f / %.1f s", state.armTimer, cfg.armDelaySeconds)
+            end
         end
-        return  -- don't process damage until armed
+        return
     end
 
-    -- Electrics damage: if battery/electrical energy is depleted, drain health slowly.
-    local ok = pcall(function()
-        local ev = electrics and electrics.values
-        if ev then
-            -- Use electricalEnergy or batteryVoltage as a reliable indicator of
-            -- electrical system failure (works on all vehicle types).
-            local energy  = ev.electricalEnergy  or ev.electricalenergy
-            local voltage = ev.batteryVoltage     or ev.battery_voltage
-            local failed  = false
-            if energy  ~= nil and energy  <= 0 then failed = true end
-            if voltage ~= nil and voltage <= 0 then failed = true end
-            if failed then
-                applyDamage(cfg.electricsDamagePerTick * dt, "electrics_failure")
-            end
-        end
-    end)
-    if not ok then dbg("electrics check error") end
+    -- ── 2. Engine-fire countdown (post-ignition) ───────────────────────────
+    if state.engineFire then
+        state.explodeTimer = state.explodeTimer + dt
 
-    -- Engine damage threshold: if engine is severely damaged, take a one-time hit.
-    local ok2 = pcall(function()
-        if powertrain then
-            local dmg = powertrain.getEngineDamage and powertrain.getEngineDamage() or 0
-            if dmg >= cfg.engineDamageThreshold and not state.engineWasDamaged then
-                state.engineWasDamaged = true
-                applyDamage(20, "engine_critical")
-                dbg("Engine critical damage registered (%.2f)", dmg)
-            end
+        -- Periodic countdown log so user can see it ticking.
+        state.statusTimer = state.statusTimer + dt
+        if cfg.debug and state.statusTimer >= 1.0 then
+            state.statusTimer = 0
+            dbg("Engine fire — exploding in %.1f s (elapsed %.1f / %.1f s)",
+                cfg.explodeDelaySeconds - state.explodeTimer,
+                state.explodeTimer, cfg.explodeDelaySeconds)
         end
-    end)
-    if not ok2 then dbg("powertrain check error") end
 
-    -- Fuel leak: optional trigger.
-    if cfg.explodeOnFuelLeak then
-        local ok3 = pcall(function()
-            local ev = electrics and electrics.values
-            if ev and ev.fuel_leak and ev.fuel_leak > 0 then
-                doExplode("fuel_leak")
-            end
-        end)
-        if not ok3 then dbg("fuel_leak check error") end
+        if state.explodeTimer >= cfg.explodeDelaySeconds then
+            doExplode("engine_fire_countdown")
+        end
+        return
     end
 
-    checkHealth("updateGFX")
-end
-
--- ── collision callback ────────────────────────────────────────────────────────
-
-function M.onCollision(data)
-    if not cfg.enabled or state.exploded or not state.armed then return end
-
+    -- ── 3. Monitor engine damage ───────────────────────────────────────────
     local ok, err = pcall(function()
-        -- data.speed is relative collision speed in m/s.
-        local speed = (data and data.speed) or 0
-        if speed < cfg.minCollisionSpeed then return end
+        local dmg = 0
+        if powertrain and powertrain.getEngineDamage then
+            dmg = powertrain.getEngineDamage() or 0
+        end
+        state.lastEngineDamage = dmg
 
-        -- Damage scales quadratically with speed (realistic energy model).
-        local rawDmg  = (speed * speed) / 100.0
-        local damage  = rawDmg * cfg.collisionDamageScale
+        -- Periodic status log so user can confirm the extension is running.
+        state.statusTimer = state.statusTimer + dt
+        if cfg.debug and state.statusTimer >= cfg.statusLogInterval then
+            state.statusTimer = 0
+            dbg("Status — engineDamage=%.3f threshold=%.2f engineFire=%s exploded=%s",
+                dmg, cfg.engineFireThreshold,
+                tostring(state.engineFire), tostring(state.exploded))
+        end
 
-        applyDamage(damage, string.format("collision_%.1fms", speed))
-        checkHealth("collision")
+        if dmg >= cfg.engineFireThreshold then
+            state.engineFire  = true
+            state.explodeTimer = 0
+            state.statusTimer  = 0
+            info("Engine damage %.3f >= threshold %.2f — IGNITING, will explode in %.1f s",
+                dmg, cfg.engineFireThreshold, cfg.explodeDelaySeconds)
+            startEngineFire()
+        end
     end)
-    if not ok then dbg("onCollision error: %s", tostring(err)) end
-end
-
--- ── beam break callback ───────────────────────────────────────────────────────
-
-function M.onBeamBroken(id, energy)
-    if not cfg.enabled or state.exploded or not state.armed then return end
-
-    local ok, err = pcall(function()
-        -- Each high-energy beam break deals 1–5 hp depending on energy.
-        local dmg = clamp((energy or 0) / 5000, 1, 5)
-        applyDamage(dmg, string.format("beam_break_%d", id or 0))
-        checkHealth("beam_break")
-    end)
-    if not ok then dbg("onBeamBroken error: %s", tostring(err)) end
+    if not ok then
+        dbg("updateGFX engine-check pcall error: %s", tostring(err))
+    end
 end
 
 return M
