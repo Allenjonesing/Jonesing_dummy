@@ -56,7 +56,7 @@
 local M = {}
 
 -- ── internal state ────────────────────────────────────────────────────────────
-local state              = "ghost"   -- "grace", "ghost", or "standing"
+local state              = "grace"   -- "grace", "ghost", or "standing"
 local allNodes           = {}        -- {cid, spawnX, spawnY, spawnZ} — set after baseline
 local refCid             = nil       -- cid of "dummy1_thoraxtfl" (chest reference node)
 local lastRefX           = 0.0      -- where we LAST teleported the reference node (X)
@@ -83,7 +83,7 @@ local gracePrevX         = nil
 local gracePrevY         = nil
 
 -- configurable params
-local walkSpeed          = 0.001    -- m/s  (barely perceptible GTA pedestrian shuffle)
+local walkSpeed          = 0.1    -- m/s  (barely perceptible GTA pedestrian shuffle)
 -- Hard speed cap: teleport delta per frame is clamped so physics velocity
 -- never accumulates beyond this regardless of frame rate or walk speed setting.
 -- 5 mph = 2.235 m/s
@@ -117,7 +117,7 @@ local PROXIMITY_RADIUS_SQ  = 3.0 * 3.0     -- metres²  (3 m sphere radius)
 -- Grace period after spawn before the impact check is enabled.
 -- Traffic-script spawning runs physics-settling for ~2 s after init();
 -- 3.5 s provides comfortable margin for all map/PC speeds.
-local STARTUP_GRACE        = 0.0             -- seconds
+local STARTUP_GRACE        = 3.5             -- seconds
 
 -- Name of the reference body node (chest, ~1.45 m above ground).
 -- Using a high thorax node avoids false-positive falls from foot/ground contact.
@@ -210,7 +210,7 @@ local function init(jbeamData)
     gracePrevX   = nil
     gracePrevY   = nil
 
-    state = "ghost"  -- start in ghost mode; we transition to standing after impact detection
+    state = "grace"  -- start in grace mode; we transition to ghost after impact detection
 end
 
 
@@ -227,7 +227,7 @@ local function reset()
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
-    state = "ghost"
+    state = "grace"
 end
 
 
@@ -350,7 +350,7 @@ local function updateGFX(dt)
                     end
                 end
             end
-            state = "ghost"
+            state = "ghost"  -- start in standing mode to provide immediate impact protection on spawn
         end
         return  -- walkDir/allNodes not ready yet; ghost teleportation starts next state
     end
