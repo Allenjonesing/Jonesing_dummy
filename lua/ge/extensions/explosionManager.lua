@@ -7,6 +7,11 @@
 --
 --   be:getVehicle(id):queueLuaCommand("obj:explode()")
 --
+-- NOTE on GE vehicle iteration:
+--   In GE Lua context, be:getVehicleCount() / be:getVehicle(i) do NOT exist
+--   (those are VE-context methods).  GE extensions iterate vehicles using
+--   scenetree.findClassObjects('BeamNGVehicle') instead.
+--
 -- BOOM! IMPLEMENTATION NOTES:
 --   The freeroam radial menu "Boom!" button triggers vehicle explosion by
 --   queuing  obj:explode()  in the target vehicle's VE Lua context.
@@ -51,6 +56,38 @@ end
 
 -- ── chain reaction ─────────────────────────────────────────────────────────────
 
+-- In GE Lua context, be:getVehicleCount() / be:getVehicle(i) do NOT exist.
+-- The correct GE API is scenetree.findClassObjects('BeamNGVehicle').
+-- This helper returns a list of all vehicle objects using GE-compatible methods.
+local function getAllVehiclesGE()
+    local result = {}
+    -- Primary: scenetree (available in all BeamNG builds)
+    local ok, names = pcall(function()
+        return scenetree.findClassObjects('BeamNGVehicle')
+    end)
+    if ok and type(names) == 'table' then
+        for _, name in ipairs(names) do
+            local veh = scenetree:findObject(name)
+            if veh then
+                table.insert(result, veh)
+            end
+        end
+        dbg("getAllVehiclesGE: found %d vehicles via scenetree", #result)
+        return result
+    end
+    -- Fallback: gameplay_vehicles extension (newer builds)
+    pcall(function()
+        local gv = extensions and extensions.gameplay_vehicles
+        if gv and gv.getVehicles then
+            for _, veh in pairs(gv.getVehicles()) do
+                table.insert(result, veh)
+            end
+            dbg("getAllVehiclesGE: found %d vehicles via gameplay_vehicles", #result)
+        end
+    end)
+    return result
+end
+
 -- Queue obj:explode() on a nearby vehicle — same path as Boom! radial menu.
 -- This is the SAME call the "Fun Stuff → Boom!" button ultimately issues.
 local function chainDetonate(vehicleObj, vid)
@@ -93,17 +130,14 @@ function M.onVehicleExploded(vehicleId, event)
         return
     end
 
-    local count = be and be:getVehicleCount() or 0
-    dbg("Scanning %d vehicles for chain candidates within %.1f m", count, radius)
+    local vehicles = getAllVehiclesGE()
+    dbg("Scanning %d vehicles for chain candidates within %.1f m", #vehicles, radius)
 
     local affected = 0
-    for i = 0, count - 1 do
+    for _, veh in ipairs(vehicles) do
         local ok, err = pcall(function()
-            local veh = be:getVehicle(i)
-            if not veh then return end
-
-            local vid = (veh.getID and veh:getID()) or tostring(i)
-            if vid == vehicleId then
+            local vid = (veh.getID and veh:getID()) or tostring(veh)
+            if tostring(vid) == tostring(vehicleId) then
                 dbg("Skipping source vehicle %s", tostring(vid))
                 return
             end
@@ -121,7 +155,7 @@ function M.onVehicleExploded(vehicleId, event)
             end
         end)
         if not ok then
-            dbg("Vehicle-scan loop error at index %d: %s", i, tostring(err))
+            dbg("Vehicle-scan loop error: %s", tostring(err))
         end
     end
 
