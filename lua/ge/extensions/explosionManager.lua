@@ -17,7 +17,7 @@ local TAG = "explosionManager"
 
 -- ── configuration ─────────────────────────────────────────────────────────────
 local cfg = {
-    debug               = false,
+    debug               = true,
     chainReactionDamage = 40,    -- hp deducted from nearby vehicles' explosionHealth
     radialImpulseForce  = 80000, -- Newton·s applied to nearby vehicle nodes
     minProximityRadius  = 1.0,   -- vehicles closer than this (m) always affected
