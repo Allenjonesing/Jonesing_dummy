@@ -5,14 +5,12 @@
 -- jonesingPedestrianWalker.lua
 -- Pedestrian walking controller for the Jonesing agenty_dummy.
 --
--- Core mechanic — "step-walk with physics settling":
---   Every WALK_INTERVAL seconds all body nodes are teleported one step forward
---   (XY advances by walkSpeed × WALK_INTERVAL; Z is always read live from
---   physics at step time).  Between steps the physics engine runs freely: the
---   feet settle to terrain height (automatic slope / banked-road following),
---   stabiliser beams keep the dummy upright, and vehicle collisions are handled
---   by the physics engine before we move the dummy further — preventing the
---   "teleport into wall → explosion" problem.
+-- Core mechanic — "step-push with physics settling":
+--   Every WALK_INTERVAL seconds all body nodes are given a small velocity in the
+--   walk direction via obj:setNodeVelocity().  The engine then runs freely until
+--   the next step: terrain Z is followed automatically via contact forces, walls
+--   push back (no clipping), and vehicle collisions apply naturally through the
+--   physics solver — no geometry can be "teleported into".
 --
 -- Walk direction:
 --   A random direction is chosen at WALKING start and updated with gentle ±20°
@@ -20,29 +18,27 @@
 --   direction is reversed with a ±30° random kick.
 --
 -- Terrain Z following:
---   Z is NOT stored in nodeRecs.  At each step the current physics Z of every
---   node is read directly and used for the teleport.  This means uphill, downhill,
---   and banked-road surfaces are all followed automatically without any manual
---   Z tracking.
+--   The Z component of the applied velocity is always 0.  Gravity and terrain
+--   contact forces handle vertical position automatically on all surface types.
 --
 -- Ragdoll detection (WALKING → RAGDOLL):
---   Uses RELATIVE position of an inner soft node (intestine: "oi1") versus the
---   outer thorax node.  Because step-walk teleports ALL nodes together, this
---   relative vector is constant during normal walking — stabiliser-beam
---   oscillations move both nodes in the same direction and leave the difference
---   unchanged.  A vehicle impact applies a collision impulse to the outer shell
---   (which has collision geometry) but NOT to the inner intestine node; the
---   vector therefore changes, signalling a genuine hit.  This eliminates the
---   false-positive ragdoll that fired when the thorax-absolute-position check
---   exceeded its threshold due to normal settling oscillation.
+--   At each step start the RELATIVE position of the inner intestine node ("oi1")
+--   vs the outer thorax node is recorded as relBase.  During the settling window
+--   the same relative vector is compared to relBase.  Because the velocity push
+--   is applied to ALL nodes equally, the relative vector is nearly constant during
+--   normal walking.  A vehicle impact applies a collision impulse to the outer
+--   thorax shell (which has collision geometry) but NOT to the inner intestine
+--   node (no collision surface); the relative vector therefore diverges, signalling
+--   a genuine hit.  relBase is refreshed at every step so long-run drift from
+--   walking never falsely triggers ragdoll.
 --
 -- World-placement detection (SETUP → WALKING):
 --   Waits for a >2 m head-node jump (traffic-script teleport) or SETUP_TIMEOUT
---   seconds (direct spawn), then captures all node XY positions and starts.
+--   seconds (direct spawn), then collects all node CIDs and starts walking.
 --
 -- States:  SETUP → WALKING → RAGDOLL
 --   SETUP   — waiting for world-placement
---   WALKING — step-walk active; physics settles between steps; dummy stays upright
+--   WALKING — velocity-push active; physics settles between steps; dummy stays upright
 --   RAGDOLL — no overrides; full physics forever
 
 local M = {}
@@ -54,19 +50,15 @@ local state = "setup"
 local headCid      = nil   -- topmost node (head crown / headtip) — obstacle ray origin
 local thoraxCid    = nil   -- chest reference node (outer shell, has collision)
 local intestineCid = nil   -- inner soft node ("oi1") — no collision surface
--- Per-node spawn XY.  Z is NOT stored — always read live from physics at step
--- time so the dummy automatically follows terrain slopes and banked roads.
-local nodeRecs  = {}    -- {cid, spawnX, spawnY}
-local thoraxRec = nil   -- direct reference into nodeRecs for O(1) access
-
--- accumulated XY walk offset
-local walkOffsetX = 0.0
-local walkOffsetY = 0.0
+-- All node CIDs — populated at SETUP→WALKING transition.
+-- Only CIDs are needed; spawn positions are NOT stored since we apply velocity
+-- rather than teleporting to an absolute position.
+local nodeCids = {}
 
 -- walk state
 local walkDir           = 0.0  -- radians; +Y axis = north, clockwise
 local walkTimer         = 0.0  -- time since last direction drift (in step-units)
-local walkIntervalTimer = 0.0  -- time since last teleport step
+local walkIntervalTimer = 0.0  -- time since last velocity push
 local walkGraceTimer    = 0.0  -- no-ragdoll window at WALKING start
 
 -- SETUP detection
@@ -74,26 +66,29 @@ local prevHeadX  = nil
 local prevHeadY  = nil
 local setupTimer = 0.0
 
--- Baseline relative position of intestine node vs thorax node at WALKING start.
--- Because step-walk moves ALL nodes together, this vector is constant during normal
--- walking.  An external impact pushes the outer thorax (collision surface) without
--- directly pushing the inner intestine, making the vector diverge.
+-- Baseline relative position of intestine node vs thorax node, refreshed at
+-- every step start.  Deviation > IMPACT_REL_SQ during the settling window
+-- signals a vehicle impact (outer shell pushed hard, inner intestine lags).
 local relBaseX = nil
 local relBaseY = nil
 local relBaseZ = nil
 
 -- ── tuneable parameters (overridable from jbeam slot data) ────────────────────
-local walkSpeed        = 0.001   -- m/s  comfortable pedestrian pace
-local walkChangePeriod = 6.0   -- s    seconds between gentle direction tweaks
-local TURN_DIST        = 4.0   -- m    obstacle turn-trigger distance
-local TURN_CONE_HALF   = 1.5   -- m    lateral half-width of forward cone
-local RAGDOLL_VEL      = 5.0   -- m/s  kept for jbeam override compat; unused internally
-local WALK_GRACE       = 0.8   -- s    no-ragdoll window at WALKING start
-local SETUP_TIMEOUT    = 2.0   -- s    max SETUP wait before assuming direct spawn
--- Time between teleport steps.  Physics runs freely between steps: terrain Z
--- adjusts, stabiliser beams restabilise, collisions are handled by physics.
-local WALK_INTERVAL    = 0.1  -- s
-local MAX_WALK_SPEED   = 0.001   -- m/s  hard cap on effective speed (prevents runaway)
+-- NOTE: with velocity-push locomotion, walkSpeed is a true velocity (m/s) that is
+-- applied directly via setNodeVelocity.  Higher speeds are safe — the physics solver
+-- prevents geometry clipping rather than requiring tiny steps.
+local walkSpeed        = 0.5    -- m/s  comfortable walking pace (~1.8 km/h)
+local walkChangePeriod = 6.0    -- s    seconds between gentle direction tweaks
+local TURN_DIST        = 4.0    -- m    obstacle turn-trigger distance
+local TURN_CONE_HALF   = 1.5    -- m    lateral half-width of forward cone
+local RAGDOLL_VEL      = 5.0    -- m/s  kept for jbeam override compat; unused internally
+local WALK_GRACE       = 0.8    -- s    no-ragdoll window at WALKING start
+local SETUP_TIMEOUT    = 2.0    -- s    max SETUP wait before assuming direct spawn
+-- Time between velocity pushes.  Physics runs freely between pushes: terrain Z
+-- adjusts via contact forces, stabiliser beams restabilise, collisions are
+-- handled naturally — nodes cannot clip through geometry.
+local WALK_INTERVAL    = 0.1    -- s
+local MAX_WALK_SPEED   = 1.5    -- m/s  hard cap (prevents runaway from jbeam overrides)
 
 -- Displacement² of the intestine-vs-thorax relative vector that signals an impact.
 -- Normal stabiliser-beam settling moves both nodes together (<2 mm delta).
@@ -159,13 +154,12 @@ local function init(jbeamData)
     WALK_GRACE       = jbeamData.walkGrace        or WALK_GRACE
 
     -- Scan all nodes to find head, thorax, and intestine cids.
-    -- nodeRecs is built later at the SETUP→WALKING transition (world coords are
+    -- nodeCids is built later at the SETUP→WALKING transition (world coords are
     -- not valid at init() time for traffic-script-placed vehicles).
     headCid      = nil
     thoraxCid    = nil
     intestineCid = nil
-    nodeRecs  = {}
-    thoraxRec = nil
+    nodeCids  = {}
     local maxZ = -math.huge
 
     for _, n in pairs(v.data.nodes) do
@@ -185,8 +179,6 @@ local function init(jbeamData)
     math.randomseed(obj:getId())
 
     walkDir             = math.random() * 2 * math.pi
-    walkOffsetX         = 0
-    walkOffsetY         = 0
     walkTimer           = 0
     walkIntervalTimer   = 0
     walkGraceTimer      = 0
@@ -203,8 +195,6 @@ end
 local function reset()
     math.randomseed(obj:getId() + os.time())
     walkDir             = math.random() * 2 * math.pi
-    walkOffsetX         = 0
-    walkOffsetY         = 0
     walkTimer           = 0
     walkIntervalTimer   = 0
     walkGraceTimer      = 0
@@ -213,8 +203,7 @@ local function reset()
     relBaseX            = nil
     relBaseY            = nil
     relBaseZ            = nil
-    nodeRecs            = {}
-    thoraxRec           = nil
+    nodeCids            = {}
     setupTimer          = 0.0
     state               = "setup"
 end
@@ -228,7 +217,7 @@ local function updateGFX(dt)
 
     local hp = vec3(obj:getNodePosition(headCid))
 
-    -- ── SETUP: wait for world-placement, then capture spawn XY ───────────────
+    -- ── SETUP: wait for world-placement, then collect node CIDs ──────────────
     if state == "setup" then
         setupTimer = setupTimer + dt
 
@@ -241,28 +230,18 @@ local function updateGFX(dt)
         if setupTimer >= SETUP_TIMEOUT then doStart = true end
 
         if doStart then
-            -- Capture XY spawn positions for every node.
-            -- Z is intentionally NOT stored — it is always read live from
-            -- physics at step time so the dummy follows terrain automatically.
-            nodeRecs  = {}
-            thoraxRec = nil
+            -- Collect all node CIDs.  No spawn positions are stored — velocity-push
+            -- locomotion does not need them; position is tracked by the physics engine.
+            nodeCids = {}
             for _, n in pairs(v.data.nodes) do
-                local p   = vec3(obj:getNodePosition(n.cid))
-                local rec = {cid=n.cid, spawnX=p.x, spawnY=p.y}
-                table.insert(nodeRecs, rec)
-                if n.cid == thoraxCid then thoraxRec = rec end
+                table.insert(nodeCids, n.cid)
             end
-            walkOffsetX       = 0
-            walkOffsetY       = 0
             walkIntervalTimer = 0
             -- Fresh random walk direction at WALKING start
             walkDir           = math.random() * 2 * math.pi
 
-            -- Capture the baseline relative position of the inner intestine node
-            -- vs the outer thorax node.  Because step-walk teleports all nodes
-            -- together, this relative vector stays constant during normal walking.
-            -- A car impact pushes the outer thorax (collision) but not the inner
-            -- intestine (no collision geometry), so the vector diverges on a hit.
+            -- Capture initial intestine-vs-thorax relative position baseline.
+            -- Refreshed at every step start — see below.
             if intestineCid and thoraxCid then
                 local ip = vec3(obj:getNodePosition(intestineCid))
                 local tp = vec3(obj:getNodePosition(thoraxCid))
@@ -285,12 +264,13 @@ local function updateGFX(dt)
 
     if walkGraceTimer > 0 then walkGraceTimer = walkGraceTimer - dt end
 
-    -- Settling phase: physics runs freely between steps.
-    -- Monitor the intestine-vs-thorax relative position for impact.
-    -- Because step-walk moves ALL nodes together, this relative vector is constant
-    -- during normal walking — both nodes shift by the same amount so the difference
-    -- is unchanged.  A vehicle impact pushes the outer thorax (collision surface)
-    -- without directly pushing the inner intestine, making the vector diverge.
+    -- Settling phase: physics runs freely between velocity pushes.
+    -- Monitor the intestine-vs-thorax relative position for an impact signal.
+    -- The velocity push is applied to ALL nodes equally, so the relative vector
+    -- is nearly constant during normal walking.  A vehicle impact applies a
+    -- collision impulse to the outer thorax shell (collision geometry) but NOT
+    -- to the inner intestine node (no collision surface), making the vector
+    -- diverge — a reliable hit signal that is immune to normal walking drift.
     walkIntervalTimer = walkIntervalTimer + dt
     if walkIntervalTimer < WALK_INTERVAL then
         if walkGraceTimer <= 0 and intestineCid and thoraxCid and relBaseX ~= nil then
@@ -304,18 +284,18 @@ local function updateGFX(dt)
                 return
             end
         end
-        return  -- still settling; wait for next step
+        return  -- still settling; wait for next push
     end
     walkIntervalTimer = 0
 
-    -- ── Step time: advance XY, check obstacles, teleport ─────────────────────
+    -- ── Step time: choose direction, apply velocity push ─────────────────────
 
     local dirX = math.sin(walkDir)
     local dirY = math.cos(walkDir)
 
     -- Obstacle check at each step: probe from current head position
-    if obstacleAhead(vec3(obj:getNodePosition(headCid)), dirX, dirY) then
-        -- Reverse with a ±TURN_ANGLE_RAD random kick so the dummy doesn't just oscillate
+    if obstacleAhead(hp, dirX, dirY) then
+        -- Reverse with a ±TURN_ANGLE_RAD random kick so the dummy doesn't oscillate
         walkDir = walkDir + math.pi + (math.random() - 0.5) * TURN_ANGLE_RAD
         dirX    = math.sin(walkDir)
         dirY    = math.cos(walkDir)
@@ -328,21 +308,25 @@ local function updateGFX(dt)
         walkDir   = walkDir + (math.random() - 0.5) * DRIFT_ANGLE_RAD
     end
 
-    -- Advance XY walk offset by one step
-    local step = math.min(walkSpeed, MAX_WALK_SPEED) * WALK_INTERVAL
-    walkOffsetX = walkOffsetX + dirX * step
-    walkOffsetY = walkOffsetY + dirY * step
+    -- Apply walk velocity to every node.
+    -- Z is set to 0 — gravity and terrain contact forces handle vertical movement
+    -- automatically on all surface types (slopes, banked roads, kerbs).
+    -- Walls and other geometry absorb the velocity through the physics solver;
+    -- no node can be "teleported into" solid geometry.
+    local speed = math.min(walkSpeed, MAX_WALK_SPEED)
+    for _, cid in ipairs(nodeCids) do
+        obj:setNodeVelocity(cid, dirX * speed, dirY * speed, 0)
+    end
 
-    -- Teleport all nodes: XY = spawnXY + walkOffset, Z = current physics Z.
-    -- Reading Z from physics at step time gives free terrain-following on slopes
-    -- and banked roads — no manual Z tracking required.
-    for _, rec in ipairs(nodeRecs) do
-        local curZ = obj:getNodePosition(rec.cid).z
-        obj:setNodePosition(rec.cid, vec3(
-            rec.spawnX + walkOffsetX,
-            rec.spawnY + walkOffsetY,
-            curZ
-        ))
+    -- Refresh relBase right after the push so the settling window measures
+    -- deviation from a fresh known-good baseline.  This prevents long-run drift
+    -- from accumulated beam-spring creep causing false ragdolls.
+    if intestineCid and thoraxCid then
+        local ip = vec3(obj:getNodePosition(intestineCid))
+        local tp = vec3(obj:getNodePosition(thoraxCid))
+        relBaseX = ip.x - tp.x
+        relBaseY = ip.y - tp.y
+        relBaseZ = ip.z - tp.z
     end
 end
 
