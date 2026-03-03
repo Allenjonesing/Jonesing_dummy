@@ -27,7 +27,7 @@ local cfg = {
     enabled                = true,   -- master on/off switch
     debug                  = true,   -- verbose every-frame logging
     armDelaySeconds        = 3.0,    -- seconds after init before monitoring starts
-    explodeDelaySeconds    = 5.0,    -- seconds between ignition and explosion
+    explodeDelaySeconds    = 3.0,    -- seconds between ignition and explosion
     engineDeviceName       = "mainEngine", -- powertrain device name to inspect
     stallRpmThreshold      = 400,    -- RPM below which engine is considered stalled
     stallWasRunningRpm     = 600,    -- RPM above which we mark engine as "was running"
@@ -287,6 +287,9 @@ function M.updateGFX(dt)
     local triggered = false
     local trigReason = ""
     pcall(function()
+        local eng = powertrain.getDevice("mainEngine")
+        triggered = eng and eng.isBroken == true
+
         -- Try the configured device name first.
         local dev = powertrain and powertrain.getDevice and
                     powertrain.getDevice(cfg.engineDeviceName)
