@@ -83,7 +83,7 @@ local relBaseY = nil
 local relBaseZ = nil
 
 -- ── tuneable parameters (overridable from jbeam slot data) ────────────────────
-local walkSpeed        = 0.02   -- m/s  comfortable pedestrian pace
+local walkSpeed        = 0.001   -- m/s  comfortable pedestrian pace
 local walkChangePeriod = 6.0   -- s    seconds between gentle direction tweaks
 local TURN_DIST        = 4.0   -- m    obstacle turn-trigger distance
 local TURN_CONE_HALF   = 1.5   -- m    lateral half-width of forward cone
@@ -92,13 +92,13 @@ local WALK_GRACE       = 0.8   -- s    no-ragdoll window at WALKING start
 local SETUP_TIMEOUT    = 2.0   -- s    max SETUP wait before assuming direct spawn
 -- Time between teleport steps.  Physics runs freely between steps: terrain Z
 -- adjusts, stabiliser beams restabilise, collisions are handled by physics.
-local WALK_INTERVAL    = 0.05  -- s
-local MAX_WALK_SPEED   = 0.1   -- m/s  hard cap on effective speed (prevents runaway)
+local WALK_INTERVAL    = 0.1  -- s
+local MAX_WALK_SPEED   = 0.001   -- m/s  hard cap on effective speed (prevents runaway)
 
 -- Displacement² of the intestine-vs-thorax relative vector that signals an impact.
 -- Normal stabiliser-beam settling moves both nodes together (<2 mm delta).
 -- A car hit pushes the outer thorax shell by 5+ cm while the inner intestine lags.
-local IMPACT_REL_SQ = 0.05 * 0.05  -- (5 cm)²
+local IMPACT_REL_SQ = 0.02 * 0.02  -- (2 cm)²
 
 -- Distance² threshold for traffic-script placement detection
 local PLACED_JUMP_SQ = 2.0 * 2.0  -- (2 m)²
