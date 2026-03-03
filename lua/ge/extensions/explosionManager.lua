@@ -92,8 +92,12 @@ end
 -- This is the BeamNG built-in explosion — same as "Fun Stuff → Boom!" action.
 local function chainDetonate(vehicleObj, vid, power, radius)
     local ok, err = pcall(function()
+        local vehObj = be:getObjectByID(vid)              -- or be:getObjectByID(data.subjectID)
+        if vehObj then
+            vehObj:queueLuaCommand('fire.explodeVehicle()')  -- Boom
+        end
         local vpos = vehicleObj:getPosition()
-        core_explosion.createExplosion(vpos, power, radius)
+        -- core_explosion.createExplosion(vpos, power, radius)
         info("Chain explosion via core_explosion.createExplosion for vehicle %s (power=%.0f radius=%.1f)",
             tostring(vid), power, radius)
     end)
@@ -125,8 +129,12 @@ function M.onVehicleExploded(vehicleId, event)
     -- Trigger the explosion effect using BeamNG's built-in core_explosion API.
     -- This is the same call used by the "Fun Stuff → Boom!" radial menu action.
     local explodeOk, explodeErr = pcall(function()
+        local vehObj = be:getObjectByID(vehicleId)              -- or be:getObjectByID(data.subjectID)
+        if vehObj then
+        vehObj:queueLuaCommand('fire.explodeVehicle()')  -- Boom
+        end
         local pos = vec3(blastPos.x, blastPos.y, blastPos.z)
-        core_explosion.createExplosion(pos, power, radius)
+        -- core_explosion.createExplosion(pos, power, radius)
         info("core_explosion.createExplosion(pos=(%.1f,%.1f,%.1f), power=%.0f, radius=%.1f) for vehicle %s",
             blastPos.x, blastPos.y, blastPos.z, power, radius, tostring(vehicleId))
     end)
