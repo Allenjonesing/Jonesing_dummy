@@ -72,7 +72,7 @@ local lastThoraxPlacedX = nil
 local lastThoraxPlacedY = nil
 
 -- ── tuneable parameters (overridable from jbeam slot data) ────────────────────
-local walkSpeed        = 0.6   -- m/s  comfortable pedestrian pace
+local walkSpeed        = 0.02   -- m/s  comfortable pedestrian pace
 local walkChangePeriod = 6.0   -- s    seconds between gentle direction tweaks
 local TURN_DIST        = 4.0   -- m    obstacle turn-trigger distance
 local TURN_CONE_HALF   = 1.5   -- m    lateral half-width of forward cone
@@ -81,8 +81,8 @@ local WALK_GRACE       = 0.8   -- s    no-ragdoll window at WALKING start
 local SETUP_TIMEOUT    = 2.0   -- s    max SETUP wait before assuming direct spawn
 -- Time between teleport steps.  Physics runs freely between steps: terrain Z
 -- adjusts, stabiliser beams restabilise, collisions are handled by physics.
-local WALK_INTERVAL    = 0.15  -- s
-local MAX_WALK_SPEED   = 3.0   -- m/s  hard cap on effective speed (prevents runaway)
+local WALK_INTERVAL    = 0.05  -- s
+local MAX_WALK_SPEED   = 0.1   -- m/s  hard cap on effective speed (prevents runaway)
 
 -- Displacement² from our last node placement that signals a physical impact.
 -- Stabiliser beams hold the body to within ~5 cm of its placed position;
