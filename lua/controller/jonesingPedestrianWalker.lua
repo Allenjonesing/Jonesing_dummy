@@ -26,9 +26,15 @@
 --   Z tracking.
 --
 -- Ragdoll detection (WALKING → RAGDOLL):
---   During each settling window (between steps) the thorax XY is compared with
---   its last-placed position.  A deviation > IMPACT_THRESHOLD_SQ (15 cm) signals
---   a physical hit; all overrides are released and physics takes over forever.
+--   Uses RELATIVE position of an inner soft node (intestine: "oi1") versus the
+--   outer thorax node.  Because step-walk teleports ALL nodes together, this
+--   relative vector is constant during normal walking — stabiliser-beam
+--   oscillations move both nodes in the same direction and leave the difference
+--   unchanged.  A vehicle impact applies a collision impulse to the outer shell
+--   (which has collision geometry) but NOT to the inner intestine node; the
+--   vector therefore changes, signalling a genuine hit.  This eliminates the
+--   false-positive ragdoll that fired when the thorax-absolute-position check
+--   exceeded its threshold due to normal settling oscillation.
 --
 -- World-placement detection (SETUP → WALKING):
 --   Waits for a >2 m head-node jump (traffic-script teleport) or SETUP_TIMEOUT
@@ -36,7 +42,7 @@
 --
 -- States:  SETUP → WALKING → RAGDOLL
 --   SETUP   — waiting for world-placement
---   WALKING — step-walk active; physics settles between steps
+--   WALKING — step-walk active; physics settles between steps; dummy stays upright
 --   RAGDOLL — no overrides; full physics forever
 
 local M = {}
@@ -45,8 +51,9 @@ local M = {}
 local state = "setup"
 
 -- node IDs
-local headCid   = nil   -- topmost node (head crown / headtip) — obstacle ray origin
-local thoraxCid = nil   -- chest reference node for impact detection
+local headCid      = nil   -- topmost node (head crown / headtip) — obstacle ray origin
+local thoraxCid    = nil   -- chest reference node (outer shell, has collision)
+local intestineCid = nil   -- inner soft node ("oi1") — no collision surface
 -- Per-node spawn XY.  Z is NOT stored — always read live from physics at step
 -- time so the dummy automatically follows terrain slopes and banked roads.
 local nodeRecs  = {}    -- {cid, spawnX, spawnY}
@@ -67,9 +74,13 @@ local prevHeadX  = nil
 local prevHeadY  = nil
 local setupTimer = 0.0
 
--- last-placed thorax XY for impact detection during settling window
-local lastThoraxPlacedX = nil
-local lastThoraxPlacedY = nil
+-- Baseline relative position of intestine node vs thorax node at WALKING start.
+-- Because step-walk moves ALL nodes together, this vector is constant during normal
+-- walking.  An external impact pushes the outer thorax (collision surface) without
+-- directly pushing the inner intestine, making the vector diverge.
+local relBaseX = nil
+local relBaseY = nil
+local relBaseZ = nil
 
 -- ── tuneable parameters (overridable from jbeam slot data) ────────────────────
 local walkSpeed        = 0.02   -- m/s  comfortable pedestrian pace
@@ -84,10 +95,10 @@ local SETUP_TIMEOUT    = 2.0   -- s    max SETUP wait before assuming direct spa
 local WALK_INTERVAL    = 0.05  -- s
 local MAX_WALK_SPEED   = 0.1   -- m/s  hard cap on effective speed (prevents runaway)
 
--- Displacement² from our last node placement that signals a physical impact.
--- Stabiliser beams hold the body to within ~5 cm of its placed position;
--- a vehicle impact displaces it 15+ cm.
-local IMPACT_THRESHOLD_SQ = 0.15 * 0.15  -- (15 cm)²
+-- Displacement² of the intestine-vs-thorax relative vector that signals an impact.
+-- Normal stabiliser-beam settling moves both nodes together (<2 mm delta).
+-- A car hit pushes the outer thorax shell by 5+ cm while the inner intestine lags.
+local IMPACT_REL_SQ = 0.05 * 0.05  -- (5 cm)²
 
 -- Distance² threshold for traffic-script placement detection
 local PLACED_JUMP_SQ = 2.0 * 2.0  -- (2 m)²
@@ -98,8 +109,9 @@ local TURN_ANGLE_RAD  = math.pi / 3   -- ±60° (so total spread = 120°)
 local DRIFT_ANGLE_RAD = math.pi / 9   -- ±20°
 
 -- Named nodes (fallback to auto-detect if absent in a skin)
-local HEAD_NODE_NAME   = "dummy1_headtip"
-local THORAX_NODE_NAME = "dummy1_thoraxtfl"
+local HEAD_NODE_NAME      = "dummy1_headtip"
+local THORAX_NODE_NAME    = "dummy1_thoraxtfl"
+local INTESTINE_NODE_NAME = "oi1"             -- soft inner node; no collision surface
 
 -- ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -146,18 +158,20 @@ local function init(jbeamData)
     WALK_INTERVAL    = jbeamData.walkInterval     or WALK_INTERVAL
     WALK_GRACE       = jbeamData.walkGrace        or WALK_GRACE
 
-    -- Scan all nodes to find head and thorax cids.
+    -- Scan all nodes to find head, thorax, and intestine cids.
     -- nodeRecs is built later at the SETUP→WALKING transition (world coords are
     -- not valid at init() time for traffic-script-placed vehicles).
-    headCid   = nil
-    thoraxCid = nil
+    headCid      = nil
+    thoraxCid    = nil
+    intestineCid = nil
     nodeRecs  = {}
     thoraxRec = nil
     local maxZ = -math.huge
 
     for _, n in pairs(v.data.nodes) do
         local cid = n.cid
-        if n.name == THORAX_NODE_NAME then thoraxCid = cid end
+        if n.name == THORAX_NODE_NAME    then thoraxCid    = cid end
+        if n.name == INTESTINE_NODE_NAME then intestineCid = cid end
         if n.name == HEAD_NODE_NAME then
             headCid = cid
         elseif headCid == nil then
@@ -178,8 +192,9 @@ local function init(jbeamData)
     walkGraceTimer      = 0
     prevHeadX           = nil
     prevHeadY           = nil
-    lastThoraxPlacedX   = nil
-    lastThoraxPlacedY   = nil
+    relBaseX            = nil
+    relBaseY            = nil
+    relBaseZ            = nil
     setupTimer          = 0.0
     state               = "setup"
 end
@@ -195,8 +210,9 @@ local function reset()
     walkGraceTimer      = 0
     prevHeadX           = nil
     prevHeadY           = nil
-    lastThoraxPlacedX   = nil
-    lastThoraxPlacedY   = nil
+    relBaseX            = nil
+    relBaseY            = nil
+    relBaseZ            = nil
     nodeRecs            = {}
     thoraxRec           = nil
     setupTimer          = 0.0
@@ -242,10 +258,17 @@ local function updateGFX(dt)
             -- Fresh random walk direction at WALKING start
             walkDir           = math.random() * 2 * math.pi
 
-            if thoraxRec then
-                local tp = vec3(obj:getNodePosition(thoraxRec.cid))
-                lastThoraxPlacedX = tp.x
-                lastThoraxPlacedY = tp.y
+            -- Capture the baseline relative position of the inner intestine node
+            -- vs the outer thorax node.  Because step-walk teleports all nodes
+            -- together, this relative vector stays constant during normal walking.
+            -- A car impact pushes the outer thorax (collision) but not the inner
+            -- intestine (no collision geometry), so the vector diverges on a hit.
+            if intestineCid and thoraxCid then
+                local ip = vec3(obj:getNodePosition(intestineCid))
+                local tp = vec3(obj:getNodePosition(thoraxCid))
+                relBaseX = ip.x - tp.x
+                relBaseY = ip.y - tp.y
+                relBaseZ = ip.z - tp.z
             end
 
             walkGraceTimer = WALK_GRACE
@@ -263,16 +286,20 @@ local function updateGFX(dt)
     if walkGraceTimer > 0 then walkGraceTimer = walkGraceTimer - dt end
 
     -- Settling phase: physics runs freely between steps.
-    -- Monitor thorax for impact but do NOT teleport anything.
-    -- This window lets feet settle to terrain Z, handles wall push-back, and
-    -- allows vehicle impacts to be detected before the next step overrides them.
+    -- Monitor the intestine-vs-thorax relative position for impact.
+    -- Because step-walk moves ALL nodes together, this relative vector is constant
+    -- during normal walking — both nodes shift by the same amount so the difference
+    -- is unchanged.  A vehicle impact pushes the outer thorax (collision surface)
+    -- without directly pushing the inner intestine, making the vector diverge.
     walkIntervalTimer = walkIntervalTimer + dt
     if walkIntervalTimer < WALK_INTERVAL then
-        if walkGraceTimer <= 0 and thoraxRec and lastThoraxPlacedX ~= nil then
-            local tp  = vec3(obj:getNodePosition(thoraxRec.cid))
-            local ddx = tp.x - lastThoraxPlacedX
-            local ddy = tp.y - lastThoraxPlacedY
-            if (ddx * ddx + ddy * ddy) > IMPACT_THRESHOLD_SQ then
+        if walkGraceTimer <= 0 and intestineCid and thoraxCid and relBaseX ~= nil then
+            local ip  = vec3(obj:getNodePosition(intestineCid))
+            local tp  = vec3(obj:getNodePosition(thoraxCid))
+            local ddx = (ip.x - tp.x) - relBaseX
+            local ddy = (ip.y - tp.y) - relBaseY
+            local ddz = (ip.z - tp.z) - relBaseZ
+            if ddx*ddx + ddy*ddy + ddz*ddz > IMPACT_REL_SQ then
                 state = "ragdoll"
                 return
             end
@@ -316,12 +343,6 @@ local function updateGFX(dt)
             rec.spawnY + walkOffsetY,
             curZ
         ))
-    end
-
-    -- Record thorax placed position for next settling window's impact check
-    if thoraxRec then
-        lastThoraxPlacedX = thoraxRec.spawnX + walkOffsetX
-        lastThoraxPlacedY = thoraxRec.spawnY + walkOffsetY
     end
 end
 
