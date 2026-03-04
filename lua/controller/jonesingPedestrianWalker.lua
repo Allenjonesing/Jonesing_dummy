@@ -124,7 +124,7 @@ local function doStep()
     end
     -- Record thorax position immediately after placement for next impact check.
     if thoraxCid then
-        local tp  = obj:getNodePosition(thoraxCid)
+        local tp  = vec3(obj:getNodePosition(thoraxCid))
         lastPlacedX = tp.x
         lastPlacedY = tp.y
     end
@@ -250,7 +250,7 @@ local function updateGFX(dt)
         -- Normal physics settling moves the thorax < 2 cm in the settling window.
         -- A vehicle or physics-object impact moves it > 5 cm → ragdoll.
         if walkGraceTimer <= 0 and thoraxCid and lastPlacedX ~= nil then
-            local tp  = obj:getNodePosition(thoraxCid)
+            local tp  = vec3(obj:getNodePosition(thoraxCid))
             local ddx = tp.x - lastPlacedX
             local ddy = tp.y - lastPlacedY
             if ddx * ddx + ddy * ddy > IMPACT_XY_SQ then
