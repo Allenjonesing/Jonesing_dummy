@@ -87,7 +87,7 @@ local walkSpeed          = 0.001    -- m/s  (barely perceptible GTA pedestrian s
 -- Hard speed cap: teleport delta per frame is clamped so physics velocity
 -- never accumulates beyond this regardless of frame rate or walk speed setting.
 -- 5 mph = 2.235 m/s
-local maxWalkSpeed        = 1.235    -- m/s  (~5 mph)
+local maxWalkSpeed        = 0.235    -- m/s  (~5 mph)
 local walkChangePeriod   = -1.0      -- s    (how often direction gently drifts)
 local sidewalkOffset     = 0.0      -- m    (0 = walk from spawn position, no sidewalk shift)
 
