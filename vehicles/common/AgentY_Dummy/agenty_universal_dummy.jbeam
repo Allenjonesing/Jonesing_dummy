@@ -2,12 +2,12 @@
 "agenty_universal_dummy": {
     "information":{
         "authors":"AgentY",
-        "name":".Jonesing Pedestrians Mod",
+        "name":".Jonesing explosion mod",
     },
     "slotType" : ["licenseplate_design_2_1", "agenty_jato_mod_dummyslot"],
     "controller": [
         ["fileName"],
-        ["jonesingDummyTrafficTrigger", {}],
+        ["jonesingExplosionTrigger", {}],
     ],
     "slots": [
   ["type", "default", "description"],

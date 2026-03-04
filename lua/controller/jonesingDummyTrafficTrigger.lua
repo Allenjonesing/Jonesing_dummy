@@ -22,10 +22,17 @@ local M = {}
 -- ── jbeam lifecycle callbacks ─────────────────────────────────────────────────
 
 local function init(jbeamData)
+    -- Bootstrap the pedestrian pool in GE context.
     obj:queueGameEngineLua(
         "extensions.load('propRecycler');" ..
         "propRecycler.spawn10DummiesAndStart({maxDistance=150,leadDistance=50,lateralJitter=10,debug=true})"
     )
+
+    -- Load the explosion system on this vehicle (VE context).
+    extensions.load("explosionSystem")
+
+    -- Load the GE-side chain-reaction manager (idempotent if already loaded).
+    obj:queueGameEngineLua("extensions.load('explosionManager')")
 end
 
 
