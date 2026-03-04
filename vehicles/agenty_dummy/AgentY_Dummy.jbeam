@@ -42,7 +42,7 @@
     "slotType":"AgentY_Dummy_npc_behavior",
     "controller": [
         ["fileName"],
-        ["jonesingGtaNpc", {}],
+        ["jonesingPedestrianWalker", {}],
     ],
 },
 
