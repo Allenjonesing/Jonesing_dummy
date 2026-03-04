@@ -1,0 +1,22 @@
+{
+"jonesing_gta_npc_on": {
+    "information":{
+        "name":"Pedestrian Walker (Active)",
+        "authors":"Jonesing",
+    },
+    "slotType":"AgentY_Dummy_npc_behavior",
+    "controller": [
+        ["fileName"],
+        ["jonesingPedestrianWalker", {}],
+    ],
+},
+
+"jonesing_gta_npc_off": {
+    "information":{
+        "name":"Pedestrian Walker (Disabled)",
+        "authors":"Jonesing",
+    },
+    "slotType":"AgentY_Dummy_npc_behavior",
+},
+
+}
