@@ -77,22 +77,22 @@ local relBaseY = nil
 local relBaseZ = nil
 
 -- ── tuneable parameters (overridable from jbeam slot data) ────────────────────
-local walkSpeed        = 0.3    -- m/s  comfortable walking pace; keep small for safe teleport steps
-local walkChangePeriod = 6.0    -- s    seconds between gentle direction tweaks
-local TURN_DIST        = 4.0    -- m    obstacle turn-trigger distance
+local walkSpeed        = 0.001    -- m/s  comfortable walking pace; keep small for safe teleport steps
+local walkChangePeriod = -1.0    -- s    seconds between gentle direction tweaks
+local TURN_DIST        = 0.0    -- m    obstacle turn-trigger distance
 local TURN_CONE_HALF   = 1.5    -- m    lateral half-width of forward cone
 local RAGDOLL_VEL      = 5.0    -- m/s  kept for jbeam override compat; unused internally
 local WALK_GRACE       = 0.8    -- s    no-ragdoll window at WALKING start
 local SETUP_TIMEOUT    = 2.0    -- s    max SETUP wait before assuming direct spawn
 -- Time between teleport steps.  Physics runs freely between steps: terrain Z
 -- adjusts, stabiliser beams restabilise, collisions are handled by physics.
-local WALK_INTERVAL    = 0.1    -- s
-local MAX_WALK_SPEED   = 1.5    -- m/s  hard cap (prevents runaway from jbeam overrides)
+local WALK_INTERVAL    = 0.05    -- s
+local MAX_WALK_SPEED   = 0.002    -- m/s  hard cap (prevents runaway from jbeam overrides)
 
 -- Displacement² of the intestine-vs-thorax relative vector that signals an impact.
 -- Normal stabiliser-beam settling moves both nodes together (<2 mm delta).
 -- A car hit pushes the outer thorax shell by 5+ cm while the inner intestine lags.
-local IMPACT_REL_SQ = 0.02 * 0.02  -- (2 cm)²
+local IMPACT_REL_SQ = 0.002 * 0.002  -- (2 cm)²
 
 -- Distance² threshold for traffic-script placement detection
 local PLACED_JUMP_SQ = 2.0 * 2.0  -- (2 m)²
@@ -272,34 +272,54 @@ local function updateGFX(dt)
     if walkGraceTimer > 0 then walkGraceTimer = walkGraceTimer - dt end
 
     -- Settling phase: physics runs freely between teleport steps.
+    -- Only teleport at WALK_INTERVAL to allow physics to settle and prevent phasing
+    walkIntervalTimer = walkIntervalTimer + dt
+    if walkIntervalTimer >= WALK_INTERVAL then
+        walkIntervalTimer = 0
+        
+        -- Teleport all nodes to their stepped positions
+        for _, rec in ipairs(nodeRecs) do
+            local curZ = obj:getNodePosition(rec.cid).z
+            obj:setNodePosition(rec.cid, vec3(
+                rec.spawnX + walkOffsetX,
+                rec.spawnY + walkOffsetY,
+                curZ
+            ))
+        end
+        
+        -- Refresh relBase after step
+        if intestineCid and thoraxCid then
+            local ip = vec3(obj:getNodePosition(intestineCid))
+            local tp = vec3(obj:getNodePosition(thoraxCid))
+            relBaseX = ip.x - tp.x
+            relBaseY = ip.y - tp.y
+            relBaseZ = ip.z - tp.z
+        end
+        return
+    end
     -- Monitor the intestine-vs-thorax relative position for an impact signal.
     -- Because step-walk moves ALL nodes together, this relative vector is constant
     -- during normal walking.  A vehicle impact applies a collision impulse to the
     -- outer thorax shell (collision geometry) but NOT to the inner intestine node
     -- (no collision surface), making the vector diverge — a reliable hit signal.
-    walkIntervalTimer = walkIntervalTimer + dt
-    if walkIntervalTimer < WALK_INTERVAL then
-        if walkGraceTimer <= 0 and intestineCid and thoraxCid and relBaseX ~= nil then
-            local ip  = vec3(obj:getNodePosition(intestineCid))
-            local tp  = vec3(obj:getNodePosition(thoraxCid))
-            local ddx = (ip.x - tp.x) - relBaseX
-            local ddy = (ip.y - tp.y) - relBaseY
-            local ddz = (ip.z - tp.z) - relBaseZ
-            if ddx*ddx + ddy*ddy + ddz*ddz > IMPACT_REL_SQ then
-                state = "ragdoll"
-                return
-            end
+    if walkGraceTimer <= 0 and intestineCid and thoraxCid and relBaseX ~= nil then
+        local ip  = vec3(obj:getNodePosition(intestineCid))
+        local tp  = vec3(obj:getNodePosition(thoraxCid))
+        local ddx = (ip.x - tp.x) - relBaseX
+        local ddy = (ip.y - tp.y) - relBaseY
+        local ddz = (ip.z - tp.z) - relBaseZ
+        if ddx*ddx + ddy*ddy + ddz*ddz > IMPACT_REL_SQ then
+            state = "ragdoll"
+            return
         end
-        return  -- still settling; wait for next step
     end
-    walkIntervalTimer = 0
 
-    -- ── Step time: advance XY, check obstacles, teleport ─────────────────────
+    -- ── Substep movement: advance XY every frame ─────────────────────────────
 
     local dirX = math.sin(walkDir)
     local dirY = math.cos(walkDir)
 
-    -- Obstacle check at each step: probe from current head position
+    -- Obstacle check: probe from current head position
     if obstacleAhead(hp, dirX, dirY) then
         -- Reverse with a ±TURN_ANGLE_RAD random kick so the dummy doesn't oscillate
         walkDir = walkDir + math.pi + (math.random() - 0.5) * TURN_ANGLE_RAD
@@ -308,19 +328,19 @@ local function updateGFX(dt)
     end
 
     -- Gentle direction drift every walkChangePeriod
-    walkTimer = walkTimer + WALK_INTERVAL
+    walkTimer = walkTimer + dt
     if walkTimer >= walkChangePeriod then
         walkTimer = 0
         walkDir   = walkDir + (math.random() - 0.5) * DRIFT_ANGLE_RAD
     end
 
-    -- Advance XY walk offset by one step
-    local step = math.min(walkSpeed, MAX_WALK_SPEED) * WALK_INTERVAL
+    -- Advance XY walk offset by substep (every frame)
+    local step = math.min(walkSpeed, MAX_WALK_SPEED) * dt
     walkOffsetX = walkOffsetX + dirX * step
     walkOffsetY = walkOffsetY + dirY * step
 
-    -- Teleport all nodes: XY = spawnXY + walkOffset, Z = current physics Z.
-    -- Reading Z from physics at step time gives free terrain-following on slopes
+    -- Move all nodes: XY = spawnXY + walkOffset, Z = current physics Z.
+    -- Reading Z from physics at every frame gives free terrain-following on slopes
     -- and banked roads — no manual Z tracking required.
     for _, rec in ipairs(nodeRecs) do
         local curZ = obj:getNodePosition(rec.cid).z
@@ -331,7 +351,7 @@ local function updateGFX(dt)
         ))
     end
 
-    -- Refresh relBase right after the teleport so the settling window measures
+    -- Refresh relBase at every frame so the settling window measures
     -- deviation from a fresh known-good baseline.  This prevents long-run drift
     -- from accumulated beam-spring creep causing false ragdolls.
     if intestineCid and thoraxCid then
