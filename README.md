@@ -94,6 +94,7 @@ Each material entry has a `Stages` array. The first stage is the main PBR stage:
 - `diffuseColor` multiplies on top of `baseColorMap`. Setting `baseColorMap` to `vehicles/common/null.dds` (a white 1×1 texture) means `diffuseColor` is the only color.
 - `twoSided: true` makes the inner face of shell meshes visible — without it the backface appears transparent/dark when the outer shell is deformed.
 - All organ materials (`organs_heart`, `organs_lung`, `organs_guts`, etc.) use `twoSided: true` or `doubleSided: true` so they are visible from any angle after the outer body breaks open.
+- **`AgentY_Dummy_organ`** is the cavity lining (inner surface of the shell body). It **requires** `twoSided: true` — without it the inward-facing mesh is culled by the renderer and the inside appears black regardless of its color.
 
 ---
 
@@ -101,23 +102,23 @@ Each material entry has a `Stages` array. The first stage is the main PBR stage:
 
 ### Outer Body (`AgentY_Dummy`, `AgentY_Dummy_plasticparts`)
 - Color comes from the texture `AgentY_Dummy_d.color.png` (orange/tan dummy look)
-- Both materials now have `twoSided: true` so the inner face is visible when the shell breaks
+- Both materials have `twoSided: true` so the inner face of the shell renders when broken
 
-### Interior / Organs (vivid red)
-All interior materials have been set to vivid red to maximise gore visibility when the dummy breaks apart:
+### Interior / Organs (vivid red, wet/glossy)
+All interior materials are vivid red with low roughness (`0.2`) and high clearCoat (`0.8`) for a wet, bloody appearance:
 
-| Material | RGB |
-|---|---|
-| `AgentY_Dummy_organ` (general cavity lining) | `[1.0, 0.05, 0.05]` |
-| `organs_heart` | `[0.9, 0.05, 0.1]` |
-| `organs_lung` | `[1.0, 0.05, 0.05]` |
-| `organs_liver` | `[0.75, 0.05, 0.05]` |
-| `organs_guts` | `[1.0, 0.05, 0.05]` |
-| `stomach-material` | `[1.0, 0.05, 0.05]` |
-| `Bladder-material` | `[0.9, 0.1, 0.1]` |
-| `Intestines_001` – `Intestines_010`, `Intestines.001` | `[1.0, 0.05, 0.05]` |
-| Lung variants (`thairoid01_*`) | `[1.0, 0.05, 0.05]` |
-| `Liver_Material-material` | `[0.75, 0.05, 0.05]` |
+| Material | RGB | roughness | clearCoat |
+|---|---|---|---|
+| `AgentY_Dummy_organ` (cavity lining) | `[1.0, 0.05, 0.05]` | 0.2 | 0.8 |
+| `organs_heart` | `[0.9, 0.05, 0.1]` | 0.2 | 0.8 |
+| `organs_lung` | `[1.0, 0.05, 0.05]` | 0.2 | 0.8 |
+| `organs_liver` | `[0.75, 0.05, 0.05]` | 0.25 | 0.7 |
+| `organs_guts` | `[1.0, 0.05, 0.05]` | 0.2 | 0.8 |
+| `stomach-material` | `[1.0, 0.05, 0.05]` | 0.2 | 0.8 |
+| `Bladder-material` | `[0.9, 0.1, 0.1]` | 0.2 | 0.8 |
+| `Intestines_001` – `Intestines_010`, `Intestines.001` | `[1.0, 0.05, 0.05]` | 0.2 | 0.8 |
+| Lung variants (`thairoid01_*`) | `[1.0, 0.05, 0.05]` | 0.2 | 0.8 |
+| `Liver_Material-material` | `[0.75, 0.05, 0.05]` | 0.25 | 0.7 |
 
 ---
 

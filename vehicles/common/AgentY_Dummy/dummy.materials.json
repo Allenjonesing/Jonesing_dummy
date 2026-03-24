@@ -60,15 +60,16 @@
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.3
       },
       {},
       {},
       {}
     ],
     "mapTo": "AgentY_Dummy_organ",
+    "twoSided": true,
     "dynamicCubemap": true,
     "materialTag0": "beamng",
     "materialTag1": "object",
@@ -261,9 +262,9 @@
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.35,
-        "clearCoatFactor": 0.6,
-        "clearCoatRoughnessFactor": 0.8
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -290,9 +291,9 @@
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.4,
-        "clearCoatFactor": 0.5,
-        "clearCoatRoughnessFactor": 0.8
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -314,9 +315,9 @@
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.5,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -341,9 +342,9 @@
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.7,
-        "clearCoatFactor": 0.3,
-        "clearCoatRoughnessFactor": 1
+        "roughnessFactor": 0.25,
+        "clearCoatFactor": 0.7,
+        "clearCoatRoughnessFactor": 0.3
       },
       {},
       {},
@@ -368,9 +369,9 @@
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.5,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -397,7 +398,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.6
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -421,7 +424,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.7
+        "roughnessFactor": 0.25,
+        "clearCoatFactor": 0.7,
+        "clearCoatRoughnessFactor": 0.3
       },
       {},
       {},
@@ -444,7 +449,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.6
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -468,9 +475,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.5,
-        "clearCoatFactor": 0.5,
-        "clearCoatRoughnessFactor": 0.8
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.15
       },
       {},
       {},
@@ -494,7 +501,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.65
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -518,9 +527,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -544,9 +553,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -570,9 +579,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -596,9 +605,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -622,9 +631,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -648,9 +657,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -674,9 +683,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -700,9 +709,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -726,9 +735,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -752,9 +761,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -778,9 +787,9 @@
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
