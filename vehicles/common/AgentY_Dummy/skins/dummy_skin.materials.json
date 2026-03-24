@@ -96,4 +96,54 @@
     "order_simset": 0,
     "version": 1.5   
   }, 
+
+  "AgentY_Dummy.skin_dummy.humanoid" : {
+    "name" : "AgentY_Dummy.skin_dummy.humanoid",
+    "class" : "Material",
+    "persistentId" : "44fbe02b-0d89-4a83-9ed6-653a85ef1c7b",
+    "Stages" : [
+      {
+        "baseColorMap" : "vehicles/common/null.dds",
+        "diffuseColor" : [ 0.82, 0.62, 0.48, 1 ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.85,
+        "clearCoatFactor": 0.1,
+        "clearCoatRoughnessFactor": 1,
+      },
+      {},
+      {},
+      {}
+    ],
+    "mapTo" : "AgentY_Dummy.skin_dummy.humanoid",
+    "dynamicCubemap": true,
+    "materialTag0": "beamng",
+    "materialTag1": "object",
+    "order_simset": 0,
+    "version": 1.5
+  },
+
+  "AgentY_Dummy_plasticparts.skin_dummy.humanoid" : {
+    "name" : "AgentY_Dummy_plasticparts.skin_dummy.humanoid",
+    "class" : "Material",
+    "persistentId" : "44fbe02b-0d89-4a83-9ed6-653a85ef1c7b",
+    "Stages" : [
+      {
+        "baseColorMap" : "vehicles/common/null.dds",
+        "diffuseColor" : [ 0.70, 0.50, 0.38, 1 ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.9,
+        "clearCoatFactor": 0,
+        "clearCoatRoughnessFactor": 1,
+      },
+      {},
+      {},
+      {}
+    ],
+    "mapTo" : "AgentY_Dummy_plasticparts.skin_dummy.humanoid",
+    "dynamicCubemap": true,
+    "materialTag0": "beamng",
+    "materialTag1": "object",
+    "order_simset": 0,
+    "version": 1.5
+  },
 }

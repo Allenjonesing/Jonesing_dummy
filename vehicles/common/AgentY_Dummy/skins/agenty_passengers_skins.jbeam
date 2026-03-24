@@ -32,6 +32,15 @@
     "skinName" : "dummy_col3",
 },
 
+"agenty_dummy_skin_humanoid": {
+    "information":{
+        "authors":"AgentY",
+        "name":"Humanoid Skin Tone",
+    },
+    "slotType" : "skin_dummy",
+    "skinName" : "humanoid",
+},
+
 "agenty_stuntman_shirt_skin_deputy": {
     "information":{
         "authors":"AgentY",
