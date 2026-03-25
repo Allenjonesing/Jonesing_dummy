@@ -55,6 +55,18 @@
 		["dummy1_headtip",0.00, "$=$adummy1scale*-0.01", "$=$adummy1scale*1.78"],
 		
 		{"group":""},
+
+		//--SKULL BONE (cranium) - rigid internal structure, no collision, stays with head--
+		{"group":"bone_skull_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":"$=$adummy1weight*0.10"},
+		{"frictionCoef":0.5},
+		["bone_skull_f",  0.00, "$=$adummy1scale*-0.12", "$=$adummy1scale*1.60"],
+		["bone_skull_r",  0.00, "$=$adummy1scale*0.05",  "$=$adummy1scale*1.58"],
+		["bone_skull_t",  0.00, "$=$adummy1scale*-0.02", "$=$adummy1scale*1.73"],
+		["bone_skull_b",  0.00, "$=$adummy1scale*-0.02", "$=$adummy1scale*1.53"],
+		{"group":""},
     ],
     "beams": [
         ["id1:", "id2:"],
@@ -156,7 +168,26 @@
 		["dummy1_headmfr", "dummy1_headtip"],
 		["dummy1_headmrr", "dummy1_headtip"],
 		["dummy1_headmrl", "dummy1_headtip"],
-		
+
+		//--SKULL BONE beams (very rigid, FLT_MAX strength, tightly anchored to head shell)--
+		{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+		{"beamDeform":5000000, "beamStrength":"FLT_MAX"},
+		{"beamSpring":"$=$adummy1weight*3000000","beamDamp":"$=$adummy1weight*2000"},
+		{"deformLimitExpansion":1.001},
+		{"breakGroup":""},
+		// Skull internal tetrahedron (all 6 edges = rigid 3-D cage)
+		["bone_skull_f","bone_skull_r"],["bone_skull_f","bone_skull_t"],["bone_skull_f","bone_skull_b"],
+		["bone_skull_r","bone_skull_t"],["bone_skull_r","bone_skull_b"],["bone_skull_t","bone_skull_b"],
+		// Anchor skull to head shell nodes
+		["bone_skull_f","dummy1_headmfl"],["bone_skull_f","dummy1_headmfr"],
+		["bone_skull_r","dummy1_headmrl"],["bone_skull_r","dummy1_headmrr"],
+		["bone_skull_t","dummy1_headtfl"],["bone_skull_t","dummy1_headtfr"],
+		["bone_skull_t","dummy1_headtrl"],["bone_skull_t","dummy1_headtrr"],
+		["bone_skull_t","dummy1_headtip"],
+		["bone_skull_b","dummy1_neckb"],
+		["bone_skull_b","dummy1_headbfl"],["bone_skull_b","dummy1_headbfr"],
+		["bone_skull_b","dummy1_headbrl"],["bone_skull_b","dummy1_headbrr"],
+
     ],
     "triangles": [
         ["id1:","id2:","id3:"],

@@ -93,6 +93,45 @@
 		["dummy1_L_finger4","$=$adummy1scale*0.250", "$=$adummy1scale*0.070","$=$adummy1scale*0.780"],
 		
 		{"group":""},
+
+		//--LEFT HUMERUS (upper arm bone) - rigid beam, stays with left arm--
+		{"group":"bone_L_humerus_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":"$=$adummy1weight*0.08"},
+		{"frictionCoef":0.5},
+		// 4 nodes: 2 at shoulder end, 2 at elbow end
+		["bone_L_hum_t1", "$=$adummy1scale*0.18", "$=$adummy1scale*-0.04", "$=$adummy1scale*1.40"],
+		["bone_L_hum_t2", "$=$adummy1scale*0.18",  "$=$adummy1scale*0.02", "$=$adummy1scale*1.40"],
+		["bone_L_hum_b1", "$=$adummy1scale*0.25", "$=$adummy1scale*-0.03", "$=$adummy1scale*1.21"],
+		["bone_L_hum_b2", "$=$adummy1scale*0.25",  "$=$adummy1scale*0.02", "$=$adummy1scale*1.21"],
+		{"group":""},
+
+		//--LEFT RADIUS (thumb-side forearm bone)--
+		{"group":"bone_L_radius_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":"$=$adummy1weight*0.06"},
+		{"frictionCoef":0.5},
+		// 4 nodes: 2 at elbow end, 2 at wrist end (outer/thumb side, higher X)
+		["bone_L_rad_t1", "$=$adummy1scale*0.29", "$=$adummy1scale*-0.03", "$=$adummy1scale*1.18"],
+		["bone_L_rad_t2", "$=$adummy1scale*0.29",  "$=$adummy1scale*0.02", "$=$adummy1scale*1.18"],
+		["bone_L_rad_b1", "$=$adummy1scale*0.29", "$=$adummy1scale*-0.03", "$=$adummy1scale*0.98"],
+		["bone_L_rad_b2", "$=$adummy1scale*0.29",  "$=$adummy1scale*0.02", "$=$adummy1scale*0.98"],
+		{"group":""},
+
+		//--LEFT ULNA (pinky-side forearm bone)--
+		{"group":"bone_L_ulna_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":"$=$adummy1weight*0.06"},
+		{"frictionCoef":0.5},
+		// 4 nodes: 2 at elbow end, 2 at wrist end (inner/pinky side, lower X)
+		["bone_L_uln_t1", "$=$adummy1scale*0.21", "$=$adummy1scale*-0.03", "$=$adummy1scale*1.18"],
+		["bone_L_uln_t2", "$=$adummy1scale*0.21",  "$=$adummy1scale*0.02", "$=$adummy1scale*1.18"],
+		["bone_L_uln_b1", "$=$adummy1scale*0.22", "$=$adummy1scale*-0.03", "$=$adummy1scale*0.98"],
+		["bone_L_uln_b2", "$=$adummy1scale*0.22",  "$=$adummy1scale*0.02", "$=$adummy1scale*0.98"],
+		{"group":""},
     ],
     "beams": [
         ["id1:", "id2:"],
@@ -392,7 +431,44 @@
 		["dummy1_L_finger4","dummy1_L_handtrl"],
 		["dummy1_L_finger4","dummy1_L_handtfr"],
 		["dummy1_L_finger4","dummy1_L_handtrr"],
-		
+
+		//--LEFT ARM BONE beams (very rigid, unbreakable, tightly bound to left arm)--
+		{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+		{"beamDeform":5000000, "beamStrength":"FLT_MAX"},
+		{"beamSpring":"$=$adummy1weight*3000000","beamDamp":"$=$adummy1weight*2000"},
+		{"deformLimitExpansion":1.001},
+		{"breakGroup":""},
+		// Humerus: internal box beams
+		["bone_L_hum_t1","bone_L_hum_t2"],["bone_L_hum_b1","bone_L_hum_b2"],
+		["bone_L_hum_t1","bone_L_hum_b1"],["bone_L_hum_t2","bone_L_hum_b2"],
+		["bone_L_hum_t1","bone_L_hum_b2"],["bone_L_hum_t2","bone_L_hum_b1"],
+		// Anchor humerus to upper arm shell
+		["bone_L_hum_t1","dummy1_L_upperarmthorax"],["bone_L_hum_t2","dummy1_L_upperarmthorax"],
+		["bone_L_hum_t1","dummy1_L_upperarmtfl"], ["bone_L_hum_t2","dummy1_L_upperarmtrl"],
+		["bone_L_hum_b1","dummy1_L_upperarmbfl"], ["bone_L_hum_b2","dummy1_L_upperarmbrl"],
+		["bone_L_hum_b1","dummy1_L_upperarmmfl"], ["bone_L_hum_b2","dummy1_L_upperarmmrl"],
+
+		// Radius: internal box beams
+		["bone_L_rad_t1","bone_L_rad_t2"],["bone_L_rad_b1","bone_L_rad_b2"],
+		["bone_L_rad_t1","bone_L_rad_b1"],["bone_L_rad_t2","bone_L_rad_b2"],
+		["bone_L_rad_t1","bone_L_rad_b2"],["bone_L_rad_t2","bone_L_rad_b1"],
+		// Anchor radius to forearm outer (thumb-side) shell
+		["bone_L_rad_t1","dummy1_L_forearmtipl"],["bone_L_rad_t2","dummy1_L_forearmtipl"],
+		["bone_L_rad_t1","dummy1_L_forearmmfl"], ["bone_L_rad_t2","dummy1_L_forearmmrl"],
+		["bone_L_rad_b1","dummy1_L_forearmbfl"], ["bone_L_rad_b2","dummy1_L_forearmbrl"],
+
+		// Ulna: internal box beams
+		["bone_L_uln_t1","bone_L_uln_t2"],["bone_L_uln_b1","bone_L_uln_b2"],
+		["bone_L_uln_t1","bone_L_uln_b1"],["bone_L_uln_t2","bone_L_uln_b2"],
+		["bone_L_uln_t1","bone_L_uln_b2"],["bone_L_uln_t2","bone_L_uln_b1"],
+		// Anchor ulna to forearm inner (pinky-side) shell
+		["bone_L_uln_t1","dummy1_L_forearmtipr"],["bone_L_uln_t2","dummy1_L_forearmtipr"],
+		["bone_L_uln_t1","dummy1_L_forearmmfr"], ["bone_L_uln_t2","dummy1_L_forearmmrr"],
+		["bone_L_uln_b1","dummy1_L_forearmbfr"], ["bone_L_uln_b2","dummy1_L_forearmbrr"],
+		// Cross-link radius and ulna at elbow and wrist for inter-bone rigidity
+		["bone_L_rad_t1","bone_L_uln_t1"],["bone_L_rad_t2","bone_L_uln_t2"],
+		["bone_L_rad_b1","bone_L_uln_b1"],["bone_L_rad_b2","bone_L_uln_b2"],
+
     ],
     "triangles": [
         ["id1:","id2:","id3:"],
