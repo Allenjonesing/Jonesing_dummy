@@ -798,5 +798,27 @@
     "doubleSided": true,
     "materialTag0": "beamng",
     "materialTag1": "object"
+  },
+
+  "blood_skid": {
+    "name": "blood_skid",
+    "class": "Material",
+    "persistentId": "b100d5k1-dead-beef-cafe-ba5eba11cafe",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/common/null.dds",
+        "diffuseColor": [0.45, 0.0, 0.0, 0.85],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.95
+      },
+      {},
+      {},
+      {}
+    ],
+    "mapTo": "blood_skid",
+    "translucent": true,
+    "materialTag0": "beamng",
+    "materialTag1": "decal",
+    "version": 1.5
   }
 }

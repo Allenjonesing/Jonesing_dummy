@@ -266,7 +266,7 @@ local function spawnDummyAt(pos, q)
             pos = toVec3(pos),
             rot = quat(qx, qy, qz, qw),
             paint = nil,
-            partConfig = "",
+            partConfig = "vehicles/agenty_dummy/humanoid.pc",
             cling = false,
             autoEnterVehicle = false, -- <<< prevents stealing player focus
             setPlayerVehicle = false -- <<< ignored on some builds, harmless
