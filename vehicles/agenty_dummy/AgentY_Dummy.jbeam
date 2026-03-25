@@ -10,7 +10,7 @@
         ["type", "default", "description"],
         ["AgentY_Dummy0_torso","AgentY_Dummy0_torso", "Body", {"coreSlot":true}],
 	["AgentY_Dummy0_extras","", "Accessories"],
-        ["skin_dummy","","Skin"],
+        ["skin_dummy","agenty_dummy_skin_humanoid","Skin"],
         ["licenseplate_design_2_1","","Licenseplate Addon Slot"],
         ["AgentY_Dummy_mod", "", "Additional Modification"],
 	["AgentY_Dummy_stabilizers", "AgentY_Dummy_stabilizers", "Standing Stabilizers"],

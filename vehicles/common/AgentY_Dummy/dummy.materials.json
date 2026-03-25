@@ -16,6 +16,7 @@
       {}
     ],
     "mapTo": "AgentY_Dummy",
+    "twoSided": true,
     "dynamicCubemap": true,
     "materialTag0": "beamng",
     "materialTag1": "object",
@@ -39,6 +40,7 @@
       {}
     ],
     "mapTo": "AgentY_Dummy_plasticparts",
+    "twoSided": true,
     "dynamicCubemap": true,
     "materialTag0": "beamng",
     "materialTag1": "object",
@@ -52,21 +54,22 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.78,
-          0.3,
-          0.28,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.3
       },
       {},
       {},
       {}
     ],
     "mapTo": "AgentY_Dummy_organ",
+    "twoSided": true,
     "dynamicCubemap": true,
     "materialTag0": "beamng",
     "materialTag1": "object",
@@ -253,15 +256,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.75,
-          0.15,
-          0.2,
+          0.9,
+          0.05,
+          0.1,
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.35,
-        "clearCoatFactor": 0.6,
-        "clearCoatRoughnessFactor": 0.8
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -282,15 +285,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.75,
-          0.12,
-          0.18,
+          0.9,
+          0.05,
+          0.1,
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.4,
-        "clearCoatFactor": 0.5,
-        "clearCoatRoughnessFactor": 0.8
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -306,15 +309,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.78,
-          0.32,
-          0.32,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.5,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -333,15 +336,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.4,
-          0.1,
-          0.1,
+          0.75,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.7,
-        "clearCoatFactor": 0.3,
-        "clearCoatRoughnessFactor": 1
+        "roughnessFactor": 0.25,
+        "clearCoatFactor": 0.7,
+        "clearCoatRoughnessFactor": 0.3
       },
       {},
       {},
@@ -360,15 +363,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.85,
-          0.25,
-          0.25,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.5,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -389,13 +392,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.78,
-          0.32,
-          0.32,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.6
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -413,13 +418,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.42,
-          0.11,
-          0.1,
+          0.75,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.7
+        "roughnessFactor": 0.25,
+        "clearCoatFactor": 0.7,
+        "clearCoatRoughnessFactor": 0.3
       },
       {},
       {},
@@ -436,13 +443,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.78,
-          0.32,
-          0.32,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.6
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -460,15 +469,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.85,
-          0.78,
-          0.5,
+          0.9,
+          0.1,
+          0.1,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.5,
-        "clearCoatFactor": 0.5,
-        "clearCoatRoughnessFactor": 0.8
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.15
       },
       {},
       {},
@@ -486,13 +495,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.72,
-          0.4,
-          0.38,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.65
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -510,15 +521,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.8,
-          0.4,
-          0.35,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -536,15 +547,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.8,
-          0.4,
-          0.35,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -562,15 +573,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.8,
-          0.4,
-          0.35,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -588,15 +599,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.8,
-          0.4,
-          0.35,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -614,15 +625,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.8,
-          0.4,
-          0.35,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -640,15 +651,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.8,
-          0.4,
-          0.35,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -666,15 +677,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.8,
-          0.4,
-          0.35,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -692,15 +703,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.8,
-          0.4,
-          0.35,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -718,15 +729,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.8,
-          0.4,
-          0.35,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -744,15 +755,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.8,
-          0.4,
-          0.35,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -770,15 +781,15 @@
     "Stages": [
       {
         "diffuseColor": [
-          0.8,
-          0.4,
-          0.35,
+          1.0,
+          0.05,
+          0.05,
           1
         ],
         "metallicFactor": 0.0,
-        "roughnessFactor": 0.55,
-        "clearCoatFactor": 0.4,
-        "clearCoatRoughnessFactor": 0.9
+        "roughnessFactor": 0.2,
+        "clearCoatFactor": 0.8,
+        "clearCoatRoughnessFactor": 0.2
       },
       {},
       {},
@@ -787,5 +798,27 @@
     "doubleSided": true,
     "materialTag0": "beamng",
     "materialTag1": "object"
+  },
+
+  "blood_skid": {
+    "name": "blood_skid",
+    "class": "Material",
+    "persistentId": "b100d5k1-dead-beef-cafe-ba5eba11cafe",
+    "Stages": [
+      {
+        "baseColorMap": "vehicles/common/null.dds",
+        "diffuseColor": [0.45, 0.0, 0.0, 0.85],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.95
+      },
+      {},
+      {},
+      {}
+    ],
+    "mapTo": "blood_skid",
+    "translucent": true,
+    "materialTag0": "beamng",
+    "materialTag1": "decal",
+    "version": 1.5
   }
 }
