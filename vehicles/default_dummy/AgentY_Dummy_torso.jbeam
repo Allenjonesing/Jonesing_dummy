@@ -51,7 +51,7 @@
 
         //--THORAX--
         {"group":"agenty_dummy1_thorax"},
-        {"nodeWeight":0.556},
+        {"nodeWeight":0.50},
 
         //main shape
         {"selfCollision":false},
@@ -84,7 +84,7 @@
 
         //--ABDOMEN--
         {"group":"agenty_dummy1_abdomen"},
-        {"nodeWeight":0.930},
+        {"nodeWeight":0.87},
         {"frictionCoef":0.9},
 
         //main shape
@@ -101,7 +101,7 @@
 
         //--PELVIS--
         {"group":"agenty_dummy1_pelvis"},
-        {"nodeWeight":1.112},
+        {"nodeWeight":1.05},
         {"frictionCoef":0.8},
 
         //main shape
@@ -284,7 +284,7 @@
 {"group":"bone_spine_g"},
 {"collision":false},{"selfCollision":false},
 {"nodeMaterial":"|NM_RUBBER"},
-{"nodeWeight":"$=$adummy1weight*0.08"},
+{"nodeWeight":0.05},
 {"frictionCoef":0.5},
 ["bone_cv_t1",  "$=$adummy1scale*0.02",  "$=$adummy1scale*0.03", "$=$adummy1scale*1.47"],
 ["bone_cv_t2",  "$=$adummy1scale*-0.02", "$=$adummy1scale*0.03", "$=$adummy1scale*1.47"],
@@ -314,7 +314,7 @@
 {"group":"bone_ribcage_g"},
 {"collision":false},{"selfCollision":false},
 {"nodeMaterial":"|NM_RUBBER"},
-{"nodeWeight":"$=$adummy1weight*0.07"},
+{"nodeWeight":0.05},
 {"frictionCoef":0.5},
 // Upper rib ring (Z~1.41)
 ["bone_rib_tfl",  "$=$adummy1scale*0.13",  "$=$adummy1scale*-0.11", "$=$adummy1scale*1.41"],
@@ -332,7 +332,7 @@
 {"group":"bone_clavicle_g"},
 {"collision":false},{"selfCollision":false},
 {"nodeMaterial":"|NM_RUBBER"},
-{"nodeWeight":"$=$adummy1weight*0.08"},
+{"nodeWeight":0.05},
 {"frictionCoef":0.5},
 // Left clavicle (runs from sternum toward left shoulder)
 ["bone_clav_l1", "$=$adummy1scale*0.04",  "$=$adummy1scale*-0.05", "$=$adummy1scale*1.45"],
@@ -350,7 +350,7 @@
 {"group":"bone_pelvis_g"},
 {"collision":false},{"selfCollision":false},
 {"nodeMaterial":"|NM_RUBBER"},
-{"nodeWeight":"$=$adummy1weight*0.10"},
+{"nodeWeight":0.05},
 {"frictionCoef":0.5},
 // Upper pelvic ring (Z~1.03)
 ["bone_pel_tfl",  "$=$adummy1scale*0.10",  "$=$adummy1scale*-0.10", "$=$adummy1scale*1.03"],
@@ -1005,8 +1005,8 @@
 
 //// ========================== --- BONE BEAMS --- ==============================
 {"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-{"beamDeform":500000, "beamStrength":"FLT_MAX"},
-{"beamSpring":"$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*150"},
+{"beamDeform":50000, "beamStrength":"FLT_MAX"},
+{"beamSpring":25000,"beamDamp":30},
 {"breakGroup":""},
 
 //--SPINE - CERVICAL segment box + inter-segment links--

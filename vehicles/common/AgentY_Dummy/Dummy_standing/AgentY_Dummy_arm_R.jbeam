@@ -18,7 +18,7 @@
 	
      "nodes": [
         ["id", "posX", "posY", "posZ"],
-		{"nodeWeight":"$=$adummy1weight*0.14393"},
+		{"nodeWeight":"$=$adummy1weight*0.11"},
 		{"nodeMaterial":"|NM_PLASTIC"},
         {"frictionCoef":0.5},
         {"collision":true},
@@ -99,7 +99,7 @@
 		{"group":"bone_R_humerus_g"},
 		{"collision":false},{"selfCollision":false},
 		{"nodeMaterial":"|NM_RUBBER"},
-		{"nodeWeight":"$=$adummy1weight*0.08"},
+		{"nodeWeight":0.05},
 		{"frictionCoef":0.5},
 		// 4 nodes: 2 at shoulder end, 2 at elbow end (X mirrored from left)
 		["bone_R_hum_t1", "$=$adummy1scale*-0.18", "$=$adummy1scale*-0.04", "$=$adummy1scale*1.40"],
@@ -112,7 +112,7 @@
 		{"group":"bone_R_radius_g"},
 		{"collision":false},{"selfCollision":false},
 		{"nodeMaterial":"|NM_RUBBER"},
-		{"nodeWeight":"$=$adummy1weight*0.06"},
+		{"nodeWeight":0.05},
 		{"frictionCoef":0.5},
 		// 4 nodes (X mirrored; right arm's thumb side is the larger-magnitude X)
 		["bone_R_rad_t1", "$=$adummy1scale*-0.29", "$=$adummy1scale*-0.03", "$=$adummy1scale*1.18"],
@@ -125,7 +125,7 @@
 		{"group":"bone_R_ulna_g"},
 		{"collision":false},{"selfCollision":false},
 		{"nodeMaterial":"|NM_RUBBER"},
-		{"nodeWeight":"$=$adummy1weight*0.06"},
+		{"nodeWeight":0.05},
 		{"frictionCoef":0.5},
 		// 4 nodes (inner/pinky side, smaller-magnitude X)
 		["bone_R_uln_t1", "$=$adummy1scale*-0.21", "$=$adummy1scale*-0.03", "$=$adummy1scale*1.18"],
@@ -437,8 +437,8 @@
 
 		//--RIGHT ARM BONE beams (very rigid, unbreakable, tightly bound to right arm)--
 		{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-		{"beamDeform":500000, "beamStrength":"FLT_MAX"},
-		{"beamSpring":"$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*150"},
+		{"beamDeform":50000, "beamStrength":"FLT_MAX"},
+		{"beamSpring":25000,"beamDamp":30},
 		{"breakGroup":""},
 		// Humerus: internal box beams
 		["bone_R_hum_t1","bone_R_hum_t2"],["bone_R_hum_b1","bone_R_hum_b2"],

@@ -32,7 +32,7 @@
 
 		//--LEFT THIGH--
         {"group":"agenty_dummy1_thigh_L"},
-		{"nodeWeight":"$=$adummy1weight*0.965"},
+		{"nodeWeight":"$=$adummy1weight*0.93"},
 		
 		{"selfCollision":false},
 		["dummy1_L_thighpelvis","$=$adummy1scale*0.02","$=$adummy1scale*-0.04","$=$adummy1scale*0.92"],
@@ -57,7 +57,7 @@
 		
 		//--RIGHT THIGH--
         {"group":"agenty_dummy1_thigh_R"},
-		{"nodeWeight":"$=$adummy1weight*0.965"},
+		{"nodeWeight":"$=$adummy1weight*0.93"},
 		
 		{"selfCollision":false},
 		["dummy1_R_thighpelvis","$=$adummy1scale*-0.02","$=$adummy1scale*-0.04","$=$adummy1scale*0.92"],
@@ -174,7 +174,7 @@
 		{"group":"bone_L_femur_g"},
 		{"collision":false},{"selfCollision":false},
 		{"nodeMaterial":"|NM_RUBBER"},
-		{"nodeWeight":"$=$adummy1weight*0.10"},
+		{"nodeWeight":0.05},
 		{"frictionCoef":0.5},
 		["bone_L_fem_t1", "$=$adummy1scale*0.07",  "$=$adummy1scale*-0.04", "$=$adummy1scale*0.88"],
 		["bone_L_fem_t2", "$=$adummy1scale*0.07",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.88"],
@@ -186,7 +186,7 @@
 		{"group":"bone_L_tibia_g"},
 		{"collision":false},{"selfCollision":false},
 		{"nodeMaterial":"|NM_RUBBER"},
-		{"nodeWeight":"$=$adummy1weight*0.09"},
+		{"nodeWeight":0.05},
 		{"frictionCoef":0.5},
 		["bone_L_tib_t1", "$=$adummy1scale*0.16",  "$=$adummy1scale*-0.06", "$=$adummy1scale*0.51"],
 		["bone_L_tib_t2", "$=$adummy1scale*0.16",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.51"],
@@ -198,7 +198,7 @@
 		{"group":"bone_L_fibula_g"},
 		{"collision":false},{"selfCollision":false},
 		{"nodeMaterial":"|NM_RUBBER"},
-		{"nodeWeight":"$=$adummy1weight*0.07"},
+		{"nodeWeight":0.05},
 		{"frictionCoef":0.5},
 		["bone_L_fib_t1", "$=$adummy1scale*0.19",  "$=$adummy1scale*-0.06", "$=$adummy1scale*0.50"],
 		["bone_L_fib_t2", "$=$adummy1scale*0.19",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.50"],
@@ -210,7 +210,7 @@
 		{"group":"bone_R_femur_g"},
 		{"collision":false},{"selfCollision":false},
 		{"nodeMaterial":"|NM_RUBBER"},
-		{"nodeWeight":"$=$adummy1weight*0.10"},
+		{"nodeWeight":0.05},
 		{"frictionCoef":0.5},
 		["bone_R_fem_t1", "$=$adummy1scale*-0.07",  "$=$adummy1scale*-0.04", "$=$adummy1scale*0.88"],
 		["bone_R_fem_t2", "$=$adummy1scale*-0.07",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.88"],
@@ -222,7 +222,7 @@
 		{"group":"bone_R_tibia_g"},
 		{"collision":false},{"selfCollision":false},
 		{"nodeMaterial":"|NM_RUBBER"},
-		{"nodeWeight":"$=$adummy1weight*0.09"},
+		{"nodeWeight":0.05},
 		{"frictionCoef":0.5},
 		["bone_R_tib_t1", "$=$adummy1scale*-0.16",  "$=$adummy1scale*-0.06", "$=$adummy1scale*0.51"],
 		["bone_R_tib_t2", "$=$adummy1scale*-0.16",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.51"],
@@ -234,7 +234,7 @@
 		{"group":"bone_R_fibula_g"},
 		{"collision":false},{"selfCollision":false},
 		{"nodeMaterial":"|NM_RUBBER"},
-		{"nodeWeight":"$=$adummy1weight*0.07"},
+		{"nodeWeight":0.05},
 		{"frictionCoef":0.5},
 		["bone_R_fib_t1", "$=$adummy1scale*-0.19",  "$=$adummy1scale*-0.06", "$=$adummy1scale*0.50"],
 		["bone_R_fib_t2", "$=$adummy1scale*-0.19",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.50"],
@@ -821,8 +821,8 @@
 
 		//--LEG BONE beams (very rigid, unbreakable)--
 		{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-		{"beamDeform":500000, "beamStrength":"FLT_MAX"},
-		{"beamSpring":"$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*150"},
+		{"beamDeform":50000, "beamStrength":"FLT_MAX"},
+		{"beamSpring":25000,"beamDamp":30},
 		{"breakGroup":""},
 		["bone_L_fem_t1","bone_L_fem_t2"],["bone_L_fem_b1","bone_L_fem_b2"],
 		["bone_L_fem_t1","bone_L_fem_b1"],["bone_L_fem_t2","bone_L_fem_b2"],
