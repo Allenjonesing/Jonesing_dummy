@@ -431,9 +431,8 @@
 
 		//--LEFT ARM BONE beams (very rigid, unbreakable)--
 		{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-		{"beamDeform":5000000, "beamStrength":"FLT_MAX"},
-		{"beamSpring":"$=$adummy1weight*3000000","beamDamp":"$=$adummy1weight*2000"},
-		{"deformLimitExpansion":1.001},
+		{"beamDeform":500000, "beamStrength":"FLT_MAX"},
+		{"beamSpring":"$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*150"},
 		{"breakGroup":""},
 		["bone_L_hum_t1","bone_L_hum_t2"],["bone_L_hum_b1","bone_L_hum_b2"],
 		["bone_L_hum_t1","bone_L_hum_b1"],["bone_L_hum_t2","bone_L_hum_b2"],

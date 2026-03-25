@@ -171,9 +171,8 @@
 
 		//--SKULL BONE beams (very rigid, FLT_MAX strength, tightly anchored to head shell)--
 		{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-		{"beamDeform":5000000, "beamStrength":"FLT_MAX"},
-		{"beamSpring":"$=$adummy1weight*3000000","beamDamp":"$=$adummy1weight*2000"},
-		{"deformLimitExpansion":1.001},
+		{"beamDeform":500000, "beamStrength":"FLT_MAX"},
+		{"beamSpring":"$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*150"},
 		{"breakGroup":""},
 		// Skull internal tetrahedron (all 6 edges = rigid 3-D cage)
 		["bone_skull_f","bone_skull_r"],["bone_skull_f","bone_skull_t"],["bone_skull_f","bone_skull_b"],

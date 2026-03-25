@@ -824,9 +824,8 @@
 
 		//--LEG BONE beams (very rigid, unbreakable, tightly bound to respective leg section)--
 		{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
-		{"beamDeform":5000000, "beamStrength":"FLT_MAX"},
-		{"beamSpring":"$=$adummy1weight*3000000","beamDamp":"$=$adummy1weight*2000"},
-		{"deformLimitExpansion":1.001},
+		{"beamDeform":500000, "beamStrength":"FLT_MAX"},
+		{"beamSpring":"$=$adummy1weight*100000","beamDamp":"$=$adummy1weight*150"},
 		{"breakGroup":""},
 
 		// Left Femur: internal box beams
