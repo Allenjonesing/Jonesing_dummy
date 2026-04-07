@@ -66,6 +66,10 @@ local walkOffsetY        = 0.0
 local walkDir            = 0.0
 local walkTimer          = 0.0
 local startupTimer       = 0.0
+-- effectSpawned: ensures the blood/scream/flash effects fire exactly once per
+-- impact event (guards against the impact and proximity checks both triggering
+-- in the same frame).
+local effectSpawned      = false
 -- rawNodeIds: cid list stored during init() before baseline is captured.
 -- (getNodePosition at init() returns wrong positions; we snapshot later.)
 local rawNodeIds         = {}        -- list of cids for all nodes
@@ -209,6 +213,7 @@ local function init(jbeamData)
     startupTimer = 0
     gracePrevX   = nil
     gracePrevY   = nil
+    effectSpawned = false
 
     state = "ghost"  -- start in ghost mode; we transition to standing after impact detection
 end
@@ -224,6 +229,7 @@ local function reset()
     lastRefY     = 0
     gracePrevX   = nil
     gracePrevY   = nil
+    effectSpawned = false
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
@@ -372,6 +378,18 @@ local function updateGFX(dt)
         local ddy = cur.y - lastRefY
         -- XY position displacement check (slow/medium speed vehicle contact)
         if (ddx*ddx + ddy*ddy) > IMPACT_THRESHOLD_SQ then
+            -- Spawn blood / scream / flash effects in the GE context (once per impact).
+            -- Pattern mirrors createObjectTool.lua: uses worldEditorCppApi.createObject
+            -- to place a ParticleEmitterNode (BNGP_23), SFXEmitter, and PointLight at
+            -- the impact position, then destroys them after a short lifetime.
+            if not effectSpawned then
+                effectSpawned = true
+                obj:queueGameEngineLua(string.format(
+                    "extensions.load('jonesingGtaEffects');" ..
+                    "jonesingGtaEffects.spawnHitEffects(%f,%f,%f)",
+                    cur.x, cur.y, cur.z
+                ))
+            end
             state = "standing"
             return
         end
@@ -400,6 +418,16 @@ local function updateGFX(dt)
             return false
         end)
         if ok and triggered then
+            -- Spawn effects at the reference node's world position.
+            if not effectSpawned then
+                effectSpawned = true
+                local rp = vec3(obj:getNodePosition(refCid))
+                obj:queueGameEngineLua(string.format(
+                    "extensions.load('jonesingGtaEffects');" ..
+                    "jonesingGtaEffects.spawnHitEffects(%f,%f,%f)",
+                    rp.x, rp.y, rp.z
+                ))
+            end
             state = "standing"
             return
         end
