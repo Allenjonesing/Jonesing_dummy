@@ -56,7 +56,7 @@
 
         //--THORAX--
         {"group":"agenty_dummy1_thorax"},
-        {"nodeWeight":0.556},
+        {"nodeWeight":0.50},
 
         //main shape
         {"selfCollision":false},
@@ -89,7 +89,7 @@
 
         //--ABDOMEN--
         {"group":"agenty_dummy1_abdomen"},
-        {"nodeWeight":0.930},
+        {"nodeWeight":0.87},
         {"frictionCoef":0.9},
 
         //main shape
@@ -106,7 +106,7 @@
 
         //--PELVIS--
         {"group":"agenty_dummy1_pelvis"},
-        {"nodeWeight":1.112},
+        {"nodeWeight":1.05},
         {"frictionCoef":0.8},
 
         //main shape
@@ -278,6 +278,95 @@
 ["obd2","$=$adummy1scale*-0.02","$=$adummy1scale*-0.05","$=$adummy1scale*0.98"],
 ["obd3","$=$adummy1scale*0.02","$=$adummy1scale*0.00","$=$adummy1scale*0.94"],
 ["obd4","$=$adummy1scale*-0.02","$=$adummy1scale*0.00","$=$adummy1scale*0.94"],
+{"group":""},
+
+//// BONES ////
+// Rigid internal skeleton primitives. collision:false so they stay inside skin.
+// No break-group: they are permanently bound to the body part they live in,
+// so they always travel with it when a limb/torso is separated.
+
+//--SPINE - CERVICAL (neck/upper thorax region)--
+{"group":"bone_spine_g"},
+{"collision":false},{"selfCollision":false},
+{"nodeMaterial":"|NM_RUBBER"},
+{"nodeWeight":0.05},
+{"frictionCoef":0.5},
+["bone_cv_t1",  "$=$adummy1scale*0.02",  "$=$adummy1scale*0.03", "$=$adummy1scale*1.47"],
+["bone_cv_t2",  "$=$adummy1scale*-0.02", "$=$adummy1scale*0.03", "$=$adummy1scale*1.47"],
+["bone_cv_b1",  "$=$adummy1scale*0.02",  "$=$adummy1scale*0.03", "$=$adummy1scale*1.43"],
+["bone_cv_b2",  "$=$adummy1scale*-0.02", "$=$adummy1scale*0.03", "$=$adummy1scale*1.43"],
+
+//--SPINE - THORACIC (chest/thorax region)--
+["bone_tv_t1",  "$=$adummy1scale*0.02",  "$=$adummy1scale*0.04", "$=$adummy1scale*1.42"],
+["bone_tv_t2",  "$=$adummy1scale*-0.02", "$=$adummy1scale*0.04", "$=$adummy1scale*1.42"],
+["bone_tv_b1",  "$=$adummy1scale*0.02",  "$=$adummy1scale*0.04", "$=$adummy1scale*1.21"],
+["bone_tv_b2",  "$=$adummy1scale*-0.02", "$=$adummy1scale*0.04", "$=$adummy1scale*1.21"],
+
+//--SPINE - LUMBAR (lower back/abdomen region)--
+["bone_lv_t1",  "$=$adummy1scale*0.02",  "$=$adummy1scale*0.02", "$=$adummy1scale*1.19"],
+["bone_lv_t2",  "$=$adummy1scale*-0.02", "$=$adummy1scale*0.02", "$=$adummy1scale*1.19"],
+["bone_lv_b1",  "$=$adummy1scale*0.02",  "$=$adummy1scale*0.02", "$=$adummy1scale*1.01"],
+["bone_lv_b2",  "$=$adummy1scale*-0.02", "$=$adummy1scale*0.02", "$=$adummy1scale*1.01"],
+
+//--SPINE - SACRUM (pelvis region)--
+["bone_sac_t1", "$=$adummy1scale*0.02",  "$=$adummy1scale*0.03", "$=$adummy1scale*0.97"],
+["bone_sac_t2", "$=$adummy1scale*-0.02", "$=$adummy1scale*0.03", "$=$adummy1scale*0.97"],
+["bone_sac_b1", "$=$adummy1scale*0.02",  "$=$adummy1scale*0.03", "$=$adummy1scale*0.87"],
+["bone_sac_b2", "$=$adummy1scale*-0.02", "$=$adummy1scale*0.03", "$=$adummy1scale*0.87"],
+{"group":""},
+
+//--RIBCAGE (thorax cage)--
+{"group":"bone_ribcage_g"},
+{"collision":false},{"selfCollision":false},
+{"nodeMaterial":"|NM_RUBBER"},
+{"nodeWeight":0.05},
+{"frictionCoef":0.5},
+// Upper rib ring (Z~1.41)
+["bone_rib_tfl",  "$=$adummy1scale*0.13",  "$=$adummy1scale*-0.11", "$=$adummy1scale*1.41"],
+["bone_rib_tfr",  "$=$adummy1scale*-0.13", "$=$adummy1scale*-0.11", "$=$adummy1scale*1.41"],
+["bone_rib_trl",  "$=$adummy1scale*0.13",  "$=$adummy1scale*0.06",  "$=$adummy1scale*1.41"],
+["bone_rib_trr",  "$=$adummy1scale*-0.13", "$=$adummy1scale*0.06",  "$=$adummy1scale*1.41"],
+// Lower rib ring (Z~1.24)
+["bone_rib_bfl",  "$=$adummy1scale*0.11",  "$=$adummy1scale*-0.11", "$=$adummy1scale*1.24"],
+["bone_rib_bfr",  "$=$adummy1scale*-0.11", "$=$adummy1scale*-0.11", "$=$adummy1scale*1.24"],
+["bone_rib_brl",  "$=$adummy1scale*0.11",  "$=$adummy1scale*0.06",  "$=$adummy1scale*1.24"],
+["bone_rib_brr",  "$=$adummy1scale*-0.11", "$=$adummy1scale*0.06",  "$=$adummy1scale*1.24"],
+{"group":""},
+
+//--CLAVICLES (collarbones)--
+{"group":"bone_clavicle_g"},
+{"collision":false},{"selfCollision":false},
+{"nodeMaterial":"|NM_RUBBER"},
+{"nodeWeight":0.05},
+{"frictionCoef":0.5},
+// Left clavicle (runs from sternum toward left shoulder)
+["bone_clav_l1", "$=$adummy1scale*0.04",  "$=$adummy1scale*-0.05", "$=$adummy1scale*1.45"],
+["bone_clav_l2", "$=$adummy1scale*0.04",  "$=$adummy1scale*0.01",  "$=$adummy1scale*1.44"],
+["bone_clav_l3", "$=$adummy1scale*0.13",  "$=$adummy1scale*-0.05", "$=$adummy1scale*1.43"],
+["bone_clav_l4", "$=$adummy1scale*0.13",  "$=$adummy1scale*0.01",  "$=$adummy1scale*1.42"],
+// Right clavicle (mirror)
+["bone_clav_r1", "$=$adummy1scale*-0.04", "$=$adummy1scale*-0.05", "$=$adummy1scale*1.45"],
+["bone_clav_r2", "$=$adummy1scale*-0.04", "$=$adummy1scale*0.01",  "$=$adummy1scale*1.44"],
+["bone_clav_r3", "$=$adummy1scale*-0.13", "$=$adummy1scale*-0.05", "$=$adummy1scale*1.43"],
+["bone_clav_r4", "$=$adummy1scale*-0.13", "$=$adummy1scale*0.01",  "$=$adummy1scale*1.42"],
+{"group":""},
+
+//--PELVIS BONE--
+{"group":"bone_pelvis_g"},
+{"collision":false},{"selfCollision":false},
+{"nodeMaterial":"|NM_RUBBER"},
+{"nodeWeight":0.05},
+{"frictionCoef":0.5},
+// Upper pelvic ring (Z~1.03)
+["bone_pel_tfl",  "$=$adummy1scale*0.10",  "$=$adummy1scale*-0.10", "$=$adummy1scale*1.03"],
+["bone_pel_tfr",  "$=$adummy1scale*-0.10", "$=$adummy1scale*-0.10", "$=$adummy1scale*1.03"],
+["bone_pel_trl",  "$=$adummy1scale*0.10",  "$=$adummy1scale*0.06",  "$=$adummy1scale*1.03"],
+["bone_pel_trr",  "$=$adummy1scale*-0.10", "$=$adummy1scale*0.06",  "$=$adummy1scale*1.03"],
+// Lower pelvic ring (Z~0.88)
+["bone_pel_bfl",  "$=$adummy1scale*0.09",  "$=$adummy1scale*-0.09", "$=$adummy1scale*0.88"],
+["bone_pel_bfr",  "$=$adummy1scale*-0.09", "$=$adummy1scale*-0.09", "$=$adummy1scale*0.88"],
+["bone_pel_brl",  "$=$adummy1scale*0.09",  "$=$adummy1scale*0.05",  "$=$adummy1scale*0.88"],
+["bone_pel_brr",  "$=$adummy1scale*-0.09", "$=$adummy1scale*0.05",  "$=$adummy1scale*0.88"],
 {"group":""},
 
     ],
@@ -772,6 +861,117 @@
 ["obd2","dummy1_pelvisbr"], ["obd4","dummy1_abdomenbfr"]
 
 //// ========================== --- END ORGANS --- ==============================
+
+//// ========================== --- BONE BEAMS --- ==============================
+// All bone beams: very rigid, unbreakable. They stay permanently with their
+// body section – no breakGroup so limb-separation leaves the bones inside
+// whichever piece they belong to.
+{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+{"beamDeform":50000, "beamStrength":"FLT_MAX"},
+{"beamSpring":25000,"beamDamp":30},
+{"breakGroup":""},
+
+//--SPINE - CERVICAL segment box + inter-segment links--
+["bone_cv_t1","bone_cv_t2"],["bone_cv_b1","bone_cv_b2"],
+["bone_cv_t1","bone_cv_b1"],["bone_cv_t2","bone_cv_b2"],
+["bone_cv_t1","bone_cv_b2"],["bone_cv_t2","bone_cv_b1"],
+// Anchor cervical to thorax top shell
+["bone_cv_t1","dummy1_thoraxhead"],["bone_cv_t2","dummy1_thoraxhead"],
+["bone_cv_t1","dummy1_thoraxtrl"], ["bone_cv_t2","dummy1_thoraxtrr"],
+["bone_cv_b1","dummy1_thoraxtrl"], ["bone_cv_b2","dummy1_thoraxtrr"],
+
+//--SPINE - THORACIC segment box--
+["bone_tv_t1","bone_tv_t2"],["bone_tv_b1","bone_tv_b2"],
+["bone_tv_t1","bone_tv_b1"],["bone_tv_t2","bone_tv_b2"],
+["bone_tv_t1","bone_tv_b2"],["bone_tv_t2","bone_tv_b1"],
+// Connect cervical to thoracic
+["bone_cv_b1","bone_tv_t1"],["bone_cv_b2","bone_tv_t2"],
+["bone_cv_b1","bone_tv_t2"],["bone_cv_b2","bone_tv_t1"],
+// Anchor thoracic to thorax shell
+["bone_tv_t1","dummy1_thoraxmrl"],["bone_tv_t2","dummy1_thoraxmrr"],
+["bone_tv_b1","dummy1_thoraxbrl"],["bone_tv_b2","dummy1_thoraxbrr"],
+
+//--SPINE - LUMBAR segment box--
+["bone_lv_t1","bone_lv_t2"],["bone_lv_b1","bone_lv_b2"],
+["bone_lv_t1","bone_lv_b1"],["bone_lv_t2","bone_lv_b2"],
+["bone_lv_t1","bone_lv_b2"],["bone_lv_t2","bone_lv_b1"],
+// Connect thoracic to lumbar
+["bone_tv_b1","bone_lv_t1"],["bone_tv_b2","bone_lv_t2"],
+["bone_tv_b1","bone_lv_t2"],["bone_tv_b2","bone_lv_t1"],
+// Anchor lumbar to abdomen shell
+["bone_lv_t1","dummy1_abdomentrl"],["bone_lv_t2","dummy1_abdomentrr"],
+["bone_lv_b1","dummy1_abdomenbrl"],["bone_lv_b2","dummy1_abdomenbrr"],
+
+//--SPINE - SACRUM segment box--
+["bone_sac_t1","bone_sac_t2"],["bone_sac_b1","bone_sac_b2"],
+["bone_sac_t1","bone_sac_b1"],["bone_sac_t2","bone_sac_b2"],
+["bone_sac_t1","bone_sac_b2"],["bone_sac_t2","bone_sac_b1"],
+// Connect lumbar to sacrum
+["bone_lv_b1","bone_sac_t1"],["bone_lv_b2","bone_sac_t2"],
+["bone_lv_b1","bone_sac_t2"],["bone_lv_b2","bone_sac_t1"],
+// Anchor sacrum to pelvis shell
+["bone_sac_t1","dummy1_pelvistrl"],["bone_sac_t2","dummy1_pelvistrr"],
+["bone_sac_b1","dummy1_pelvismrl"],["bone_sac_b2","dummy1_pelvismrr"],
+["bone_sac_b1","dummy1_pelvisbr"], ["bone_sac_b2","dummy1_pelvisbr"],
+
+//--RIBCAGE - upper ring, lower ring, vertical pillars, spine attach--
+// Upper ring
+["bone_rib_tfl","bone_rib_tfr"],["bone_rib_tfr","bone_rib_trr"],
+["bone_rib_trr","bone_rib_trl"],["bone_rib_trl","bone_rib_tfl"],
+["bone_rib_tfl","bone_rib_trr"],["bone_rib_tfr","bone_rib_trl"],
+// Lower ring
+["bone_rib_bfl","bone_rib_bfr"],["bone_rib_bfr","bone_rib_brr"],
+["bone_rib_brr","bone_rib_brl"],["bone_rib_brl","bone_rib_bfl"],
+["bone_rib_bfl","bone_rib_brr"],["bone_rib_bfr","bone_rib_brl"],
+// Vertical pillars
+["bone_rib_tfl","bone_rib_bfl"],["bone_rib_tfr","bone_rib_bfr"],
+["bone_rib_trl","bone_rib_brl"],["bone_rib_trr","bone_rib_brr"],
+["bone_rib_tfl","bone_rib_bfr"],["bone_rib_tfr","bone_rib_bfl"],
+// Connect ribs to spine
+["bone_rib_trl","bone_tv_t1"],["bone_rib_trr","bone_tv_t2"],
+["bone_rib_brl","bone_tv_b1"],["bone_rib_brr","bone_tv_b2"],
+// Anchor ribs to thorax shell
+["bone_rib_tfl","dummy1_thoraxtfl"],["bone_rib_tfr","dummy1_thoraxtfr"],
+["bone_rib_trl","dummy1_thoraxtrl"],["bone_rib_trr","dummy1_thoraxtrr"],
+["bone_rib_bfl","dummy1_thoraxbfl"],["bone_rib_bfr","dummy1_thoraxbfr"],
+["bone_rib_brl","dummy1_thoraxbrl"],["bone_rib_brr","dummy1_thoraxbrr"],
+
+//--CLAVICLES - internal box + anchors--
+// Left clavicle box
+["bone_clav_l1","bone_clav_l2"],["bone_clav_l3","bone_clav_l4"],
+["bone_clav_l1","bone_clav_l3"],["bone_clav_l2","bone_clav_l4"],
+["bone_clav_l1","bone_clav_l4"],["bone_clav_l2","bone_clav_l3"],
+// Right clavicle box
+["bone_clav_r1","bone_clav_r2"],["bone_clav_r3","bone_clav_r4"],
+["bone_clav_r1","bone_clav_r3"],["bone_clav_r2","bone_clav_r4"],
+["bone_clav_r1","bone_clav_r4"],["bone_clav_r2","bone_clav_r3"],
+// Anchor clavicles to thorax top + cervical spine
+["bone_clav_l1","dummy1_thoraxtfl"],["bone_clav_l2","dummy1_thoraxtrl"],
+["bone_clav_l3","dummy1_thoraxarml"],["bone_clav_l1","bone_cv_t1"],
+["bone_clav_r1","dummy1_thoraxtfr"],["bone_clav_r2","dummy1_thoraxtrr"],
+["bone_clav_r3","dummy1_thoraxarmr"],["bone_clav_r1","bone_cv_t2"],
+
+//--PELVIS BONE - upper ring, lower ring, vertical pillars, sacrum attach--
+// Upper ring
+["bone_pel_tfl","bone_pel_tfr"],["bone_pel_tfr","bone_pel_trr"],
+["bone_pel_trr","bone_pel_trl"],["bone_pel_trl","bone_pel_tfl"],
+["bone_pel_tfl","bone_pel_trr"],["bone_pel_tfr","bone_pel_trl"],
+// Lower ring
+["bone_pel_bfl","bone_pel_bfr"],["bone_pel_bfr","bone_pel_brr"],
+["bone_pel_brr","bone_pel_brl"],["bone_pel_brl","bone_pel_bfl"],
+["bone_pel_bfl","bone_pel_brr"],["bone_pel_bfr","bone_pel_brl"],
+// Vertical pillars
+["bone_pel_tfl","bone_pel_bfl"],["bone_pel_tfr","bone_pel_bfr"],
+["bone_pel_trl","bone_pel_brl"],["bone_pel_trr","bone_pel_brr"],
+["bone_pel_tfl","bone_pel_bfr"],["bone_pel_tfr","bone_pel_bfl"],
+// Connect pelvis bone to sacrum
+["bone_pel_trl","bone_sac_b1"],["bone_pel_trr","bone_sac_b2"],
+["bone_pel_tfl","bone_sac_b1"],["bone_pel_tfr","bone_sac_b2"],
+// Anchor pelvis bone to pelvis shell
+["bone_pel_tfl","dummy1_pelvistfl"],["bone_pel_tfr","dummy1_pelvistfr"],
+["bone_pel_trl","dummy1_pelvistrl"],["bone_pel_trr","dummy1_pelvistrr"],
+["bone_pel_bfl","dummy1_pelvismfl"],["bone_pel_bfr","dummy1_pelvismfr"],
+["bone_pel_brl","dummy1_pelvismrl"],["bone_pel_brr","dummy1_pelvismrr"],
 
     ],
 

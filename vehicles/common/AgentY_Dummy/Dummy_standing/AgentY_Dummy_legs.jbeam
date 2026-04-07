@@ -32,7 +32,7 @@
 
 		//--LEFT THIGH--
         {"group":"agenty_dummy1_thigh_L"},
-		{"nodeWeight":"$=$adummy1weight*0.965"},
+		{"nodeWeight":"$=$adummy1weight*0.93"},
 		
 		{"selfCollision":false},
 		["dummy1_L_thighpelvis","$=$adummy1scale*0.02","$=$adummy1scale*-0.04","$=$adummy1scale*0.92"],
@@ -57,7 +57,7 @@
 		
 		//--RIGHT THIGH--
         {"group":"agenty_dummy1_thigh_R"},
-		{"nodeWeight":"$=$adummy1weight*0.965"},
+		{"nodeWeight":"$=$adummy1weight*0.93"},
 		
 		{"selfCollision":false},
 		["dummy1_R_thighpelvis","$=$adummy1scale*-0.02","$=$adummy1scale*-0.04","$=$adummy1scale*0.92"],
@@ -168,6 +168,81 @@
 		["dummy1_R_foottipr","$=$adummy1scale*-0.22","$=$adummy1scale*-0.30", 0],
 		
 		
+		{"group":""},
+
+		//--LEFT FEMUR (thigh bone) - rigid beam, stays with left leg--
+		{"group":"bone_L_femur_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":0.05},
+		{"frictionCoef":0.5},
+		// 4 nodes: 2 at hip end, 2 at knee end
+		["bone_L_fem_t1", "$=$adummy1scale*0.07",  "$=$adummy1scale*-0.04", "$=$adummy1scale*0.88"],
+		["bone_L_fem_t2", "$=$adummy1scale*0.07",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.88"],
+		["bone_L_fem_b1", "$=$adummy1scale*0.14",  "$=$adummy1scale*-0.04", "$=$adummy1scale*0.56"],
+		["bone_L_fem_b2", "$=$adummy1scale*0.14",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.56"],
+		{"group":""},
+
+		//--LEFT TIBIA (main shin bone)--
+		{"group":"bone_L_tibia_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":0.05},
+		{"frictionCoef":0.5},
+		// 4 nodes: 2 at knee end, 2 at ankle end (front/larger-X side)
+		["bone_L_tib_t1", "$=$adummy1scale*0.16",  "$=$adummy1scale*-0.06", "$=$adummy1scale*0.51"],
+		["bone_L_tib_t2", "$=$adummy1scale*0.16",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.51"],
+		["bone_L_tib_b1", "$=$adummy1scale*0.15",  "$=$adummy1scale*-0.05", "$=$adummy1scale*0.16"],
+		["bone_L_tib_b2", "$=$adummy1scale*0.15",   "$=$adummy1scale*0.00", "$=$adummy1scale*0.16"],
+		{"group":""},
+
+		//--LEFT FIBULA (lateral shin bone, alongside tibia)--
+		{"group":"bone_L_fibula_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":0.05},
+		{"frictionCoef":0.5},
+		// 4 nodes: slightly larger X than tibia (outer side)
+		["bone_L_fib_t1", "$=$adummy1scale*0.19",  "$=$adummy1scale*-0.06", "$=$adummy1scale*0.50"],
+		["bone_L_fib_t2", "$=$adummy1scale*0.19",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.50"],
+		["bone_L_fib_b1", "$=$adummy1scale*0.17",  "$=$adummy1scale*-0.05", "$=$adummy1scale*0.16"],
+		["bone_L_fib_b2", "$=$adummy1scale*0.17",   "$=$adummy1scale*0.00", "$=$adummy1scale*0.16"],
+		{"group":""},
+
+		//--RIGHT FEMUR (thigh bone) - X mirrored--
+		{"group":"bone_R_femur_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":0.05},
+		{"frictionCoef":0.5},
+		["bone_R_fem_t1", "$=$adummy1scale*-0.07",  "$=$adummy1scale*-0.04", "$=$adummy1scale*0.88"],
+		["bone_R_fem_t2", "$=$adummy1scale*-0.07",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.88"],
+		["bone_R_fem_b1", "$=$adummy1scale*-0.14",  "$=$adummy1scale*-0.04", "$=$adummy1scale*0.56"],
+		["bone_R_fem_b2", "$=$adummy1scale*-0.14",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.56"],
+		{"group":""},
+
+		//--RIGHT TIBIA--
+		{"group":"bone_R_tibia_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":0.05},
+		{"frictionCoef":0.5},
+		["bone_R_tib_t1", "$=$adummy1scale*-0.16",  "$=$adummy1scale*-0.06", "$=$adummy1scale*0.51"],
+		["bone_R_tib_t2", "$=$adummy1scale*-0.16",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.51"],
+		["bone_R_tib_b1", "$=$adummy1scale*-0.15",  "$=$adummy1scale*-0.05", "$=$adummy1scale*0.16"],
+		["bone_R_tib_b2", "$=$adummy1scale*-0.15",   "$=$adummy1scale*0.00", "$=$adummy1scale*0.16"],
+		{"group":""},
+
+		//--RIGHT FIBULA--
+		{"group":"bone_R_fibula_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":0.05},
+		{"frictionCoef":0.5},
+		["bone_R_fib_t1", "$=$adummy1scale*-0.19",  "$=$adummy1scale*-0.06", "$=$adummy1scale*0.50"],
+		["bone_R_fib_t2", "$=$adummy1scale*-0.19",   "$=$adummy1scale*0.01", "$=$adummy1scale*0.50"],
+		["bone_R_fib_b1", "$=$adummy1scale*-0.17",  "$=$adummy1scale*-0.05", "$=$adummy1scale*0.16"],
+		["bone_R_fib_b2", "$=$adummy1scale*-0.17",   "$=$adummy1scale*0.00", "$=$adummy1scale*0.16"],
 		{"group":""},
     ],
     "beams": [
@@ -746,6 +821,75 @@
 		["dummy1_R_footbmr","dummy1_R_foottipl"],
 		
 		{"breakGroup":""},
+
+		//--LEG BONE beams (very rigid, unbreakable, tightly bound to respective leg section)--
+		{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+		{"beamDeform":50000, "beamStrength":"FLT_MAX"},
+		{"beamSpring":25000,"beamDamp":30},
+		{"breakGroup":""},
+
+		// Left Femur: internal box beams
+		["bone_L_fem_t1","bone_L_fem_t2"],["bone_L_fem_b1","bone_L_fem_b2"],
+		["bone_L_fem_t1","bone_L_fem_b1"],["bone_L_fem_t2","bone_L_fem_b2"],
+		["bone_L_fem_t1","bone_L_fem_b2"],["bone_L_fem_t2","bone_L_fem_b1"],
+		// Anchor left femur to thigh shell
+		["bone_L_fem_t1","dummy1_L_thighpelvis"],["bone_L_fem_t2","dummy1_L_thighpelvis"],
+		["bone_L_fem_t1","dummy1_L_thightfl"],   ["bone_L_fem_t2","dummy1_L_thightrl"],
+		["bone_L_fem_b1","dummy1_L_thighbfl"],   ["bone_L_fem_b2","dummy1_L_thighbrl"],
+		["bone_L_fem_b1","dummy1_L_thighmfl"],   ["bone_L_fem_b2","dummy1_L_thighmrl"],
+
+		// Left Tibia: internal box beams
+		["bone_L_tib_t1","bone_L_tib_t2"],["bone_L_tib_b1","bone_L_tib_b2"],
+		["bone_L_tib_t1","bone_L_tib_b1"],["bone_L_tib_t2","bone_L_tib_b2"],
+		["bone_L_tib_t1","bone_L_tib_b2"],["bone_L_tib_t2","bone_L_tib_b1"],
+		// Anchor left tibia to legshin shell (front side)
+		["bone_L_tib_t1","dummy1_L_legshintipl"],["bone_L_tib_t2","dummy1_L_legshintipl"],
+		["bone_L_tib_t1","dummy1_L_legshinmfl"], ["bone_L_tib_t2","dummy1_L_legshinmrl"],
+		["bone_L_tib_b1","dummy1_L_legshinbfl"], ["bone_L_tib_b2","dummy1_L_legshinbrl"],
+
+		// Left Fibula: internal box beams
+		["bone_L_fib_t1","bone_L_fib_t2"],["bone_L_fib_b1","bone_L_fib_b2"],
+		["bone_L_fib_t1","bone_L_fib_b1"],["bone_L_fib_t2","bone_L_fib_b2"],
+		["bone_L_fib_t1","bone_L_fib_b2"],["bone_L_fib_t2","bone_L_fib_b1"],
+		// Anchor left fibula to legshin outer shell
+		["bone_L_fib_t1","dummy1_L_legshintipr"],["bone_L_fib_t2","dummy1_L_legshintipr"],
+		["bone_L_fib_t1","dummy1_L_legshinmfl"], ["bone_L_fib_t2","dummy1_L_legshinmrl"],
+		["bone_L_fib_b1","dummy1_L_legshinbfl"], ["bone_L_fib_b2","dummy1_L_legshinbrl"],
+		// Cross-link tibia and fibula
+		["bone_L_tib_t1","bone_L_fib_t1"],["bone_L_tib_t2","bone_L_fib_t2"],
+		["bone_L_tib_b1","bone_L_fib_b1"],["bone_L_tib_b2","bone_L_fib_b2"],
+
+		// Right Femur: internal box beams
+		["bone_R_fem_t1","bone_R_fem_t2"],["bone_R_fem_b1","bone_R_fem_b2"],
+		["bone_R_fem_t1","bone_R_fem_b1"],["bone_R_fem_t2","bone_R_fem_b2"],
+		["bone_R_fem_t1","bone_R_fem_b2"],["bone_R_fem_t2","bone_R_fem_b1"],
+		// Anchor right femur to thigh shell
+		["bone_R_fem_t1","dummy1_R_thighpelvis"],["bone_R_fem_t2","dummy1_R_thighpelvis"],
+		["bone_R_fem_t1","dummy1_R_thightfr"],   ["bone_R_fem_t2","dummy1_R_thightrr"],
+		["bone_R_fem_b1","dummy1_R_thighbfr"],   ["bone_R_fem_b2","dummy1_R_thighbrr"],
+		["bone_R_fem_b1","dummy1_R_thighmfr"],   ["bone_R_fem_b2","dummy1_R_thighmrr"],
+
+		// Right Tibia: internal box beams
+		["bone_R_tib_t1","bone_R_tib_t2"],["bone_R_tib_b1","bone_R_tib_b2"],
+		["bone_R_tib_t1","bone_R_tib_b1"],["bone_R_tib_t2","bone_R_tib_b2"],
+		["bone_R_tib_t1","bone_R_tib_b2"],["bone_R_tib_t2","bone_R_tib_b1"],
+		// Anchor right tibia to right legshin shell
+		["bone_R_tib_t1","dummy1_R_legshintipl"],["bone_R_tib_t2","dummy1_R_legshintipl"],
+		["bone_R_tib_t1","dummy1_R_legshinmfl"], ["bone_R_tib_t2","dummy1_R_legshinmrl"],
+		["bone_R_tib_b1","dummy1_R_legshinbfl"], ["bone_R_tib_b2","dummy1_R_legshinbrl"],
+
+		// Right Fibula: internal box beams
+		["bone_R_fib_t1","bone_R_fib_t2"],["bone_R_fib_b1","bone_R_fib_b2"],
+		["bone_R_fib_t1","bone_R_fib_b1"],["bone_R_fib_t2","bone_R_fib_b2"],
+		["bone_R_fib_t1","bone_R_fib_b2"],["bone_R_fib_t2","bone_R_fib_b1"],
+		// Anchor right fibula to right legshin outer shell
+		["bone_R_fib_t1","dummy1_R_legshintipr"],["bone_R_fib_t2","dummy1_R_legshintipr"],
+		["bone_R_fib_t1","dummy1_R_legshinmfr"], ["bone_R_fib_t2","dummy1_R_legshinmrr"],
+		["bone_R_fib_b1","dummy1_R_legshinbfr"], ["bone_R_fib_b2","dummy1_R_legshinbrr"],
+		// Cross-link tibia and fibula
+		["bone_R_tib_t1","bone_R_fib_t1"],["bone_R_tib_t2","bone_R_fib_t2"],
+		["bone_R_tib_b1","bone_R_fib_b1"],["bone_R_tib_b2","bone_R_fib_b2"],
+
     ],
     "triangles": [
         ["id1:","id2:","id3:"],

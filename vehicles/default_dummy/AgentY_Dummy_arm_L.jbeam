@@ -18,7 +18,7 @@
 	
      "nodes": [
         ["id", "posX", "posY", "posZ"],
-		{"nodeWeight":"$=$adummy1weight*0.14393"},
+		{"nodeWeight":"$=$adummy1weight*0.11"},
 		{"nodeMaterial":"|NM_PLASTIC"},
         {"frictionCoef":0.5},
         {"collision":true},
@@ -92,6 +92,42 @@
 		["dummy1_L_finger3","$=$adummy1scale*0.267", "$=$adummy1scale*0.050","$=$adummy1scale*0.745"],
 		["dummy1_L_finger4","$=$adummy1scale*0.250", "$=$adummy1scale*0.070","$=$adummy1scale*0.780"],
 		
+		{"group":""},
+
+		//--LEFT HUMERUS (upper arm bone)--
+		{"group":"bone_L_humerus_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":0.05},
+		{"frictionCoef":0.5},
+		["bone_L_hum_t1", "$=$adummy1scale*0.18", "$=$adummy1scale*-0.04", "$=$adummy1scale*1.40"],
+		["bone_L_hum_t2", "$=$adummy1scale*0.18",  "$=$adummy1scale*0.02", "$=$adummy1scale*1.40"],
+		["bone_L_hum_b1", "$=$adummy1scale*0.25", "$=$adummy1scale*-0.03", "$=$adummy1scale*1.21"],
+		["bone_L_hum_b2", "$=$adummy1scale*0.25",  "$=$adummy1scale*0.02", "$=$adummy1scale*1.21"],
+		{"group":""},
+
+		//--LEFT RADIUS (thumb-side forearm bone)--
+		{"group":"bone_L_radius_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":0.05},
+		{"frictionCoef":0.5},
+		["bone_L_rad_t1", "$=$adummy1scale*0.29", "$=$adummy1scale*-0.03", "$=$adummy1scale*1.18"],
+		["bone_L_rad_t2", "$=$adummy1scale*0.29",  "$=$adummy1scale*0.02", "$=$adummy1scale*1.18"],
+		["bone_L_rad_b1", "$=$adummy1scale*0.29", "$=$adummy1scale*-0.03", "$=$adummy1scale*0.98"],
+		["bone_L_rad_b2", "$=$adummy1scale*0.29",  "$=$adummy1scale*0.02", "$=$adummy1scale*0.98"],
+		{"group":""},
+
+		//--LEFT ULNA (pinky-side forearm bone)--
+		{"group":"bone_L_ulna_g"},
+		{"collision":false},{"selfCollision":false},
+		{"nodeMaterial":"|NM_RUBBER"},
+		{"nodeWeight":0.05},
+		{"frictionCoef":0.5},
+		["bone_L_uln_t1", "$=$adummy1scale*0.21", "$=$adummy1scale*-0.03", "$=$adummy1scale*1.18"],
+		["bone_L_uln_t2", "$=$adummy1scale*0.21",  "$=$adummy1scale*0.02", "$=$adummy1scale*1.18"],
+		["bone_L_uln_b1", "$=$adummy1scale*0.22", "$=$adummy1scale*-0.03", "$=$adummy1scale*0.98"],
+		["bone_L_uln_b2", "$=$adummy1scale*0.22",  "$=$adummy1scale*0.02", "$=$adummy1scale*0.98"],
 		{"group":""},
     ],
     "beams": [
@@ -392,7 +428,34 @@
 		["dummy1_L_finger4","dummy1_L_handtrl"],
 		["dummy1_L_finger4","dummy1_L_handtfr"],
 		["dummy1_L_finger4","dummy1_L_handtrr"],
-		
+
+		//--LEFT ARM BONE beams (very rigid, unbreakable)--
+		{"beamPrecompression":1, "beamType":"|NORMAL", "beamLongBound":1, "beamShortBound":1},
+		{"beamDeform":50000, "beamStrength":"FLT_MAX"},
+		{"beamSpring":25000,"beamDamp":30},
+		{"breakGroup":""},
+		["bone_L_hum_t1","bone_L_hum_t2"],["bone_L_hum_b1","bone_L_hum_b2"],
+		["bone_L_hum_t1","bone_L_hum_b1"],["bone_L_hum_t2","bone_L_hum_b2"],
+		["bone_L_hum_t1","bone_L_hum_b2"],["bone_L_hum_t2","bone_L_hum_b1"],
+		["bone_L_hum_t1","dummy1_L_upperarmthorax"],["bone_L_hum_t2","dummy1_L_upperarmthorax"],
+		["bone_L_hum_t1","dummy1_L_upperarmtfl"], ["bone_L_hum_t2","dummy1_L_upperarmtrl"],
+		["bone_L_hum_b1","dummy1_L_upperarmbfl"], ["bone_L_hum_b2","dummy1_L_upperarmbrl"],
+		["bone_L_hum_b1","dummy1_L_upperarmmfl"], ["bone_L_hum_b2","dummy1_L_upperarmmrl"],
+		["bone_L_rad_t1","bone_L_rad_t2"],["bone_L_rad_b1","bone_L_rad_b2"],
+		["bone_L_rad_t1","bone_L_rad_b1"],["bone_L_rad_t2","bone_L_rad_b2"],
+		["bone_L_rad_t1","bone_L_rad_b2"],["bone_L_rad_t2","bone_L_rad_b1"],
+		["bone_L_rad_t1","dummy1_L_forearmtipl"],["bone_L_rad_t2","dummy1_L_forearmtipl"],
+		["bone_L_rad_t1","dummy1_L_forearmmfl"], ["bone_L_rad_t2","dummy1_L_forearmmrl"],
+		["bone_L_rad_b1","dummy1_L_forearmbfl"], ["bone_L_rad_b2","dummy1_L_forearmbrl"],
+		["bone_L_uln_t1","bone_L_uln_t2"],["bone_L_uln_b1","bone_L_uln_b2"],
+		["bone_L_uln_t1","bone_L_uln_b1"],["bone_L_uln_t2","bone_L_uln_b2"],
+		["bone_L_uln_t1","bone_L_uln_b2"],["bone_L_uln_t2","bone_L_uln_b1"],
+		["bone_L_uln_t1","dummy1_L_forearmtipr"],["bone_L_uln_t2","dummy1_L_forearmtipr"],
+		["bone_L_uln_t1","dummy1_L_forearmmfr"], ["bone_L_uln_t2","dummy1_L_forearmmrr"],
+		["bone_L_uln_b1","dummy1_L_forearmbfr"], ["bone_L_uln_b2","dummy1_L_forearmbrr"],
+		["bone_L_rad_t1","bone_L_uln_t1"],["bone_L_rad_t2","bone_L_uln_t2"],
+		["bone_L_rad_b1","bone_L_uln_b1"],["bone_L_rad_b2","bone_L_uln_b2"],
+
     ],
     "triangles": [
         ["id1:","id2:","id3:"],
