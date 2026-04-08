@@ -56,7 +56,7 @@
 local M = {}
 
 -- ── internal state ────────────────────────────────────────────────────────────
-local state              = "ghost"   -- "grace", "ghost", or "standing"
+local state              = "grace"   -- "grace", "ghost", or "standing"
 local allNodes           = {}        -- {cid, spawnX, spawnY, spawnZ} — set after baseline
 local refCid             = nil       -- cid of "dummy1_thoraxtfl" (chest reference node)
 local lastRefX           = 0.0      -- where we LAST teleported the reference node (X)
@@ -66,6 +66,7 @@ local walkOffsetY        = 0.0
 local walkDir            = 0.0
 local walkTimer          = 0.0
 local startupTimer       = 0.0
+local ghostEntryTimer    = 0.0      -- time spent in ghost state; checks gated behind GHOST_ENTRY_GRACE
 -- rawNodeIds: cid list stored during init() before baseline is captured.
 -- (getNodePosition at init() returns wrong positions; we snapshot later.)
 local rawNodeIds         = {}        -- list of cids for all nodes
@@ -81,6 +82,8 @@ local lowestCid          = nil
 -- teleports the vehicle to its world position (sudden large jump).
 local gracePrevX         = nil
 local gracePrevY         = nil
+-- Per-vehicle position tracked across frames to estimate speed without getVelocity()
+local _vehPrevPos        = {}   -- [vehId] = {x, y, z}
 
 -- configurable params
 local walkSpeed          = 0.001    -- m/s  (barely perceptible GTA pedestrian shuffle)
@@ -114,10 +117,26 @@ local IMPACT_THRESHOLD_SQ  = 0.02 * 0.02   -- metres²  (2 cm in XY)
 -- false triggers from vehicles on bridges or overpasses directly above/below.
 local PROXIMITY_RADIUS_SQ  = 3.0 * 3.0     -- metres²  (3 m sphere radius)
 
--- Grace period after spawn before the impact check is enabled.
--- Traffic-script spawning runs physics-settling for ~2 s after init();
--- 3.5 s provides comfortable margin for all map/PC speeds.
-local STARTUP_GRACE        = 0.0             -- seconds
+-- Grace period after spawn before ghost mode starts.
+-- Traffic scripts call init() BEFORE placing the vehicle, so positions captured
+-- at init() time are jbeam-local (wrong).  We wait here and use the placement-
+-- jump detector (PLACED_DETECTION_SQ) for an early exit; 3.5 s is a safety-net
+-- for edge cases where the jump is not detected.  During the entire grace period
+-- we teleport all nodes every frame (upright hold), so no spring-forces
+-- accumulate and the transition to ghost mode is always clean.
+local STARTUP_GRACE        = 3.5             -- seconds
+
+-- Additional delay (seconds) after entering ghost mode before impact detection
+-- and proximity checks are enabled.  Jbeam spring-force residuals can produce
+-- > 2 cm node displacements on the very first ghost frames; this window lets the
+-- physics settle so those residuals never trigger a spurious ragdoll transition.
+local GHOST_ENTRY_GRACE    = 1.0             -- seconds
+
+-- Minimum vehicle speed (m/s) required to trigger proximity ragdoll.
+-- Only vehicles moving faster than this are treated as a threat.
+-- 5 m/s ≈ 18 km/h — slow-moving or stationary vehicles (including the player
+-- vehicle idling nearby at spawn time) are ignored.
+local PROXIMITY_MIN_SPEED_SQ = 5.0 * 5.0    -- m²/s²
 
 -- Name of the reference body node (chest, ~1.45 m above ground).
 -- Using a high thorax node avoids false-positive falls from foot/ground contact.
@@ -207,27 +226,30 @@ local function init(jbeamData)
     walkDir      = 0
     walkTimer    = 0
     startupTimer = 0
+    ghostEntryTimer = 0
     gracePrevX   = nil
     gracePrevY   = nil
 
-    state = "ghost"  -- start in ghost mode; we transition to standing after impact detection
+    state = "grace"
 end
 
 
 local function reset()
-    allNodes     = {}
-    walkOffsetX  = 0
-    walkOffsetY  = 0
-    walkTimer    = 0
-    startupTimer = 0
-    lastRefX     = 0
-    lastRefY     = 0
-    gracePrevX   = nil
-    gracePrevY   = nil
+    allNodes        = {}
+    walkOffsetX     = 0
+    walkOffsetY     = 0
+    walkTimer       = 0
+    startupTimer    = 0
+    ghostEntryTimer = 0
+    lastRefX        = 0
+    lastRefY        = 0
+    gracePrevX      = nil
+    gracePrevY      = nil
+    _vehPrevPos     = {}
     local seed = rawNodeIds[1] or 0
     math.randomseed(os.time() + seed)
     walkDir = math.random() * 2 * math.pi
-    state = "ghost"
+    state = "grace"
 end
 
 
@@ -237,7 +259,7 @@ local function updateGFX(dt)
     -- STANDING state: all position overrides are OFF.
     if state == "standing" then return end
 
-    -- ── 1. Ghost mode: hold upright and wait for world placement ───────────────
+    -- ── 1. Grace period: hold upright and wait for world placement ───────────────
     -- Traffic scripts place the vehicle AFTER init().  We use localOffsets
     -- (jbeam-relative offsets captured at init) to teleport ALL nodes every frame
     -- to maintain the rigid upright body shape relative to rawNodeIds[1].
@@ -248,7 +270,7 @@ local function updateGFX(dt)
     -- upright pose there, and we transition to ghost mode.
     -- Because we are teleporting every frame, physics velocity NEVER accumulates,
     -- so the impact check cannot spuriously fire on ghost-mode entry.
-    if state == "ghost" then
+    if state == "grace" then
         startupTimer = startupTimer + dt
 
         -- Detect traffic-script vehicle placement: sudden large position jump.
@@ -289,8 +311,12 @@ local function updateGFX(dt)
             allNodes = {}
             local p0 = vec3(obj:getNodePosition(rawNodeIds[1]))
 
-            -- Road direction: player→dummy vector is road-perpendicular;
-            -- rotate 90° to get road-parallel walk direction.
+            -- Compute walk direction and the one-time sidewalk shift.
+            -- The shift is baked directly into allNodes.spawnX/Y so that
+            -- ghost mode begins with walkOffsetX/Y = 0 — no sudden large
+            -- teleport on the first ghost frame.
+            local initOffX = 0.0
+            local initOffY = 0.0
             local pp = getPlayerPos()
             if pp and (math.abs(pp.x - p0.x) > 1.0 or math.abs(pp.y - p0.y) > 1.0) then
                 local dx = pp.x - p0.x
@@ -304,31 +330,29 @@ local function updateGFX(dt)
                     walkDir = walkDir + flip
 
                     -- Sidewalk offset: shift the dummy AWAY from the player.
-                    -- The player is typically near the road centreline, so
-                    -- p0→pp (dummy-to-player direction) = toward road centre.
-                    -- Negate to get "away from road" = toward the kerb/sidewalk.
-                    walkOffsetX = (-dx / perpDist) * sidewalkOffset
-                    walkOffsetY = (-dy / perpDist) * sidewalkOffset
+                    initOffX = (-dx / perpDist) * sidewalkOffset
+                    initOffY = (-dy / perpDist) * sidewalkOffset
                 end
             else
                 -- Fallback: player is too close to the dummy to compute road direction.
-                -- Pick a random walk direction and apply the sidewalk offset perpendicular to it.
                 walkDir = math.random() * 2 * math.pi
                 local sideSign = (math.random() > 0.5) and 1.0 or -1.0
-                walkOffsetX = math.cos(walkDir) * sidewalkOffset * sideSign
-                walkOffsetY = -math.sin(walkDir) * sidewalkOffset * sideSign
+                initOffX = math.cos(walkDir) * sidewalkOffset * sideSign
+                initOffY = -math.sin(walkDir) * sidewalkOffset * sideSign
             end
 
-            -- Reconstruct the upright body pose.
-            -- XY: use rawNodeIds[1] world XY as the horizontal anchor.
-            -- Z:  use the lowest (foot) node's current world Z as terrain reference,
-            --     then add each node's jbeam height-above-feet (off.dz >= 0).
-            --     This ensures NO node is placed below the road surface regardless
-            --     of which node rawNodeIds[1] is or how the dummy has fallen.
+            -- Walking accumulates from zero; the one-time sidewalk offset is
+            -- already in spawnX/Y so setNodePosition won't jump on frame 1.
+            walkOffsetX = 0
+            walkOffsetY = 0
+
+            -- Reconstruct the upright body pose at the sidewalk position.
+            -- XY: rawNodeIds[1] world XY + per-node local offset + sidewalk shift.
+            -- Z:  lowest (foot) node's current world Z + jbeam height above feet.
             local terrainZ = lowestCid and obj:getNodePosition(lowestCid).z or p0.z
             for _, off in ipairs(localOffsets) do
-                local nx = p0.x + off.dx
-                local ny = p0.y + off.dy
+                local nx = p0.x + off.dx + initOffX
+                local ny = p0.y + off.dy + initOffY
                 local nz = terrainZ + off.dz
                 table.insert(allNodes, {
                     cid    = off.cid,
@@ -338,18 +362,18 @@ local function updateGFX(dt)
                 })
                 obj:setNodePosition(off.cid, vec3(nx, ny, nz))
             end
-            -- Initialize lastRefX/Y from the RECONSTRUCTED position so the first-
-            -- frame impact check has zero displacement and doesn't immediately
-            -- trigger a spurious "standing" transition.
+            -- Initialize lastRefX/Y from the placed sidewalk position so the
+            -- first impact check sees zero displacement (no spurious ragdoll).
             if refCid then
                 for _, off in ipairs(localOffsets) do
                     if off.cid == refCid then
-                        lastRefX = p0.x + off.dx
-                        lastRefY = p0.y + off.dy
+                        lastRefX = p0.x + off.dx + initOffX
+                        lastRefY = p0.y + off.dy + initOffY
                         break
                     end
                 end
             end
+            ghostEntryTimer = 0   -- reset post-grace delay counter
             state = "ghost"
         end
         return  -- walkDir/allNodes not ready yet; ghost teleportation starts next state
@@ -359,14 +383,14 @@ local function updateGFX(dt)
     -- Uses "dummy1_thoraxtfl" (top-left chest, ~1.45 m above ground) as reference.
     --
     -- The check compares the current node position against WHERE WE PLACED IT last
-    -- frame (lastRefX/Y), NOT against the mathematical expected position.  This
-    -- prevents false triggers on the first ghost frame (when walkOffsetX already
-    -- holds the 5 m sidewalk shift but the nodes haven't been teleported yet —
-    -- that would look like a 5 m displacement and immediately trigger "standing").
+    -- frame (lastRefX/Y).  Both checks are gated behind GHOST_ENTRY_GRACE so that
+    -- jbeam spring-force residuals on the first ghost frames cannot cause a spurious
+    -- ragdoll transition.
     --
     --   • XY displacement ≥ 2 cm since last teleport  → something hit the dummy
-    --
-    if refCid and #allNodes > 0 then
+    ghostEntryTimer = ghostEntryTimer + dt
+
+    if refCid and #allNodes > 0 and ghostEntryTimer >= GHOST_ENTRY_GRACE then
         local cur = vec3(obj:getNodePosition(refCid))
         local ddx = cur.x - lastRefX
         local ddy = cur.y - lastRefY
@@ -379,25 +403,44 @@ local function updateGFX(dt)
 
     -- ── 2b. Proximity check: go ragdoll as soon as any other vehicle is close ──
     -- Full 3-D sphere check prevents false triggers from vehicles on overpasses.
-    -- This catches fast vehicles before they physically displace the dummy's nodes.
-    if refCid then
+    -- Speed is estimated from the vehicle's position delta between frames so that
+    -- we don't depend on getVelocity() which may be unavailable in the VE context.
+    -- Only vehicles moving faster than PROXIMITY_MIN_SPEED_SQ are considered a
+    -- threat — slow or stationary vehicles (e.g. the player vehicle idling nearby
+    -- at spawn time) are ignored, matching the "speeding vehicle" intent.
+    if refCid and ghostEntryTimer >= GHOST_ENTRY_GRACE then
         local ok, triggered = pcall(function()
-            local refPos = vec3(obj:getNodePosition(refCid))
-            local myId   = obj:getId()
-            local count  = be:getVehicleCount()
+            local refPos    = vec3(obj:getNodePosition(refCid))
+            local myId      = obj:getId()
+            local count     = be:getVehicleCount()
+            local newPrevPos = {}   -- rebuild each frame; stale IDs are dropped automatically
+            local found     = false
             for i = 0, count - 1 do
                 local veh = be:getVehicle(i)
                 if veh and veh:getID() ~= myId then
-                    local vp = veh:getPosition()
-                    local ex = vp.x - refPos.x
-                    local ey = vp.y - refPos.y
-                    local ez = vp.z - refPos.z
-                    if (ex*ex + ey*ey + ez*ez) < PROXIMITY_RADIUS_SQ then
-                        return true
+                    local vp  = veh:getPosition()
+                    local vid = veh:getID()
+                    local ex  = vp.x - refPos.x
+                    local ey  = vp.y - refPos.y
+                    local ez  = vp.z - refPos.z
+                    -- Estimate speed from position delta (avoids getVelocity() API)
+                    local pp2  = _vehPrevPos[vid]
+                    local spd2 = 0
+                    if pp2 and dt > 0 then
+                        local mvx = (vp.x - pp2.x) / dt
+                        local mvy = (vp.y - pp2.y) / dt
+                        local mvz = (vp.z - pp2.z) / dt
+                        spd2 = mvx*mvx + mvy*mvy + mvz*mvz
+                    end
+                    newPrevPos[vid] = {x = vp.x, y = vp.y, z = vp.z}
+                    if (ex*ex + ey*ey + ez*ez) < PROXIMITY_RADIUS_SQ and
+                       spd2 >= PROXIMITY_MIN_SPEED_SQ then
+                        found = true
                     end
                 end
             end
-            return false
+            _vehPrevPos = newPrevPos   -- replace; removes any vehicles that no longer exist
+            return found
         end)
         if ok and triggered then
             state = "standing"
@@ -406,10 +449,14 @@ local function updateGFX(dt)
     end
 
     -- ── 3. Periodically tweak walk direction (gentle, ±5°, road-parallel) ─────
-    walkTimer = walkTimer + dt
-    if walkTimer >= walkChangePeriod then
-        walkTimer = 0
-        walkDir = walkDir + (math.random() - 0.5) * 2 * DIRECTION_CHANGE_MAX
+    -- walkChangePeriod <= 0 disables direction changes (set to -1 to keep walking
+    -- straight; direction-change oscillations can cause jbeam instabilities).
+    if walkChangePeriod > 0 then
+        walkTimer = walkTimer + dt
+        if walkTimer >= walkChangePeriod then
+            walkTimer = 0
+            walkDir = walkDir + (math.random() - 0.5) * 2 * DIRECTION_CHANGE_MAX
+        end
     end
 
     -- ── 4. Accumulate horizontal walk displacement ────────────────────────────
