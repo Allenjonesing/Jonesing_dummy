@@ -1,73 +1,86 @@
 -- lua/ge/extensions/propRecycler.lua
--- Jonesing Pedestrians / Prop Recycler
--- Optimized version:
---   - Ghost pedestrians are cheap Lua positions + debug markers.
---   - Real soft-body dummies are pre-spawned once into a small pool.
---   - Activation teleports an existing dummy instead of spawning during gameplay.
+-- Jonesing Pedestrians
+-- FAR  = cheap grounded colored cylinders
+-- MID  = visual-only .dae dummy models, no physics
+-- NEAR = pooled AgentY physics ragdolls
 
 local M = {}
 M.dependencies = {"core_vehicles"}
+
+-- ADD YOUR DAE PATH HERE:
+local VISUAL_DAE_PATH = "/vehicles/common/AgentY_Dummy/AgentY_Dummy.dae"
 
 local TAG = "propRecycler"
 
 local cfg = {
   debug = true,
 
-  -- Ghost pedestrians
-  totalGhosts = 20,
-  drawGhostDebug = true,
-  ghostMarkerRadius = 0.55,
-  ghostMove = true,
-  ghostSpeedMin = 0.6,
-  ghostSpeedMax = 1.5,
-  ghostTurnChance = 0.012,
-  ghostCrossChance = 0.003,
-
-  -- Physics pool
+  totalCylinders = 100,
+  maxVisualDummies = 20,
   physicsPoolSize = 3,
+  maxActiveRagdolls = 3,
+
   dummyModel = "agenty_dummy",
-  spawnPoolAtStart = true,
-  maxActiveDummies = 3,
 
-  -- Distances
-  minDistance = 65,
-  maxDistance = 280,
-  leadDistance = 150,
-  activateDistance = 55,
-  deactivateDistance = 120,
-  emergencyFarDistance = 350,
+  wideRadiusMin = 90,
+  wideRadiusMax = 650,
+  recycleRadius = 760,
 
-  -- Placement
+  visualRadius = 200,
+  ragdollBaseDistance = 7,
+  ragdollHighSpeedDistance = 18,
+  speedActivationMultiplier = 0.18,
+
   sidewalkMode = true,
   sidewalkOffset = 5.75,
-  sidewalkRandomExtra = 2.0,
-  heightOffset = 0.85,
+  sidewalkRandomExtra = 2.25,
 
-  -- Timing
-  ghostUpdateInterval = 0.10,
-  recycleCheckInterval = 0.35,
-  activationCheckInterval = 0.15,
-  minActiveTime = 4.0,
-  maxActiveTime = 14.0,
+  farCylinderHeight = 1.45,
+  farCylinderRadius = 0.30,
+
+  visualScale = "1 1 1",
+
+  markerGroundOffset = 0.01,
+  visualGroundOffset = 0.00,
+  ragdollGroundOffset = 0.00,
+
+  groundProbeHeight = 250,
+  groundProbeDepth = 700,
+
+  pedestriansMove = true,
+  walkSpeedMin = 0.35,
+  walkSpeedMax = 1.15,
+  turnChance = 0.006,
+  crossChance = 0.0015,
+
+  updateInterval = 0.10,
+  recycleInterval = 0.45,
+  visualLodInterval = 0.35,
+  activationInterval = 0.05,
+
+  minActiveTime = 2.0,
+  maxActiveTime = 10.0,
   activationCooldownSeconds = 1.0,
 
-  -- Inactive dummy storage
+  frontConeDot = 0.12,
+  sideThreatDistance = 6.5,
+
   storageOffset = vec3(0, 0, -500),
 
-  verboseEvery = 10,
-
-  -- Back compat
-  cooldownTime = nil,
-  teleportCooldownSeconds = 3.0
+  drawFarCylinders = true,
+  useVisualDaeModels = true,
+  showDebugUi = true,
 }
 
 local _enabled = false
-local _ghosts = {}
-local _pool = {} -- {id=id, active=false, ghostIndex=nil, activeSince=0}
-local _accGhost = 0
+local _peds = {}
+local _visuals = {} -- [pedIndex] = TSStatic object
+local _pool = {}
+
+local _accUpdate = 0
 local _accRecycle = 0
+local _accVisual = 0
 local _accActivate = 0
-local _lastVerb = 0
 local _recycles = 0
 
 local _pendingFocusId = nil
@@ -83,14 +96,23 @@ local function d(level, msg, ...)
   log(level, TAG, msg)
 end
 
-local function rand(a, b)
-  return a + (b - a) * math.random()
+local function rand(a, b) return a + (b - a) * math.random() end
+
+local function dist2(a, b)
+  local dx, dy, dz = a.x - b.x, a.y - b.y, a.z - b.z
+  return dx * dx + dy * dy + dz * dz
+end
+
+local function flat(v) return vec3(v.x, v.y, 0) end
+
+local function safeNorm(v, fallback)
+  if v and v:squaredLength() > 0.0001 then return v:normalized() end
+  return fallback or vec3(0, 1, 0)
 end
 
 local function asId(x)
   if type(x) == "number" then return x end
   if type(x) == "string" then return tonumber(x) end
-
   if type(x) == "userdata" or type(x) == "table" then
     local ok, id = pcall(function()
       if x.getId then return x:getId() end
@@ -100,7 +122,6 @@ local function asId(x)
     end)
     if ok and id then return tonumber(id) end
   end
-
   return nil
 end
 
@@ -113,10 +134,184 @@ local function playerId()
     local ok, id = pcall(function() return be:getPlayerVehicleID(0) end)
     if ok and id then return id end
   end
-
   local v = playerVeh()
   if v and v.getId then return v:getId() end
   return nil
+end
+
+local function playerSpeed()
+  local v = playerVeh()
+  if not v or not v.getVelocity then return 0 end
+  local ok, vel = pcall(function() return v:getVelocity() end)
+  if ok and vel then return math.sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z) end
+  return 0
+end
+
+local function vBasis()
+  local veh = playerVeh()
+  if not veh then return nil end
+
+  local pos = veh:getPosition()
+  local fwd = veh.getDirectionVector and veh:getDirectionVector() or vec3(0, 1, 0)
+  fwd = safeNorm(flat(fwd), vec3(0, 1, 0))
+
+  local right
+  if veh.getDirectionVectorSide then
+    right = veh:getDirectionVectorSide()
+  elseif veh.getSideVector then
+    right = veh:getSideVector()
+  else
+    right = vec3(1, 0, 0)
+  end
+
+  right = safeNorm(flat(right), vec3(1, 0, 0))
+  return pos, fwd, right
+end
+
+local function safeQuat(q)
+  local x, y, z, w = 0, 0, 0, 1
+  if q then
+    x = q.x or q[1] or x
+    y = q.y or q[2] or y
+    z = q.z or q[3] or z
+    w = q.w or q[4] or w
+  end
+  local m = math.sqrt(x * x + y * y + z * z + w * w)
+  if m > 0 then x, y, z, w = x / m, y / m, z / m, w / m end
+  return quat(x, y, z, w)
+end
+
+local function playerGroundZ()
+  local v = playerVeh()
+  if not v then return 0 end
+  local p = v:getPosition()
+  local probe = vec3(p.x, p.y, p.z + cfg.groundProbeHeight)
+
+  if map and map.surfaceHeightBelow then
+    local ok, z = pcall(function() return map.surfaceHeightBelow(probe) end)
+    if ok and type(z) == "number" then return z end
+  end
+
+  return p.z
+end
+
+local function getGroundZ(pos)
+  local probe = vec3(pos.x, pos.y, pos.z + cfg.groundProbeHeight)
+
+  if map and map.surfaceHeightBelow then
+    local ok, z = pcall(function() return map.surfaceHeightBelow(probe) end)
+    if ok and type(z) == "number" then return z end
+  end
+
+  if castRayStatic then
+    local ok, hitDist = pcall(function()
+      return castRayStatic(probe, vec3(0, 0, -1), cfg.groundProbeDepth)
+    end)
+    if ok and type(hitDist) == "number" and hitDist > 0 then
+      return probe.z - hitDist
+    end
+  end
+
+  return playerGroundZ()
+end
+
+local function groundSnap(pos, offset)
+  local z = getGroundZ(pos)
+  return vec3(pos.x, pos.y, z + (offset or 0))
+end
+
+local function makeRotFromDir(dir, pos)
+  local normal = vecUp
+  if map and map.surfaceNormal then
+    local ok, n = pcall(function() return map.surfaceNormal(pos, 1) end)
+    if ok and n then normal = n end
+  end
+
+  local f = safeNorm(flat(dir), vec3(0, 1, 0))
+  local ok, rot = pcall(function()
+    return quatFromDir(vecY:rotated(quatFromDir(f, normal)), normal)
+  end)
+
+  if ok and rot then return rot end
+  return quat(0, 0, 0, 1)
+end
+
+local function color(seed, alpha)
+  return ColorF(
+    0.25 + 0.65 * math.abs(math.sin(seed * 11.1)),
+    0.25 + 0.65 * math.abs(math.sin(seed * 27.7)),
+    0.25 + 0.65 * math.abs(math.sin(seed * 53.3)),
+    alpha or 0.55
+  )
+end
+
+local function sampleAroundPlayer()
+  local ppos, fwd = vBasis()
+  if not ppos then return nil end
+
+  local angle = rand(0, math.pi * 2)
+  local radius = rand(cfg.wideRadiusMin, cfg.wideRadiusMax)
+
+  local pos = vec3(
+    ppos.x + math.cos(angle) * radius,
+    ppos.y + math.sin(angle) * radius,
+    ppos.z + cfg.groundProbeHeight
+  )
+
+  if cfg.sidewalkMode
+    and gameplay_traffic_trafficUtils
+    and gameplay_traffic_trafficUtils.findSafeSpawnPoint
+    and gameplay_traffic_trafficUtils.finalizeSpawnPoint
+    and map and map.getMap and map.getMap().nodes and next(map.getMap().nodes) then
+
+    local ok, spawnData = pcall(function()
+      return gameplay_traffic_trafficUtils.findSafeSpawnPoint(
+        ppos,
+        fwd,
+        cfg.wideRadiusMin,
+        cfg.wideRadiusMax,
+        radius,
+        {}
+      )
+    end)
+
+    if ok and spawnData then
+      local ok2, roadPos, roadDir = pcall(function()
+        return gameplay_traffic_trafficUtils.finalizeSpawnPoint(
+          spawnData.pos,
+          spawnData.dir,
+          spawnData.n1,
+          spawnData.n2,
+          { legalDirection = true }
+        )
+      end)
+
+      if ok2 and roadPos and roadDir then
+        local dir = safeNorm(flat(roadDir), fwd)
+        local lateral = vec3(-dir.y, dir.x, 0)
+        local side = math.random() < 0.5 and -1 or 1
+        local offset = cfg.sidewalkOffset + rand(0, cfg.sidewalkRandomExtra)
+
+        pos = roadPos + lateral * offset * side
+        pos = groundSnap(pos, cfg.markerGroundOffset)
+
+        return {
+          pos = pos,
+          dir = dir,
+          rot = makeRotFromDir(dir, pos)
+        }
+      end
+    end
+  end
+
+  pos = groundSnap(pos, cfg.markerGroundOffset)
+  local dir = safeNorm(vec3(-math.sin(angle), math.cos(angle), 0), fwd)
+
+  return {
+    pos = pos,
+    dir = dir,
+    rot = makeRotFromDir(dir, pos)
+  }
 end
 
 local function restoreFocusSoon()
@@ -130,7 +325,6 @@ end
 
 local function runFocusRestore(dt)
   if not _pendingFocusId then return end
-
   _focusTimer = _focusTimer - dt
   if _focusTimer > 0 then return end
 
@@ -149,166 +343,12 @@ local function runFocusRestore(dt)
     if be.setActiveObjectID then be:setActiveObjectID(_pendingFocusId) end
   end)
 
-  if os.clock() < _focusDeadline then
-    _focusTimer = 0.05
-  else
-    _pendingFocusId = nil
-  end
+  if os.clock() < _focusDeadline then _focusTimer = 0.05 else _pendingFocusId = nil end
 end
 
-local function dist2(a, b)
-  local dx, dy, dz = a.x - b.x, a.y - b.y, a.z - b.z
-  return dx * dx + dy * dy + dz * dz
-end
-
-local function safeQuat(q)
-  local x, y, z, w = 0, 0, 0, 1
-
-  if q then
-    x = q.x or q[1] or x
-    y = q.y or q[2] or y
-    z = q.z or q[3] or z
-    w = q.w or q[4] or w
-  end
-
-  local m = math.sqrt(x * x + y * y + z * z + w * w)
-  if m > 0 then
-    x, y, z, w = x / m, y / m, z / m, w / m
-  end
-
-  return quat(x, y, z, w)
-end
-
-local function groundSnap(pos, fallbackZ)
-  local p = vec3(pos.x, pos.y, pos.z)
-
-  if map and map.surfaceHeightBelow then
-    local ok, z = pcall(function() return map.surfaceHeightBelow(p) end)
-    if ok and z then
-      p.z = z + cfg.heightOffset
-      return p
-    end
-  end
-
-  p.z = (fallbackZ or p.z) + cfg.heightOffset
-  return p
-end
-
-local function makeRotFromDir(dir, pos)
-  local normal = vecUp
-
-  if map and map.surfaceNormal then
-    local ok, n = pcall(function() return map.surfaceNormal(pos, 1) end)
-    if ok and n then normal = n end
-  end
-
-  local flat = vec3(dir.x, dir.y, 0)
-  if flat:squaredLength() < 0.0001 then flat = vec3(0, 1, 0) end
-  flat = flat:normalized()
-
-  local ok, rot = pcall(function()
-    return quatFromDir(vecY:rotated(quatFromDir(flat, normal)), normal)
-  end)
-
-  if ok and rot then return rot end
-  return quat(0, 0, 0, 1)
-end
-
-local function vBasis()
-  local veh = playerVeh()
-  if not veh then return nil end
-
-  local pos = veh:getPosition()
-  local fwd = veh.getDirectionVector and veh:getDirectionVector() or vec3(0, 1, 0)
-  local right = nil
-
-  if veh.getDirectionVectorSide then
-    right = veh:getDirectionVectorSide()
-  elseif veh.getSideVector then
-    right = veh:getSideVector()
-  else
-    right = vec3(1, 0, 0)
-  end
-
-  return pos, fwd, right
-end
-
-local function sidewalkOffset(roadPos, roadDir)
-  if not cfg.sidewalkMode then
-    return groundSnap(roadPos, roadPos.z)
-  end
-
-  local dir = vec3(roadDir.x, roadDir.y, 0)
-  if dir:squaredLength() < 0.0001 then
-    return groundSnap(roadPos, roadPos.z)
-  end
-
-  dir = dir:normalized()
-
-  local lateral = vec3(-dir.y, dir.x, 0)
-  local side = math.random() < 0.5 and -1 or 1
-  local offset = cfg.sidewalkOffset + rand(0, cfg.sidewalkRandomExtra)
-
-  return groundSnap(roadPos + lateral * offset * side, roadPos.z)
-end
-
-local function samplePose()
-  local ppos, fwd, right = vBasis()
-  if not ppos then return nil end
-
-  if map and map.getMap and map.getMap().nodes and next(map.getMap().nodes)
-    and gameplay_traffic_trafficUtils
-    and gameplay_traffic_trafficUtils.findSafeSpawnPoint
-    and gameplay_traffic_trafficUtils.finalizeSpawnPoint then
-
-    local ok, spawnData = pcall(function()
-      return gameplay_traffic_trafficUtils.findSafeSpawnPoint(
-        ppos,
-        fwd,
-        cfg.minDistance,
-        cfg.maxDistance,
-        cfg.leadDistance,
-        {}
-      )
-    end)
-
-    if ok and spawnData then
-      local ok2, newPos, newDir = pcall(function()
-        return gameplay_traffic_trafficUtils.finalizeSpawnPoint(
-          spawnData.pos,
-          spawnData.dir,
-          spawnData.n1,
-          spawnData.n2,
-          {legalDirection = true}
-        )
-      end)
-
-      if ok2 and newPos and newDir then
-        local p = sidewalkOffset(newPos, newDir)
-        return {
-          pos = p,
-          dir = vec3(newDir.x, newDir.y, 0):normalized(),
-          rot = makeRotFromDir(newDir, p)
-        }
-      end
-    end
-  end
-
-  -- Fallback if traffic sampler fails.
-  local lateral = rand(-20, 20)
-  local p = vec3(
-    ppos.x + fwd.x * cfg.leadDistance + right.x * lateral,
-    ppos.y + fwd.y * cfg.leadDistance + right.y * lateral,
-    ppos.z
-  )
-
-  p = groundSnap(p, ppos.z)
-
-  return {
-    pos = p,
-    dir = vec3(fwd.x, fwd.y, 0):normalized(),
-    rot = makeRotFromDir(fwd, p)
-  }
+local function storagePosFor(index)
+  local base = core_camera and core_camera.getPosition and core_camera.getPosition() or vec3(0, 0, 0)
+  return vec3(base.x + index * 4, base.y, base.z - 500)
 end
 
 local function teleportObject(id, pos, rot)
@@ -351,23 +391,13 @@ local function queueFreeze(id, frozen)
   if not o or not o.queueLuaCommand then return end
 
   local val = frozen and "true" or "false"
-
   o:queueLuaCommand(string.format([[
     if obj then
+      if obj.setVelocity then obj:setVelocity(0, 0, 0) end
+      if obj.setAngularVelocity then obj:setAngularVelocity(0, 0, 0) end
       if obj.setFreeze then obj:setFreeze(%s) end
-      if %s and obj.setVelocity then obj:setVelocity(0, 0, 0) end
-      if %s and obj.setAngularVelocity then obj:setAngularVelocity(0, 0, 0) end
     end
-  ]], val, val, val))
-end
-
-local function storagePosFor(index)
-  local ppos = core_camera and core_camera.getPosition and core_camera.getPosition() or vec3(0, 0, 0)
-  return vec3(
-    ppos.x + cfg.storageOffset.x + index * 4,
-    ppos.y + cfg.storageOffset.y,
-    ppos.z + cfg.storageOffset.z
-  )
+  ]], val))
 end
 
 local function spawnDummyAt(pos, rot)
@@ -381,7 +411,6 @@ local function spawnDummyAt(pos, rot)
       autoEnterVehicle = false,
       setPlayerVehicle = false
     })
-
     if ok and id then return asId(id) end
   end
 
@@ -389,7 +418,6 @@ local function spawnDummyAt(pos, rot)
     local ok, id = pcall(function()
       return be:spawnVehicle(cfg.dummyModel, pos, safeQuat(rot))
     end)
-
     if ok and id then return asId(id) end
   end
 
@@ -398,80 +426,140 @@ end
 
 local function buildPool()
   if #_pool > 0 then return end
-
   restoreFocusSoon()
 
   for i = 1, cfg.physicsPoolSize do
-    local pos = storagePosFor(i)
-    local id = spawnDummyAt(pos, quat(0, 0, 0, 1))
-
+    local id = spawnDummyAt(storagePosFor(i), quat(0, 0, 0, 1))
     if id then
       queueFreeze(id, true)
-      table.insert(_pool, {
-        id = id,
-        active = false,
-        ghostIndex = nil,
-        activeSince = 0
-      })
-      d("D", "Pre-spawned pooled dummy id=%s", tostring(id))
+      table.insert(_pool, { id = id, active = false, pedIndex = nil, activeSince = 0 })
     else
-      d("W", "Failed to pre-spawn pooled dummy %d", i)
+      d("W", "Failed to spawn pooled ragdoll %d", i)
     end
   end
 
-  d("I", "Physics dummy pool ready: %d/%d", #_pool, cfg.physicsPoolSize)
+  d("I", "Ragdoll pool ready: %d/%d", #_pool, cfg.physicsPoolSize)
 end
 
-local function activeCount()
+local function activeRagdolls()
   local n = 0
-  for _, p in ipairs(_pool) do
-    if p.active then n = n + 1 end
-  end
+  for _, p in ipairs(_pool) do if p.active then n = n + 1 end end
   return n
 end
 
 local function acquirePoolDummy()
   for _, p in ipairs(_pool) do
-    if not p.active and be:getObjectByID(p.id) then
-      return p
+    if not p.active and be:getObjectByID(p.id) then return p end
+  end
+  return nil
+end
+
+local function deleteVisualDummy(index)
+  local obj = _visuals[index]
+  if obj then
+    pcall(function()
+      if obj.delete then obj:delete() end
+    end)
+  end
+  _visuals[index] = nil
+end
+
+local function setVisualTransform(obj, pos, rot)
+  if not obj then return end
+  local q = safeQuat(rot)
+
+  pcall(function()
+    if obj.setPosition then
+      obj:setPosition(pos)
+    else
+      obj.position = string.format("%f %f %f", pos.x, pos.y, pos.z)
+    end
+
+    if obj.setRotation then
+      obj:setRotation(q)
+    else
+      obj.rotation = string.format("%f %f %f %f", q.x, q.y, q.z, q.w)
+    end
+  end)
+end
+
+local function spawnVisualDummy(index)
+  if not cfg.useVisualDaeModels or not VISUAL_DAE_PATH or VISUAL_DAE_PATH == "" then return nil end
+  if _visuals[index] then return _visuals[index] end
+
+  local ped = _peds[index]
+  if not ped then return nil end
+
+  local pos = groundSnap(ped.pos, cfg.visualGroundOffset)
+  local rot = ped.rot or quat(0, 0, 0, 1)
+
+  if createObject and scenetree and scenetree.MissionGroup then
+    local ok, obj = pcall(function()
+      local o = createObject("TSStatic")
+      o.shapeName = VISUAL_DAE_PATH
+      o.position = string.format("%f %f %f", pos.x, pos.y, pos.z)
+      local q = safeQuat(rot)
+      o.rotation = string.format("%f %f %f %f", q.x, q.y, q.z, q.w)
+      o.scale = cfg.visualScale
+      o.collisionType = "None"
+      o.canSave = false
+      o:registerObject("")
+      scenetree.MissionGroup:addObject(o)
+      return o
+    end)
+
+    if ok and obj then
+      _visuals[index] = obj
+      return obj
     end
   end
 
   return nil
 end
 
-local function releasePoolDummy(p, recycleGhost)
+local function recyclePed(i)
+  local ped = _peds[i]
+  if not ped or ped.activeRagdoll then return false end
+
+  deleteVisualDummy(i)
+
+  local pose = sampleAroundPlayer()
+  if not pose then return false end
+
+  ped.pos = pose.pos
+  ped.dir = pose.dir
+  ped.rot = pose.rot
+  ped.speed = rand(cfg.walkSpeedMin, cfg.walkSpeedMax)
+  ped.seed = math.random()
+  ped.nextActivationAt = os.clock() + cfg.activationCooldownSeconds
+
+  _recycles = _recycles + 1
+  return true
+end
+
+local function releasePoolDummy(p, recycleAfter)
   if not p then return end
 
-  local g = p.ghostIndex and _ghosts[p.ghostIndex] or nil
+  local ped = p.pedIndex and _peds[p.pedIndex] or nil
 
   queueFreeze(p.id, true)
-  teleportObject(p.id, storagePosFor(p.ghostIndex or 1), quat(0, 0, 0, 1))
+  teleportObject(p.id, storagePosFor(p.pedIndex or 1), quat(0, 0, 0, 1))
 
-  if g then
-    g.active = false
-    g.poolIndex = nil
-    g.nextActivationAt = os.clock() + cfg.activationCooldownSeconds
-
-    if recycleGhost then
-      local pose = samplePose()
-      if pose then
-        g.pos = pose.pos
-        g.dir = pose.dir
-        g.rot = pose.rot
-        g.speed = rand(cfg.ghostSpeedMin, cfg.ghostSpeedMax)
-        _recycles = _recycles + 1
-      end
-    end
+  if ped then
+    ped.activeRagdoll = false
+    ped.poolId = nil
+    ped.nextActivationAt = os.clock() + cfg.activationCooldownSeconds
+    ped.pos = groundSnap(ped.pos, cfg.markerGroundOffset)
+    if recycleAfter then recyclePed(ped.index) end
   end
 
   p.active = false
-  p.ghostIndex = nil
+  p.pedIndex = nil
   p.activeSince = 0
 end
 
-local function buildGhost(i)
-  local pose = samplePose()
+local function buildPed(i)
+  local pose = sampleAroundPlayer()
   if not pose then return nil end
 
   return {
@@ -479,182 +567,228 @@ local function buildGhost(i)
     pos = pose.pos,
     dir = pose.dir,
     rot = pose.rot,
-    speed = rand(cfg.ghostSpeedMin, cfg.ghostSpeedMax),
-    active = false,
-    poolIndex = nil,
-    nextActivationAt = 0
+    speed = rand(cfg.walkSpeedMin, cfg.walkSpeedMax),
+    seed = math.random(),
+    activeRagdoll = false,
+    poolId = nil,
+    nextActivationAt = 0,
   }
 end
 
-local function buildGhosts()
-  _ghosts = {}
-
-  for i = 1, cfg.totalGhosts do
-    local g = buildGhost(i)
-    if g then table.insert(_ghosts, g) end
+local function buildPedestrians()
+  _peds = {}
+  for i = 1, cfg.totalCylinders do
+    local ped = buildPed(i)
+    if ped then table.insert(_peds, ped) end
   end
-
-  d("I", "Ghost pedestrians ready: %d", #_ghosts)
+  d("I", "Pedestrian field ready: %d", #_peds)
 end
 
-local function recycleGhost(i)
-  local g = _ghosts[i]
-  if not g or g.active then return end
+local function updatePedestrians(dt)
+  if not cfg.pedestriansMove then return end
 
-  local pose = samplePose()
-  if not pose then return end
-
-  g.pos = pose.pos
-  g.dir = pose.dir
-  g.rot = pose.rot
-  g.speed = rand(cfg.ghostSpeedMin, cfg.ghostSpeedMax)
-  g.nextActivationAt = os.clock() + cfg.activationCooldownSeconds
-
-  _recycles = _recycles + 1
-end
-
-local function updateGhosts(dt)
-  if not cfg.ghostMove then return end
-
-  for _, g in ipairs(_ghosts) do
-    if not g.active then
-      if math.random() < cfg.ghostTurnChance then
-        g.dir = g.dir * -1
-      elseif math.random() < cfg.ghostCrossChance then
-        g.dir = vec3(-g.dir.y, g.dir.x, 0):normalized()
+  for _, ped in ipairs(_peds) do
+    if not ped.activeRagdoll then
+      if math.random() < cfg.turnChance then
+        ped.dir = ped.dir * -1
+      elseif math.random() < cfg.crossChance then
+        ped.dir = safeNorm(vec3(-ped.dir.y, ped.dir.x, 0), ped.dir)
       end
 
-      g.pos = g.pos + g.dir * g.speed * dt
-      g.pos = groundSnap(g.pos, g.pos.z - cfg.heightOffset)
-      g.rot = makeRotFromDir(g.dir, g.pos)
+      ped.pos = ped.pos + ped.dir * ped.speed * dt
+      ped.pos = groundSnap(ped.pos, cfg.markerGroundOffset)
+      ped.rot = makeRotFromDir(ped.dir, ped.pos)
+
+      local visual = _visuals[ped.index]
+      if visual then setVisualTransform(visual, groundSnap(ped.pos, cfg.visualGroundOffset), ped.rot) end
     end
   end
 end
 
-local function activateGhost(i)
-  local g = _ghosts[i]
-  if not g or g.active then return false end
+local function recycleFarPedestrians()
+  local veh = playerVeh()
+  if not veh then return end
+
+  local ppos = veh:getPosition()
+  local recycle2 = cfg.recycleRadius * cfg.recycleRadius
+
+  for i, ped in ipairs(_peds) do
+    if not ped.activeRagdoll and dist2(ped.pos, ppos) > recycle2 then recyclePed(i) end
+  end
+end
+
+local function updateVisualLod()
+  local veh = playerVeh()
+  if not veh then return end
+
+  local ppos = veh:getPosition()
+  local visual2 = cfg.visualRadius * cfg.visualRadius
+  local candidates = {}
+
+  for i, ped in ipairs(_peds) do
+    if not ped.activeRagdoll then
+      local d2v = dist2(ped.pos, ppos)
+      if d2v <= visual2 then
+        table.insert(candidates, { i = i, d2 = d2v })
+      else
+        deleteVisualDummy(i)
+      end
+    else
+      deleteVisualDummy(i)
+    end
+  end
+
+  table.sort(candidates, function(a, b) return a.d2 < b.d2 end)
+
+  local keep = {}
+  for n = 1, math.min(cfg.maxVisualDummies, #candidates) do
+    keep[candidates[n].i] = true
+    spawnVisualDummy(candidates[n].i)
+  end
+
+  for index, _ in pairs(_visuals) do
+    if not keep[index] then deleteVisualDummy(index) end
+  end
+end
+
+local function isThreatCandidate(ped, ppos, pfwd, speed)
+  local toPed = flat(ped.pos - ppos)
+  local d = toPed:length()
+  if d < 0.01 then return true, d end
+
+  local dynDist = cfg.ragdollBaseDistance + speed * cfg.speedActivationMultiplier
+  dynDist = math.min(cfg.ragdollHighSpeedDistance, math.max(cfg.ragdollBaseDistance, dynDist))
+
+  if d > dynDist then return false, d end
+  if d <= cfg.sideThreatDistance then return true, d end
+
+  return pfwd:dot(toPed:normalized()) >= cfg.frontConeDot, d
+end
+
+local function activatePedRagdoll(i)
+  local ped = _peds[i]
+  if not ped or ped.activeRagdoll then return false end
 
   local now = os.clock()
-  if now < (g.nextActivationAt or 0) then return false end
-  if activeCount() >= cfg.maxActiveDummies then return false end
+  if now < (ped.nextActivationAt or 0) then return false end
+  if activeRagdolls() >= cfg.maxActiveRagdolls then return false end
 
   local p = acquirePoolDummy()
   if not p then return false end
 
+  deleteVisualDummy(i)
   restoreFocusSoon()
 
-  teleportObject(p.id, g.pos, g.rot)
+  local ragPos = groundSnap(ped.pos, cfg.ragdollGroundOffset)
+  teleportObject(p.id, ragPos, ped.rot)
   queueFreeze(p.id, false)
 
   p.active = true
-  p.ghostIndex = i
+  p.pedIndex = i
   p.activeSince = now
 
-  g.active = true
-  g.poolIndex = p.id
+  ped.activeRagdoll = true
+  ped.poolId = p.id
 
-  d("D", "Activated ghost %d using pooled dummy id=%s", i, tostring(p.id))
   return true
 end
 
-local function updateActivation()
-  local veh = playerVeh()
-  if not veh then return end
+local function updateRagdolls()
+  local ppos, pfwd = vBasis()
+  if not ppos then return end
 
-  local ppos = veh:getPosition()
-  local activate2 = cfg.activateDistance * cfg.activateDistance
-  local deactivate2 = cfg.deactivateDistance * cfg.deactivateDistance
-  local emergency2 = cfg.emergencyFarDistance * cfg.emergencyFarDistance
   local now = os.clock()
+  local speed = playerSpeed()
+  local recycle2 = cfg.recycleRadius * cfg.recycleRadius
 
-  -- Release active pooled dummies when far/old.
   for _, p in ipairs(_pool) do
     if p.active then
       local o = be:getObjectByID(p.id)
-      local g = _ghosts[p.ghostIndex]
+      local ped = _peds[p.pedIndex]
 
-      if not o or not g then
+      if not o or not ped then
         p.active = false
-        p.ghostIndex = nil
+        p.pedIndex = nil
       else
-        local opos = o:getPosition()
-        g.pos = opos
+        ped.pos = o:getPosition()
+        local age = now - (p.activeSince or now)
+        local far = dist2(ped.pos, ppos) > recycle2 and age >= cfg.minActiveTime
+        local old = age >= cfg.maxActiveTime
 
-        local d2v = dist2(opos, ppos)
-        local activeAge = now - (p.activeSince or now)
-
-        local farEnough = d2v > deactivate2 and activeAge >= cfg.minActiveTime
-        local tooFar = d2v > emergency2
-        local tooOld = activeAge >= cfg.maxActiveTime and d2v > activate2
-
-        if farEnough or tooFar or tooOld then
-          releasePoolDummy(p, true)
-        end
+        if far or old then releasePoolDummy(p, true) end
       end
     end
   end
 
-  if activeCount() >= cfg.maxActiveDummies then return end
+  if activeRagdolls() >= cfg.maxActiveRagdolls then return end
 
-  -- Activate closest visible/near ghost.
-  local bestI = nil
-  local bestD2 = nil
+  local bestI, bestD = nil, nil
 
-  for i, g in ipairs(_ghosts) do
-    if not g.active and now >= (g.nextActivationAt or 0) then
-      local d2v = dist2(g.pos, ppos)
-      if d2v < activate2 and (not bestD2 or d2v < bestD2) then
-        bestI = i
-        bestD2 = d2v
+  for i, ped in ipairs(_peds) do
+    if not ped.activeRagdoll and now >= (ped.nextActivationAt or 0) then
+      local threat, d = isThreatCandidate(ped, ppos, pfwd, speed)
+      if threat and (not bestD or d < bestD) then
+        bestI, bestD = i, d
       end
     end
   end
 
-  if bestI then activateGhost(bestI) end
+  if bestI then activatePedRagdoll(bestI) end
 end
 
-local function recycleFarGhosts()
-  local veh = playerVeh()
-  if not veh then return end
+local function drawCylinder(pos, height, radius, col)
+  if not debugDrawer then return end
 
-  local ppos = veh:getPosition()
-  local max2 = cfg.maxDistance * cfg.maxDistance
+  local bottom = groundSnap(pos, cfg.markerGroundOffset)
+  local top = bottom + vec3(0, 0, height)
 
-  for i, g in ipairs(_ghosts) do
-    if not g.active and dist2(g.pos, ppos) > max2 then
-      recycleGhost(i)
-    end
+  local ok = false
+  if debugDrawer.drawCylinder then
+    ok = pcall(function() debugDrawer:drawCylinder(bottom, top, radius, col) end)
   end
 
-  if cfg.debug and _recycles - _lastVerb >= cfg.verboseEvery then
-    _lastVerb = _recycles
-    d("D", "Ghosts=%d activePhysics=%d/%d recycles=%d pool=%d",
-      #_ghosts,
-      activeCount(),
-      cfg.maxActiveDummies,
-      _recycles,
-      #_pool
-    )
+  if not ok then
+    debugDrawer:drawSphere(bottom + vec3(0, 0, height * 0.50), radius, col)
   end
 end
 
-local function drawDebug()
-  if not cfg.drawGhostDebug or not debugDrawer then return end
+local function drawFarCylinders()
+  if not cfg.drawFarCylinders or not debugDrawer then return end
 
-  for _, g in ipairs(_ghosts) do
-    if not g.active then
-      debugDrawer:drawSphere(g.pos, cfg.ghostMarkerRadius, ColorF(0.1, 0.8, 1.0, 0.45))
-      debugDrawer:drawTextAdvanced(
-        g.pos + vec3(0, 0, 1.25),
-        "PED",
-        ColorF(0.7, 1.0, 1.0, 0.85),
-        true,
-        false,
-        ColorI(0, 0, 0, 120)
-      )
+  for _, ped in ipairs(_peds) do
+    if not ped.activeRagdoll and not _visuals[ped.index] then
+      drawCylinder(ped.pos, cfg.farCylinderHeight, cfg.farCylinderRadius, color(ped.seed or 0.5, 0.55))
     end
   end
+end
+
+local function drawUi()
+  if not cfg.showDebugUi or not imgui then return end
+
+  local flags = bit.bor(
+    imgui.WindowFlags_NoTitleBar or 0,
+    imgui.WindowFlags_AlwaysAutoResize or 0,
+    imgui.WindowFlags_NoFocusOnAppearing or 0,
+    imgui.WindowFlags_NoNav or 0
+  )
+
+  imgui.SetNextWindowPos(imgui.ImVec2(20, 360), imgui.Cond_Always)
+  imgui.Begin("Jonesing Pedestrians Debug", nil, flags)
+
+  local visualCount = 0
+  for _ in pairs(_visuals) do visualCount = visualCount + 1 end
+
+  imgui.Text("Jonesing Pedestrians")
+  imgui.Separator()
+  imgui.Text(string.format("Cheap cylinders: %d", math.max(0, #_peds - visualCount - activeRagdolls())))
+  imgui.Text(string.format("Visual .dae dummies: %d / %d", visualCount, cfg.maxVisualDummies))
+  imgui.Text(string.format("Physics ragdolls: %d / %d", activeRagdolls(), cfg.maxActiveRagdolls))
+  imgui.Text(string.format("Total peds: %d", #_peds))
+  imgui.Text(string.format("Recycles: %d", _recycles))
+  imgui.Text(string.format("Speed: %.1f m/s", playerSpeed()))
+  imgui.Text(string.format("DAE: %s", VISUAL_DAE_PATH or "nil"))
+
+  imgui.End()
 end
 
 function M.start(idList, optCfg)
@@ -665,73 +799,60 @@ function M.start(idList, optCfg)
   end
 
   _enabled = true
-  _accGhost = 0
-  _accRecycle = 0
-  _accActivate = 0
-  _lastVerb = 0
+  _accUpdate, _accRecycle, _accVisual, _accActivate = 0, 0, 0, 0
   _recycles = 0
 
-  if #_ghosts == 0 then buildGhosts() end
-  if cfg.spawnPoolAtStart then buildPool() end
+  if #_peds == 0 then buildPedestrians() end
+  if #_pool == 0 then buildPool() end
 
-  d("I", "Started Jonesing Pedestrians: ghosts=%d pool=%d maxActive=%d",
-    #_ghosts,
-    #_pool,
-    cfg.maxActiveDummies
-  )
+  d("I", "Started: cylinders=%d visuals=%d ragdolls=%d",
+    #_peds, cfg.maxVisualDummies, cfg.maxActiveRagdolls)
 end
 
 function M.spawn10DummiesAndStart(optCfg)
-  -- Backwards-compatible trigger name.
-  -- Does NOT spawn 10 live physics dummies anymore.
   if _enabled then
     d("I", "Already active; skipping duplicate start.")
     return {}
   end
-
   M.start(nil, optCfg)
   return {}
 end
 
 function M.tune(optCfg)
   if not optCfg then return end
-
   for k, v in pairs(optCfg) do
     if cfg[k] ~= nil then cfg[k] = v end
   end
-
-  d("I", "Tuned: ghosts=%d pool=%d active=%d sidewalk=%s debugMarkers=%s",
-    cfg.totalGhosts,
-    cfg.physicsPoolSize,
-    cfg.maxActiveDummies,
-    tostring(cfg.sidewalkMode),
-    tostring(cfg.drawGhostDebug)
-  )
 end
 
 function M.stop()
   _enabled = false
 
-  for _, p in ipairs(_pool) do
+  for index, _ in pairs(_visuals) do deleteVisualDummy(index) end
+
+  for i, p in ipairs(_pool) do
     if p.id then
       queueFreeze(p.id, true)
-      teleportObject(p.id, storagePosFor(1), quat(0, 0, 0, 1))
+      teleportObject(p.id, storagePosFor(i), quat(0, 0, 0, 1))
     end
     p.active = false
-    p.ghostIndex = nil
+    p.pedIndex = nil
+    p.activeSince = 0
   end
 
-  for _, g in ipairs(_ghosts) do
-    g.active = false
-    g.poolIndex = nil
+  for _, ped in ipairs(_peds) do
+    ped.activeRagdoll = false
+    ped.poolId = nil
   end
 
-  d("I", "Stopped Jonesing Pedestrians. Pool preserved for reuse.")
+  d("I", "Stopped. Pool preserved.")
 end
 
 function M.reset()
   M.stop()
-  _ghosts = {}
+  for index, _ in pairs(_visuals) do deleteVisualDummy(index) end
+  _peds = {}
+  _visuals = {}
   _pool = {}
   M.start(nil, nil)
 end
@@ -742,30 +863,37 @@ function M.onUpdate(dt)
   if not _enabled then return end
   if not playerVeh() then return end
 
-  _accGhost = _accGhost + dt
+  _accUpdate = _accUpdate + dt
   _accRecycle = _accRecycle + dt
+  _accVisual = _accVisual + dt
   _accActivate = _accActivate + dt
 
-  if _accGhost >= cfg.ghostUpdateInterval then
-    updateGhosts(_accGhost)
-    _accGhost = 0
+  if _accUpdate >= cfg.updateInterval then
+    updatePedestrians(_accUpdate)
+    _accUpdate = 0
   end
 
-  if _accRecycle >= cfg.recycleCheckInterval then
-    recycleFarGhosts()
+  if _accRecycle >= cfg.recycleInterval then
+    recycleFarPedestrians()
     _accRecycle = 0
   end
 
-  if _accActivate >= cfg.activationCheckInterval then
-    updateActivation()
+  if _accVisual >= cfg.visualLodInterval then
+    updateVisualLod()
+    _accVisual = 0
+  end
+
+  if _accActivate >= cfg.activationInterval then
+    updateRagdolls()
     _accActivate = 0
   end
 
-  drawDebug()
+  drawFarCylinders()
+  drawUi()
 end
 
 function M.onExtensionLoaded()
-  d("I", "Loaded. Use propRecycler.spawn10DummiesAndStart() to start.")
+  d("I", "Loaded Jonesing Pedestrians.")
 end
 
 return M
