@@ -24,7 +24,9 @@ local M = {}
 local function init(jbeamData)
     obj:queueGameEngineLua(
         "extensions.load('propRecycler');" ..
-        "propRecycler.spawn10DummiesAndStart({maxDistance=150,leadDistance=50,lateralJitter=10,debug=true})"
+        "propRecycler.spawn10DummiesAndStart({maxDistance=150,leadDistance=50,lateralJitter=10,debug=true});" ..
+        "extensions.load('jonesingPoliceManager');" ..
+        "extensions.load('jonesingPoliceHud')"
     )
 end
 

@@ -1,559 +1,899 @@
 -- lua/ge/extensions/propRecycler.lua
--- Minimal recycler: teleports given prop IDs back near the player when far away.
+-- Jonesing Pedestrians
+-- FAR  = cheap grounded colored cylinders
+-- MID  = visual-only .dae dummy models, no physics
+-- NEAR = pooled AgentY physics ragdolls
+
 local M = {}
-M.dependencies = {"core_vehicles", "roadSampler"}
+M.dependencies = {"core_vehicles"}
+
+-- ADD YOUR DAE PATH HERE:
+local VISUAL_DAE_PATH = "/vehicles/common/AgentY_Dummy/AgentY_Dummy.dae"
+
+local TAG = "propRecycler"
 
 local cfg = {
-    checkInterval = 0.25,
-    minDistance = 60,
-    maxDistance = 5000,
-    leadDistance = 160,
-    useFocus = false,
-    lateralJitter = 20,
-    heightOffset = 0.8,
+  debug = true,
 
-    -- NEW: per-dummy teleport lockout (seconds)
-    teleportCooldownSeconds = 3.0,
+  totalCylinders = 100,
+  maxVisualDummies = 20,
+  physicsPoolSize = 3,
+  maxActiveRagdolls = 3,
 
-    -- Deprecated alias (kept for backwards-compat). If provided, it will be
-    -- copied into teleportCooldownSeconds at start/tune time.
-    cooldownTime = nil,
+  dummyModel = "agenty_dummy",
 
-    debug = true,
-    verboseEvery = 10
+  wideRadiusMin = 90,
+  wideRadiusMax = 650,
+  recycleRadius = 760,
+
+  visualRadius = 200,
+  ragdollBaseDistance = 7,
+  ragdollHighSpeedDistance = 18,
+  speedActivationMultiplier = 0.18,
+
+  sidewalkMode = true,
+  sidewalkOffset = 5.75,
+  sidewalkRandomExtra = 2.25,
+
+  farCylinderHeight = 1.45,
+  farCylinderRadius = 0.30,
+
+  visualScale = "1 1 1",
+
+  markerGroundOffset = 0.01,
+  visualGroundOffset = 0.00,
+  ragdollGroundOffset = 0.00,
+
+  groundProbeHeight = 250,
+  groundProbeDepth = 700,
+
+  pedestriansMove = true,
+  walkSpeedMin = 0.35,
+  walkSpeedMax = 1.15,
+  turnChance = 0.006,
+  crossChance = 0.0015,
+
+  updateInterval = 0.10,
+  recycleInterval = 0.45,
+  visualLodInterval = 0.35,
+  activationInterval = 0.05,
+
+  minActiveTime = 2.0,
+  maxActiveTime = 10.0,
+  activationCooldownSeconds = 1.0,
+
+  frontConeDot = 0.12,
+  sideThreatDistance = 6.5,
+
+  storageOffset = vec3(0, 0, -500),
+
+  drawFarCylinders = true,
+  useVisualDaeModels = true,
+  showDebugUi = true,
 }
 
-local _enabled, _accum, _tpCount, _lastVerb = false, 0, 0, 0
-local _props = {} -- [numericId] = { nextTeleportAt = 0 }
-local TAG = "propRecycler"
-local _pendingFocusId, _focusTimer = nil, 0
-local _focusDeadline = 0 -- absolute time window to keep retrying
+local _enabled = false
+local _peds = {}
+local _visuals = {} -- [pedIndex] = TSStatic object
+local _pool = {}
+
+local _accUpdate = 0
+local _accRecycle = 0
+local _accVisual = 0
+local _accActivate = 0
+local _recycles = 0
+
+local _pendingFocusId = nil
+local _focusTimer = 0
+local _focusDeadline = 0
+
+local vecUp = vec3(0, 0, 1)
+local vecY = vec3(0, 1, 0)
 
 local function d(level, msg, ...)
-    if level == 'D' and not cfg.debug then return end
-    if select('#', ...) > 0 then msg = string.format(msg, ...) end
-    log(level, TAG, msg)
-end
-
--- --- Helpers ----------------------------------------------------------------
--- helper: safe handle to module
-local function RS() return (extensions and extensions.roadSampler) or nil end
-
-local function asId(x)
-    if type(x) == "number" then return x end
-    if type(x) == "string" then
-        local n = tonumber(x);
-        if n then return n end
-    end
-    if type(x) == "userdata" or type(x) == "table" then
-        local ok, n = pcall(function()
-            if x.getId then return x:getId() end
-            if x.id then return x.id end
-            if x.obj and x.obj.getId then return x.obj:getId() end
-            return nil
-        end)
-        if ok and n then return tonumber(n) end
-    end
-    return nil
-end
-
-local function v() return be:getPlayerVehicle(0) end
-
-local function vBasis(veh)
-    local pos = veh:getPosition()
-    local fwd
-    if veh.getDirectionVector then
-        fwd = veh:getDirectionVector()
-    else
-        fwd = vec3(0, 1, 0)
-    end
-    local right
-    if veh.getDirectionVectorSide then
-        right = veh:getDirectionVectorSide()
-    elseif veh.getSideVector then
-        right = veh:getSideVector()
-    else
-        right = vec3(1, 0, 0)
-    end
-    return pos, fwd, right
-end
-
--- FIXED: do not call veh.getRotation() without self; use feature check
-local function qFromVeh(veh)
-    local q
-    if veh.getRotation then
-        q = veh:getRotation()
-    else
-        q = quat(0, 0, 0, 1)
-    end
-    return q.x, q.y, q.z, q.w
+  if level == "D" and not cfg.debug then return end
+  if select("#", ...) > 0 then msg = string.format(msg, ...) end
+  log(level, TAG, msg)
 end
 
 local function rand(a, b) return a + (b - a) * math.random() end
 
 local function dist2(a, b)
-    local dx, dy, dz = a.x - b.x, a.y - b.y, a.z - b.z
-    return dx * dx + dy * dy + dz * dz
+  local dx, dy, dz = a.x - b.x, a.y - b.y, a.z - b.z
+  return dx * dx + dy * dy + dz * dz
 end
 
-local function toVec3(p)
-    if p and p.x then return vec3(p.x, p.y, p.z) end
-    if p and p[1] then return vec3(p[1], p[2], p[3]) end
-    return vec3(0, 0, 0)
+local function flat(v) return vec3(v.x, v.y, 0) end
+
+local function safeNorm(v, fallback)
+  if v and v:squaredLength() > 0.0001 then return v:normalized() end
+  return fallback or vec3(0, 1, 0)
 end
 
-local function toQuat(q)
-    local x, y, z, w = 0, 0, 0, 1
-    if q then
-        x = q.x or q[1] or x
-        y = q.y or q[2] or y
-        z = q.z or q[3] or z
-        w = q.w or q[4] or w
-    end
-    local m = math.sqrt(x * x + y * y + z * z + w * w)
-    if m > 0 then x, y, z, w = x / m, y / m, z / m, w / m end
-    return x, y, z, w
+local function asId(x)
+  if type(x) == "number" then return x end
+  if type(x) == "string" then return tonumber(x) end
+  if type(x) == "userdata" or type(x) == "table" then
+    local ok, id = pcall(function()
+      if x.getId then return x:getId() end
+      if x.id then return x.id end
+      if x.obj and x.obj.getId then return x.obj:getId() end
+      return nil
+    end)
+    if ok and id then return tonumber(id) end
+  end
+  return nil
 end
 
--- Z-up forward for vehicles (same basis as traffic.lua)
-local vecUp, vecY = vec3(0, 0, 1), vec3(0, 1, 0)
-
--- Prefer player velocity, else facing, else +X
-local function bestForward()
-    local v = be:getPlayerVehicle(0)
-    if v then
-        if v.getVelocity then
-            local vel = v:getVelocity()
-            if vel:squaredLength() > 1e-4 then
-                return vel:normalized()
-            end
-        end
-        if v.getDirectionVector then
-            local f = v:getDirectionVector()
-            return vec3(f.x, f.y, f.z):normalized()
-        end
-    end
-    return vec3(1, 0, 0)
+local function playerVeh()
+  return be and be:getPlayerVehicle(0) or nil
 end
 
--- Public: return {pos=vec3, rot=quat} or nil
--- opts = { minDist?, maxDist?, targetDist?, dirBias?, useFocus? (true), params? }
-local function sampleUsingTraffic(seedPos, seedDir, opts)
-    opts = opts or {}
-    -- Require map graph (traffic refuses to respawn without nodes)
-    if not next(map.getMap().nodes) then
-        d("W", "No map nodes; traffic spawn helpers unavailable.")
-        return nil
-    end
-
-    -- Fallbacks similar to traffic.lua
-    local minDist = opts.minDist or 80
-    local maxDist = opts.maxDist or 400
-    local targetDist = opts.targetDist or
-                           math.min(minDist * 2, lerp(minDist, maxDist, 0.5))
-    local dirBias = opts.dirBias
-
-    local pos = seedPos or core_camera.getPosition()
-    local dir = (seedDir and seedDir:normalized()) or bestForward()
-
-    -- (A) Seed the traffic focus (optional but helps quality)
-    local restoreFocus
-    if opts.useFocus ~= false and traffic and traffic.setFocus and
-        traffic.getFocus then
-        local prev = deepcopy(traffic.getFocus())
-        restoreFocus = function()
-            if prev and prev.mode then
-                traffic.setFocus(prev.mode, prev)
-            else
-                traffic.setFocus()
-            end
-        end
-        traffic.setFocus('custom', {
-            pos = pos,
-            dir = dir,
-            dist = dir:length(),
-            auto = false
-        })
-    end
-
-    -- (B) Ask traffic to find & finalize a safe spawn point
-    local spawnData = gameplay_traffic_trafficUtils.findSafeSpawnPoint(pos, dir,
-                                                                       minDist,
-                                                                       maxDist,
-                                                                       targetDist,
-                                                                       opts.params or
-                                                                           {})
-
-    if not spawnData then
-        if restoreFocus then restoreFocus() end
-        d("W", "findSafeSpawnPoint returned nil.")
-        return nil
-    end
-
-    local place = {legalDirection = true}
-    if dirBias then place.dirRandomization = dirBias end
-
-    local newPos, newDir = gameplay_traffic_trafficUtils.finalizeSpawnPoint(
-                               spawnData.pos, spawnData.dir, spawnData.n1,
-                               spawnData.n2, place)
-
-    if restoreFocus then restoreFocus() end
-    if not newPos or not newDir then
-        d("W", "finalizeSpawnPoint failed.")
-        return nil
-    end
-
-    -- (C) Build rotation like traffic.lua does
-    local normal = map.surfaceNormal(newPos, 1) or vecUp
-    local rot = quatFromDir(vecY:rotated(quatFromDir(newDir, normal)), normal)
-
-    d("D", "Sample via traffic OK at (%.2f, %.2f, %.2f).", newPos.x, newPos.y,
-      newPos.z)
-    return {pos = newPos, rot = rot}
+local function playerId()
+  if be and be.getPlayerVehicleID then
+    local ok, id = pcall(function() return be:getPlayerVehicleID(0) end)
+    if ok and id then return id end
+  end
+  local v = playerVeh()
+  if v and v.getId then return v:getId() end
+  return nil
 end
 
--- Teleport using whatever the GE object supports
-local function teleportGE(id, targetPos, targetQuat)
-    local o = be:getObjectByID(id)
-    if not o then
-        d('D', 'Teleport skip: id %s missing', tostring(id));
-        return false
-    end
-    local pos = toVec3(targetPos)
-    local qx, qy, qz, qw = toQuat(targetQuat)
+local function playerSpeed()
+  local v = playerVeh()
+  if not v or not v.getVelocity then return 0 end
+  local ok, vel = pcall(function() return v:getVelocity() end)
+  if ok and vel then return math.sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z) end
+  return 0
+end
 
-    if be.teleportVehicle then
-        local ok = be:teleportVehicle(id, pos, quat(qx, qy, qz, qw))
-        if ok then return true end
-    end
-    if o.setPositionRotation then
-        o:setPositionRotation(pos.x, pos.y, pos.z, qx, qy, qz, qw);
-        return true
-    end
-    if o.setPosQuat then
-        o:setPosQuat(pos.x, pos.y, pos.z, qx, qy, qz, qw);
-        return true
-    end
-    if o.setPosition and o.setRotation then
-        o:setPosition(pos);
-        o:setRotation(quat(qx, qy, qz, qw));
-        return true
-    end
-    if o.setPosition then
-        o:setPosition(pos);
-        return true
-    end
+local function vBasis()
+  local veh = playerVeh()
+  if not veh then return nil end
 
-    local cmd = string.format([[
-    if obj then
-      if obj.setFreeze then obj:setFreeze(true) end
-      if obj.setVelocity then obj:setVelocity(0,0,0) end
-      if obj.setAngularVelocity then obj:setAngularVelocity(0,0,0) end
-      if obj.setPosQuat then obj:setPosQuat(%f,%f,%f,%f,%f,%f,%f)
-      elseif obj.setPosition then obj:setPosition(%f,%f,%f) end
-      if obj.setFreeze then obj:setFreeze(false) end
+  local pos = veh:getPosition()
+  local fwd = veh.getDirectionVector and veh:getDirectionVector() or vec3(0, 1, 0)
+  fwd = safeNorm(flat(fwd), vec3(0, 1, 0))
+
+  local right
+  if veh.getDirectionVectorSide then
+    right = veh:getDirectionVectorSide()
+  elseif veh.getSideVector then
+    right = veh:getSideVector()
+  else
+    right = vec3(1, 0, 0)
+  end
+
+  right = safeNorm(flat(right), vec3(1, 0, 0))
+  return pos, fwd, right
+end
+
+local function safeQuat(q)
+  local x, y, z, w = 0, 0, 0, 1
+  if q then
+    x = q.x or q[1] or x
+    y = q.y or q[2] or y
+    z = q.z or q[3] or z
+    w = q.w or q[4] or w
+  end
+  local m = math.sqrt(x * x + y * y + z * z + w * w)
+  if m > 0 then x, y, z, w = x / m, y / m, z / m, w / m end
+  return quat(x, y, z, w)
+end
+
+local function playerGroundZ()
+  local v = playerVeh()
+  if not v then return 0 end
+  local p = v:getPosition()
+  local probe = vec3(p.x, p.y, p.z + cfg.groundProbeHeight)
+
+  if map and map.surfaceHeightBelow then
+    local ok, z = pcall(function() return map.surfaceHeightBelow(probe) end)
+    if ok and type(z) == "number" then return z end
+  end
+
+  return p.z
+end
+
+local function getGroundZ(pos)
+  local probe = vec3(pos.x, pos.y, pos.z + cfg.groundProbeHeight)
+
+  if map and map.surfaceHeightBelow then
+    local ok, z = pcall(function() return map.surfaceHeightBelow(probe) end)
+    if ok and type(z) == "number" then return z end
+  end
+
+  if castRayStatic then
+    local ok, hitDist = pcall(function()
+      return castRayStatic(probe, vec3(0, 0, -1), cfg.groundProbeDepth)
+    end)
+    if ok and type(hitDist) == "number" and hitDist > 0 then
+      return probe.z - hitDist
     end
-  ]], pos.x, pos.y, pos.z, qx, qy, qz, qw, pos.x, pos.y, pos.z)
-    o:queueLuaCommand(cmd)
+  end
+
+  return playerGroundZ()
+end
+
+local function groundSnap(pos, offset)
+  local z = getGroundZ(pos)
+  return vec3(pos.x, pos.y, z + (offset or 0))
+end
+
+local function makeRotFromDir(dir, pos)
+  local normal = vecUp
+  if map and map.surfaceNormal then
+    local ok, n = pcall(function() return map.surfaceNormal(pos, 1) end)
+    if ok and n then normal = n end
+  end
+
+  local f = safeNorm(flat(dir), vec3(0, 1, 0))
+  local ok, rot = pcall(function()
+    return quatFromDir(vecY:rotated(quatFromDir(f, normal)), normal)
+  end)
+
+  if ok and rot then return rot end
+  return quat(0, 0, 0, 1)
+end
+
+local function color(seed, alpha)
+  return ColorF(
+    0.25 + 0.65 * math.abs(math.sin(seed * 11.1)),
+    0.25 + 0.65 * math.abs(math.sin(seed * 27.7)),
+    0.25 + 0.65 * math.abs(math.sin(seed * 53.3)),
+    alpha or 0.55
+  )
+end
+
+local function sampleAroundPlayer()
+  local ppos, fwd = vBasis()
+  if not ppos then return nil end
+
+  local angle = rand(0, math.pi * 2)
+  local radius = rand(cfg.wideRadiusMin, cfg.wideRadiusMax)
+
+  local pos = vec3(
+    ppos.x + math.cos(angle) * radius,
+    ppos.y + math.sin(angle) * radius,
+    ppos.z + cfg.groundProbeHeight
+  )
+
+  if cfg.sidewalkMode
+    and gameplay_traffic_trafficUtils
+    and gameplay_traffic_trafficUtils.findSafeSpawnPoint
+    and gameplay_traffic_trafficUtils.finalizeSpawnPoint
+    and map and map.getMap and map.getMap().nodes and next(map.getMap().nodes) then
+
+    local ok, spawnData = pcall(function()
+      return gameplay_traffic_trafficUtils.findSafeSpawnPoint(
+        ppos,
+        fwd,
+        cfg.wideRadiusMin,
+        cfg.wideRadiusMax,
+        radius,
+        {}
+      )
+    end)
+
+    if ok and spawnData then
+      local ok2, roadPos, roadDir = pcall(function()
+        return gameplay_traffic_trafficUtils.finalizeSpawnPoint(
+          spawnData.pos,
+          spawnData.dir,
+          spawnData.n1,
+          spawnData.n2,
+          { legalDirection = true }
+        )
+      end)
+
+      if ok2 and roadPos and roadDir then
+        local dir = safeNorm(flat(roadDir), fwd)
+        local lateral = vec3(-dir.y, dir.x, 0)
+        local side = math.random() < 0.5 and -1 or 1
+        local offset = cfg.sidewalkOffset + rand(0, cfg.sidewalkRandomExtra)
+
+        pos = roadPos + lateral * offset * side
+        pos = groundSnap(pos, cfg.markerGroundOffset)
+
+        return {
+          pos = pos,
+          dir = dir,
+          rot = makeRotFromDir(dir, pos)
+        }
+      end
+    end
+  end
+
+  pos = groundSnap(pos, cfg.markerGroundOffset)
+  local dir = safeNorm(vec3(-math.sin(angle), math.cos(angle), 0), fwd)
+
+  return {
+    pos = pos,
+    dir = dir,
+    rot = makeRotFromDir(dir, pos)
+  }
+end
+
+local function restoreFocusSoon()
+  local id = playerId()
+  if id then
+    _pendingFocusId = id
+    _focusTimer = 0.15
+    _focusDeadline = os.clock() + 2.0
+  end
+end
+
+local function runFocusRestore(dt)
+  if not _pendingFocusId then return end
+  _focusTimer = _focusTimer - dt
+  if _focusTimer > 0 then return end
+
+  if playerId() == _pendingFocusId then
+    _pendingFocusId = nil
+    return
+  end
+
+  pcall(function()
+    if be.setPlayerVehicleID then be:setPlayerVehicleID(0, _pendingFocusId) end
+    if be.enterVehicleID then be:enterVehicleID(_pendingFocusId, 0) end
+    if be.enterVehicle then
+      local o = be:getObjectByID(_pendingFocusId)
+      if o then be:enterVehicle(o, 0) end
+    end
+    if be.setActiveObjectID then be:setActiveObjectID(_pendingFocusId) end
+  end)
+
+  if os.clock() < _focusDeadline then _focusTimer = 0.05 else _pendingFocusId = nil end
+end
+
+local function storagePosFor(index)
+  local base = core_camera and core_camera.getPosition and core_camera.getPosition() or vec3(0, 0, 0)
+  return vec3(base.x + index * 4, base.y, base.z - 500)
+end
+
+local function teleportObject(id, pos, rot)
+  local o = be:getObjectByID(id)
+  if not o then return false end
+
+  local q = safeQuat(rot)
+
+  if be.teleportVehicle then
+    local ok = be:teleportVehicle(id, pos, q)
+    if ok then return true end
+  end
+
+  if o.setPositionRotation then
+    o:setPositionRotation(pos.x, pos.y, pos.z, q.x, q.y, q.z, q.w)
     return true
+  end
+
+  if o.setPosQuat then
+    o:setPosQuat(pos.x, pos.y, pos.z, q.x, q.y, q.z, q.w)
+    return true
+  end
+
+  if o.setPosition and o.setRotation then
+    o:setPosition(pos)
+    o:setRotation(q)
+    return true
+  end
+
+  if o.setPosition then
+    o:setPosition(pos)
+    return true
+  end
+
+  return false
 end
 
--- --- Spawner ---------------------------------------------------------------
-local function spawnDummyAt(pos, q)
-    local qx, qy, qz, qw = toQuat(q)
-    if core_vehicles and core_vehicles.spawnNewVehicle then
-        local ok, id = pcall(core_vehicles.spawnNewVehicle, "agenty_dummy", {
-            pos = toVec3(pos),
-            rot = quat(qx, qy, qz, qw),
-            paint = nil,
-            partConfig = "",
-            cling = false,
-            autoEnterVehicle = false, -- <<< prevents stealing player focus
-            setPlayerVehicle = false -- <<< ignored on some builds, harmless
-            -- playerUsable = true       -- keep TAB-able; set false to hide from TAB
-        })
-        if ok and id then return id end
+local function queueFreeze(id, frozen)
+  local o = be:getObjectByID(id)
+  if not o or not o.queueLuaCommand then return end
+
+  local val = frozen and "true" or "false"
+  o:queueLuaCommand(string.format([[
+    if obj then
+      if obj.setVelocity then obj:setVelocity(0, 0, 0) end
+      if obj.setAngularVelocity then obj:setAngularVelocity(0, 0, 0) end
+      if obj.setFreeze then obj:setFreeze(%s) end
     end
-    -- (fallbacks unchanged)
-    if spawn and spawn.spawnVehicle then
-        local ok, id = pcall(spawn.spawnVehicle, "agenty_dummy",
-                             {pos = toVec3(pos), rot = quat(qx, qy, qz, qw)})
-        if ok and id then return id end
+  ]], val))
+end
+
+local function spawnDummyAt(pos, rot)
+  if core_vehicles and core_vehicles.spawnNewVehicle then
+    local ok, id = pcall(core_vehicles.spawnNewVehicle, cfg.dummyModel, {
+      pos = pos,
+      rot = safeQuat(rot),
+      paint = nil,
+      partConfig = "",
+      cling = false,
+      autoEnterVehicle = false,
+      setPlayerVehicle = false
+    })
+    if ok and id then return asId(id) end
+  end
+
+  if be and be.spawnVehicle then
+    local ok, id = pcall(function()
+      return be:spawnVehicle(cfg.dummyModel, pos, safeQuat(rot))
+    end)
+    if ok and id then return asId(id) end
+  end
+
+  return nil
+end
+
+local function buildPool()
+  if #_pool > 0 then return end
+  restoreFocusSoon()
+
+  for i = 1, cfg.physicsPoolSize do
+    local id = spawnDummyAt(storagePosFor(i), quat(0, 0, 0, 1))
+    if id then
+      queueFreeze(id, true)
+      table.insert(_pool, { id = id, active = false, pedIndex = nil, activeSince = 0 })
+    else
+      d("W", "Failed to spawn pooled ragdoll %d", i)
     end
-    if be and be.spawnVehicle then
-        local ok, id = pcall(function()
-            return be:spawnVehicle("agenty_dummy", toVec3(pos),
-                                   quat(qx, qy, qz, qw))
-        end)
-        if ok and id then return id end
+  end
+
+  d("I", "Ragdoll pool ready: %d/%d", #_pool, cfg.physicsPoolSize)
+end
+
+local function activeRagdolls()
+  local n = 0
+  for _, p in ipairs(_pool) do if p.active then n = n + 1 end end
+  return n
+end
+
+local function acquirePoolDummy()
+  for _, p in ipairs(_pool) do
+    if not p.active and be:getObjectByID(p.id) then return p end
+  end
+  return nil
+end
+
+local function deleteVisualDummy(index)
+  local obj = _visuals[index]
+  if obj then
+    pcall(function()
+      if obj.delete then obj:delete() end
+    end)
+  end
+  _visuals[index] = nil
+end
+
+local function setVisualTransform(obj, pos, rot)
+  if not obj then return end
+  local q = safeQuat(rot)
+
+  pcall(function()
+    if obj.setPosition then
+      obj:setPosition(pos)
+    else
+      obj.position = string.format("%f %f %f", pos.x, pos.y, pos.z)
     end
-    d('W', 'Failed to spawn dummy at requested position.')
-    return nil
+
+    if obj.setRotation then
+      obj:setRotation(q)
+    else
+      obj.rotation = string.format("%f %f %f %f", q.x, q.y, q.z, q.w)
+    end
+  end)
+end
+
+local function spawnVisualDummy(index)
+  if not cfg.useVisualDaeModels or not VISUAL_DAE_PATH or VISUAL_DAE_PATH == "" then return nil end
+  if _visuals[index] then return _visuals[index] end
+
+  local ped = _peds[index]
+  if not ped then return nil end
+
+  local pos = groundSnap(ped.pos, cfg.visualGroundOffset)
+  local rot = ped.rot or quat(0, 0, 0, 1)
+
+  if createObject and scenetree and scenetree.MissionGroup then
+    local ok, obj = pcall(function()
+      local o = createObject("TSStatic")
+      o.shapeName = VISUAL_DAE_PATH
+      o.position = string.format("%f %f %f", pos.x, pos.y, pos.z)
+      local q = safeQuat(rot)
+      o.rotation = string.format("%f %f %f %f", q.x, q.y, q.z, q.w)
+      o.scale = cfg.visualScale
+      o.collisionType = "None"
+      o.canSave = false
+      o:registerObject("")
+      scenetree.MissionGroup:addObject(o)
+      return o
+    end)
+
+    if ok and obj then
+      _visuals[index] = obj
+      return obj
+    end
+  end
+
+  return nil
+end
+
+local function recyclePed(i)
+  local ped = _peds[i]
+  if not ped or ped.activeRagdoll then return false end
+
+  deleteVisualDummy(i)
+
+  local pose = sampleAroundPlayer()
+  if not pose then return false end
+
+  ped.pos = pose.pos
+  ped.dir = pose.dir
+  ped.rot = pose.rot
+  ped.speed = rand(cfg.walkSpeedMin, cfg.walkSpeedMax)
+  ped.seed = math.random()
+  ped.nextActivationAt = os.clock() + cfg.activationCooldownSeconds
+
+  _recycles = _recycles + 1
+  return true
+end
+
+local function releasePoolDummy(p, recycleAfter)
+  if not p then return end
+
+  local ped = p.pedIndex and _peds[p.pedIndex] or nil
+
+  queueFreeze(p.id, true)
+  teleportObject(p.id, storagePosFor(p.pedIndex or 1), quat(0, 0, 0, 1))
+
+  if ped then
+    ped.activeRagdoll = false
+    ped.poolId = nil
+    ped.nextActivationAt = os.clock() + cfg.activationCooldownSeconds
+    ped.pos = groundSnap(ped.pos, cfg.markerGroundOffset)
+    if recycleAfter then recyclePed(ped.index) end
+  end
+
+  p.active = false
+  p.pedIndex = nil
+  p.activeSince = 0
+end
+
+local function buildPed(i)
+  local pose = sampleAroundPlayer()
+  if not pose then return nil end
+
+  return {
+    index = i,
+    pos = pose.pos,
+    dir = pose.dir,
+    rot = pose.rot,
+    speed = rand(cfg.walkSpeedMin, cfg.walkSpeedMax),
+    seed = math.random(),
+    activeRagdoll = false,
+    poolId = nil,
+    nextActivationAt = 0,
+  }
+end
+
+local function buildPedestrians()
+  _peds = {}
+  for i = 1, cfg.totalCylinders do
+    local ped = buildPed(i)
+    if ped then table.insert(_peds, ped) end
+  end
+  d("I", "Pedestrian field ready: %d", #_peds)
+end
+
+local function updatePedestrians(dt)
+  if not cfg.pedestriansMove then return end
+
+  for _, ped in ipairs(_peds) do
+    if not ped.activeRagdoll then
+      if math.random() < cfg.turnChance then
+        ped.dir = ped.dir * -1
+      elseif math.random() < cfg.crossChance then
+        ped.dir = safeNorm(vec3(-ped.dir.y, ped.dir.x, 0), ped.dir)
+      end
+
+      ped.pos = ped.pos + ped.dir * ped.speed * dt
+      ped.pos = groundSnap(ped.pos, cfg.markerGroundOffset)
+      ped.rot = makeRotFromDir(ped.dir, ped.pos)
+
+      local visual = _visuals[ped.index]
+      if visual then setVisualTransform(visual, groundSnap(ped.pos, cfg.visualGroundOffset), ped.rot) end
+    end
+  end
+end
+
+local function recycleFarPedestrians()
+  local veh = playerVeh()
+  if not veh then return end
+
+  local ppos = veh:getPosition()
+  local recycle2 = cfg.recycleRadius * cfg.recycleRadius
+
+  for i, ped in ipairs(_peds) do
+    if not ped.activeRagdoll and dist2(ped.pos, ppos) > recycle2 then recyclePed(i) end
+  end
+end
+
+local function updateVisualLod()
+  local veh = playerVeh()
+  if not veh then return end
+
+  local ppos = veh:getPosition()
+  local visual2 = cfg.visualRadius * cfg.visualRadius
+  local candidates = {}
+
+  for i, ped in ipairs(_peds) do
+    if not ped.activeRagdoll then
+      local d2v = dist2(ped.pos, ppos)
+      if d2v <= visual2 then
+        table.insert(candidates, { i = i, d2 = d2v })
+      else
+        deleteVisualDummy(i)
+      end
+    else
+      deleteVisualDummy(i)
+    end
+  end
+
+  table.sort(candidates, function(a, b) return a.d2 < b.d2 end)
+
+  local keep = {}
+  for n = 1, math.min(cfg.maxVisualDummies, #candidates) do
+    keep[candidates[n].i] = true
+    spawnVisualDummy(candidates[n].i)
+  end
+
+  for index, _ in pairs(_visuals) do
+    if not keep[index] then deleteVisualDummy(index) end
+  end
+end
+
+local function isThreatCandidate(ped, ppos, pfwd, speed)
+  local toPed = flat(ped.pos - ppos)
+  local d = toPed:length()
+  if d < 0.01 then return true, d end
+
+  local dynDist = cfg.ragdollBaseDistance + speed * cfg.speedActivationMultiplier
+  dynDist = math.min(cfg.ragdollHighSpeedDistance, math.max(cfg.ragdollBaseDistance, dynDist))
+
+  if d > dynDist then return false, d end
+  if d <= cfg.sideThreatDistance then return true, d end
+
+  return pfwd:dot(toPed:normalized()) >= cfg.frontConeDot, d
+end
+
+local function activatePedRagdoll(i)
+  local ped = _peds[i]
+  if not ped or ped.activeRagdoll then return false end
+
+  local now = os.clock()
+  if now < (ped.nextActivationAt or 0) then return false end
+  if activeRagdolls() >= cfg.maxActiveRagdolls then return false end
+
+  local p = acquirePoolDummy()
+  if not p then return false end
+
+  deleteVisualDummy(i)
+  restoreFocusSoon()
+
+  local ragPos = groundSnap(ped.pos, cfg.ragdollGroundOffset)
+  teleportObject(p.id, ragPos, ped.rot)
+  queueFreeze(p.id, false)
+
+  p.active = true
+  p.pedIndex = i
+  p.activeSince = now
+
+  ped.activeRagdoll = true
+  ped.poolId = p.id
+
+  return true
+end
+
+local function updateRagdolls()
+  local ppos, pfwd = vBasis()
+  if not ppos then return end
+
+  local now = os.clock()
+  local speed = playerSpeed()
+  local recycle2 = cfg.recycleRadius * cfg.recycleRadius
+
+  for _, p in ipairs(_pool) do
+    if p.active then
+      local o = be:getObjectByID(p.id)
+      local ped = _peds[p.pedIndex]
+
+      if not o or not ped then
+        p.active = false
+        p.pedIndex = nil
+      else
+        ped.pos = o:getPosition()
+        local age = now - (p.activeSince or now)
+        local far = dist2(ped.pos, ppos) > recycle2 and age >= cfg.minActiveTime
+        local old = age >= cfg.maxActiveTime
+
+        if far or old then releasePoolDummy(p, true) end
+      end
+    end
+  end
+
+  if activeRagdolls() >= cfg.maxActiveRagdolls then return end
+
+  local bestI, bestD = nil, nil
+
+  for i, ped in ipairs(_peds) do
+    if not ped.activeRagdoll and now >= (ped.nextActivationAt or 0) then
+      local threat, d = isThreatCandidate(ped, ppos, pfwd, speed)
+      if threat and (not bestD or d < bestD) then
+        bestI, bestD = i, d
+      end
+    end
+  end
+
+  if bestI then activatePedRagdoll(bestI) end
+end
+
+local function drawCylinder(pos, height, radius, col)
+  if not debugDrawer then return end
+
+  local bottom = groundSnap(pos, cfg.markerGroundOffset)
+  local top = bottom + vec3(0, 0, height)
+
+  local ok = false
+  if debugDrawer.drawCylinder then
+    ok = pcall(function() debugDrawer:drawCylinder(bottom, top, radius, col) end)
+  end
+
+  if not ok then
+    debugDrawer:drawSphere(bottom + vec3(0, 0, height * 0.50), radius, col)
+  end
+end
+
+local function drawFarCylinders()
+  if not cfg.drawFarCylinders or not debugDrawer then return end
+
+  for _, ped in ipairs(_peds) do
+    if not ped.activeRagdoll and not _visuals[ped.index] then
+      drawCylinder(ped.pos, cfg.farCylinderHeight, cfg.farCylinderRadius, color(ped.seed or 0.5, 0.55))
+    end
+  end
+end
+
+local function drawUi()
+  if not cfg.showDebugUi or not imgui then return end
+
+  local flags = bit.bor(
+    imgui.WindowFlags_NoTitleBar or 0,
+    imgui.WindowFlags_AlwaysAutoResize or 0,
+    imgui.WindowFlags_NoFocusOnAppearing or 0,
+    imgui.WindowFlags_NoNav or 0
+  )
+
+  imgui.SetNextWindowPos(imgui.ImVec2(20, 360), imgui.Cond_Always)
+  imgui.Begin("Jonesing Pedestrians Debug", nil, flags)
+
+  local visualCount = 0
+  for _ in pairs(_visuals) do visualCount = visualCount + 1 end
+
+  imgui.Text("Jonesing Pedestrians")
+  imgui.Separator()
+  imgui.Text(string.format("Cheap cylinders: %d", math.max(0, #_peds - visualCount - activeRagdolls())))
+  imgui.Text(string.format("Visual .dae dummies: %d / %d", visualCount, cfg.maxVisualDummies))
+  imgui.Text(string.format("Physics ragdolls: %d / %d", activeRagdolls(), cfg.maxActiveRagdolls))
+  imgui.Text(string.format("Total peds: %d", #_peds))
+  imgui.Text(string.format("Recycles: %d", _recycles))
+  imgui.Text(string.format("Speed: %.1f m/s", playerSpeed()))
+  imgui.Text(string.format("DAE: %s", VISUAL_DAE_PATH or "nil"))
+
+  imgui.End()
+end
+
+function M.start(idList, optCfg)
+  if optCfg then
+    for k, v in pairs(optCfg) do
+      if cfg[k] ~= nil then cfg[k] = v end
+    end
+  end
+
+  _enabled = true
+  _accUpdate, _accRecycle, _accVisual, _accActivate = 0, 0, 0, 0
+  _recycles = 0
+
+  if #_peds == 0 then buildPedestrians() end
+  if #_pool == 0 then buildPool() end
+
+  d("I", "Started: cylinders=%d visuals=%d ragdolls=%d",
+    #_peds, cfg.maxVisualDummies, cfg.maxActiveRagdolls)
 end
 
 function M.spawn10DummiesAndStart(optCfg)
-    -- Guard: if the pool is already active, don't spawn another batch.
-    -- The license-plate trigger fires on every vehicle init/reset, but the
-    -- dummies should only ever be spawned once per session.
-    if _enabled then
-        if next(_props) ~= nil then
-            d('I', 'Pool already active; skipping re-spawn.')
-            return nil
-        end
-    end
-
-    local veh = v()
-    if not veh then
-        d('E', 'No player vehicle; cannot spawn.');
-        return {}
-    end
-
-    local originalPlayer = (veh.getId and veh:getId()) or nil
-    local ppos, fwd, right = vBasis(veh)
-    local qx, qy, qz, qw = qFromVeh(veh)
-
-    local ids = {}
-    for i = 1, 10 do
-        local sideIndex = math.floor(i / 2)
-        local lr = (i % 2 == 0) and 1 or -1
-
-        -- MASSIVE forward spread: start 10 m ahead, +20 m per dummy
-        local forwardDist = 10 + (i - 1) * 20.0
-        -- small side wiggle for variety
-        local sideDist = (1.5 + sideIndex * 0.5) * lr
-
-        local pos = vec3(ppos.x + fwd.x * forwardDist + right.x * sideDist,
-                         ppos.y + fwd.y * forwardDist + right.y * sideDist,
-                         ppos.z + cfg.heightOffset)
-
-        local spawned = spawnDummyAt(pos, {qx, qy, qz, qw})
-        local nid = asId(spawned)
-        if nid then
-            table.insert(ids, nid)
-        else
-            d('W', 'Spawn %d failed', i)
-        end
-    end
-
-    -- defer player focus restore: spawns may steal focus asynchronously
-    if originalPlayer then
-        _pendingFocusId = originalPlayer
-        _focusTimer = 0.25
-        _focusDeadline = os.clock() + 2.0
-    end
-
-    if #ids == 0 then
-        d('E', 'No dummies spawned; not starting recycler.');
-        return {}
-    end
-
-    d('I', 'Spawned %d dummies; starting recycler.', #ids)
-    M.start(ids, optCfg)
-    return ids
-end
-
--- --- Public API -------------------------------------------------------------
-function M.start(idList, optCfg)
-    -- apply incoming config
-    if optCfg then
-        for k, v in pairs(optCfg) do if cfg[k] ~= nil then cfg[k] = v end end
-    end
-    -- Back-compat: if user passed cooldownTime, treat it as teleportCooldownSeconds
-    if cfg.cooldownTime and not cfg.teleportCooldownSeconds then
-        cfg.teleportCooldownSeconds = cfg.cooldownTime
-    end
-
-    _props = {}
-    local now = os.clock()
-    for _, raw in ipairs(idList or {}) do
-        local id = asId(raw)
-        if id then _props[id] = {nextTeleportAt = now} end -- small grace at start
-    end
-
-    _enabled, _accum, _tpCount, _lastVerb = true, 0, 0, 0
-    local count = 0;
-    for _ in pairs(_props) do count = count + 1 end
-    d('I',
-      'Enabled for %d props (cooldown=%.2fs maxDist=%d lead=%d jitter=±%d h=%.2f)',
-      count, cfg.teleportCooldownSeconds, cfg.maxDistance, cfg.leadDistance,
-      cfg.lateralJitter, cfg.heightOffset)
-end
-
-function M.setIds(idList)
-    local prev = 0;
-    for _ in pairs(_props) do prev = prev + 1 end
-    _props = {}
-    local now = os.clock()
-    for _, raw in ipairs(idList or {}) do
-        local id = asId(raw)
-        if id then _props[id] = {nextTeleportAt = now} end
-    end
-    local nowCount = 0;
-    for _ in pairs(_props) do nowCount = nowCount + 1 end
-    d('I', 'Working set replaced: %d -> %d props', prev, nowCount)
+  if _enabled then
+    d("I", "Already active; skipping duplicate start.")
+    return {}
+  end
+  M.start(nil, optCfg)
+  return {}
 end
 
 function M.tune(optCfg)
-    if not optCfg then return end
-    for k, v in pairs(optCfg) do if cfg[k] ~= nil then cfg[k] = v end end
-    if cfg.cooldownTime and not optCfg.teleportCooldownSeconds then
-        cfg.teleportCooldownSeconds = cfg.cooldownTime
-    end
-    d('I',
-      'Tuned (cooldown=%.2fs maxDist=%d lead=%d jitter=±%d h=%.2f debug=%s every=%d)',
-      cfg.teleportCooldownSeconds, cfg.maxDistance, cfg.leadDistance,
-      cfg.lateralJitter, cfg.heightOffset, tostring(cfg.debug), cfg.verboseEvery)
+  if not optCfg then return end
+  for k, v in pairs(optCfg) do
+    if cfg[k] ~= nil then cfg[k] = v end
+  end
 end
 
 function M.stop()
-    _enabled = false
-    local n = 0;
-    for _ in pairs(_props) do n = n + 1 end
-    _props = {}
-    d('I', 'Disabled (cleared %d props)', n)
+  _enabled = false
+
+  for index, _ in pairs(_visuals) do deleteVisualDummy(index) end
+
+  for i, p in ipairs(_pool) do
+    if p.id then
+      queueFreeze(p.id, true)
+      teleportObject(p.id, storagePosFor(i), quat(0, 0, 0, 1))
+    end
+    p.active = false
+    p.pedIndex = nil
+    p.activeSince = 0
+  end
+
+  for _, ped in ipairs(_peds) do
+    ped.activeRagdoll = false
+    ped.poolId = nil
+  end
+
+  d("I", "Stopped. Pool preserved.")
 end
 
--- ---- Tick ------------------------------------------------------------------
+function M.reset()
+  M.stop()
+  for index, _ in pairs(_visuals) do deleteVisualDummy(index) end
+  _peds = {}
+  _visuals = {}
+  _pool = {}
+  M.start(nil, nil)
+end
+
 function M.onUpdate(dt)
-    -- one-shot (with brief retry) deferred focus restore
-    if _pendingFocusId then
-        _focusTimer = (_focusTimer or 0) - dt
-        if _focusTimer <= 0 then
-            local curId = nil
-            if be and be.getPlayerVehicleID then
-                pcall(function() curId = be:getPlayerVehicleID(0) end)
-            elseif be and be.getPlayerVehicle then
-                local veh = be:getPlayerVehicle(0);
-                if veh and veh.getId then curId = veh:getId() end
-            end
+  runFocusRestore(dt)
 
-            if curId ~= _pendingFocusId then
-                pcall(function()
-                    -- try the most explicit first
-                    if be and be.setPlayerVehicleID then
-                        be:setPlayerVehicleID(0, _pendingFocusId)
-                    end
-                    -- common alt signature
-                    if be and be.enterVehicleID then
-                        be:enterVehicleID(_pendingFocusId, 0)
-                    end
-                    -- older / different builds
-                    if be and be.enterVehicle then
-                        local veh = be:getObjectByID(_pendingFocusId)
-                        if veh then
-                            be:enterVehicle(veh, 0)
-                        end
-                    end
-                    -- some builds expose these instead:
-                    if be and be.setPlayerVehicle then
-                        be:setPlayerVehicle(0, _pendingFocusId)
-                    end
-                    if be and be.setActiveObjectID then
-                        be:setActiveObjectID(_pendingFocusId)
-                    end
-                end)
+  if not _enabled then return end
+  if not playerVeh() then return end
 
-                -- re-check immediately after attempting restore
-                local checkId = nil
-                if be and be.getPlayerVehicleID then
-                    pcall(function()
-                        checkId = be:getPlayerVehicleID(0)
-                    end)
-                elseif be and be.getPlayerVehicle then
-                    local v0 = be:getPlayerVehicle(0);
-                    if v0 and v0.getId then
-                        checkId = v0:getId()
-                    end
-                end
+  _accUpdate = _accUpdate + dt
+  _accRecycle = _accRecycle + dt
+  _accVisual = _accVisual + dt
+  _accActivate = _accActivate + dt
 
-                if checkId == _pendingFocusId then
-                    _pendingFocusId, _focusTimer, _focusDeadline = nil, 0, 0
-                elseif os.clock() < (_focusDeadline or 0) then
-                    _focusTimer = 0.05
-                else
-                    _pendingFocusId, _focusTimer, _focusDeadline = nil, 0, 0
-                end
-            else
-                _pendingFocusId, _focusTimer, _focusDeadline = nil, 0, 0
-            end
-        end
-    end
+  if _accUpdate >= cfg.updateInterval then
+    updatePedestrians(_accUpdate)
+    _accUpdate = 0
+  end
 
-    if not _enabled then return end
-    _accum = _accum + dt
-    if _accum < cfg.checkInterval then return end
-    _accum = 0
+  if _accRecycle >= cfg.recycleInterval then
+    recycleFarPedestrians()
+    _accRecycle = 0
+  end
 
-    local veh = v()
-    if not veh then
-        d('D', 'Waiting for player vehicle...');
-        return
-    end
+  if _accVisual >= cfg.visualLodInterval then
+    updateVisualLod()
+    _accVisual = 0
+  end
 
-    local now = os.clock()
-    local ppos, fwd, right = vBasis(veh)
-    local qx, qy, qz, qw = qFromVeh(veh)
-    local max2 = cfg.maxDistance * cfg.maxDistance
+  if _accActivate >= cfg.activationInterval then
+    updateRagdolls()
+    _accActivate = 0
+  end
 
-    for id, st in pairs(_props) do
-        local numId = asId(id)
-        if numId then
-            -- Skip until its teleport window opens
-            if (st.nextTeleportAt or 0) > now then goto continue_prop end
-
-            local o = be:getObjectByID(numId)
-            if not o then
-                d('D', 'Missing object id=%s; skipping', tostring(numId))
-                goto continue_prop
-            end
-
-            local opos = o:getPosition()
-            local far = dist2(opos, ppos) > max2
-            if far then
-                local lateral = rand(-cfg.lateralJitter, cfg.lateralJitter)
-                local seedDir = vec3(fwd.x, fwd.y, fwd.z)
-
-                local ok = false
-                local pose = sampleUsingTraffic(nil, nil, {
-                    minDist = cfg.minDistance,
-                    targetDist = cfg.leadDistance,
-                    useFocus = cfg.useFocus
-                })
-
-                if pose and pose.pos and pose.rot then
-                    ok = teleportGE(numId, pose.pos, {
-                        pose.rot.x, pose.rot.y, pose.rot.z, pose.rot.w
-                    })
-                else
-                    local target = vec3(ppos.x + seedDir.x * cfg.leadDistance +
-                                            right.x * lateral, ppos.y +
-                                            seedDir.y * cfg.leadDistance +
-                                            right.y * lateral, opos.z)
-                    d('D', 'Sampler nil; fallback target (%.2f, %.2f, %.2f)',
-                      target.x, target.y, target.z)
-                    ok = teleportGE(numId, target, {qx, qy, qz, qw})
-                end
-
-                if ok then
-                    st.nextTeleportAt = now +
-                                            (cfg.teleportCooldownSeconds or 3.0)
-                    _tpCount = _tpCount + 1
-                    if cfg.debug and (_tpCount - _lastVerb) >= cfg.verboseEvery then
-                        _lastVerb = _tpCount
-                        d('D', 'Recycles so far: %d (cooldown=%.2fs)', _tpCount,
-                          cfg.teleportCooldownSeconds or 3.0)
-                    end
-                end
-            end
-        end
-        ::continue_prop::
-    end
+  drawFarCylinders()
+  drawUi()
 end
 
 function M.onExtensionLoaded()
-    d('I', 'Loaded. Call propRecycler.start({ids...}, optCfg) to begin.')
-    d('I',
-      'Or call propRecycler.spawn10DummiesAndStart(optCfg) to auto-spawn and recycle 10 dummies.')
+  d("I", "Loaded Jonesing Pedestrians.")
 end
 
 return M
