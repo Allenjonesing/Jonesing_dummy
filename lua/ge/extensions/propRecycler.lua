@@ -17,8 +17,8 @@ local cfg = {
 
   totalCylinders = 100,
   maxVisualDummies = 20,
-  physicsPoolSize = 3,
-  maxActiveRagdolls = 3,
+  physicsPoolSize = 5,
+  maxActiveRagdolls = 5,
 
   dummyModel = "agenty_dummy",
 
