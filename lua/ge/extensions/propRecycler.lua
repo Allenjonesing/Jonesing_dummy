@@ -61,6 +61,7 @@ local cfg = {
   minActiveTime = 2.0,
   maxActiveTime = 10.0,
   activationCooldownSeconds = 1.0,
+  closeNoDespawnDistance = 9.0,
 
   frontConeDot = 0.12,
   sideThreatDistance = 6.5,
@@ -82,6 +83,7 @@ local _accRecycle = 0
 local _accVisual = 0
 local _accActivate = 0
 local _recycles = 0
+local _simTime = 0
 
 local _pendingFocusId = nil
 local _focusTimer = 0
@@ -236,13 +238,15 @@ local function makeRotFromDir(dir, pos)
   return quat(0, 0, 0, 1)
 end
 
-local function color(seed, alpha)
-  return ColorF(
-    0.25 + 0.65 * math.abs(math.sin(seed * 11.1)),
-    0.25 + 0.65 * math.abs(math.sin(seed * 27.7)),
-    0.25 + 0.65 * math.abs(math.sin(seed * 53.3)),
-    alpha or 0.55
-  )
+local function simTimescale()
+  local ok, s = pcall(function()
+    return Engine and Engine.getSimTimeScale and Engine.getSimTimeScale() or 1.0
+  end)
+  return (ok and type(s) == "number") and s or 1.0
+end
+
+local function color(_, alpha)
+  return ColorF(0.60, 0.22, 0.02, alpha or 0.85)
 end
 
 local function sampleAroundPlayer()
@@ -491,27 +495,35 @@ local function spawnVisualDummy(index)
   if not ped then return nil end
 
   local pos = groundSnap(ped.pos, cfg.visualGroundOffset)
-  local rot = ped.rot or quat(0, 0, 0, 1)
+  local q = safeQuat(ped.rot or quat(0, 0, 0, 1))
 
-  if createObject and scenetree and scenetree.MissionGroup then
-    local ok, obj = pcall(function()
-      local o = createObject("TSStatic")
-      o.shapeName = VISUAL_DAE_PATH
-      o.position = string.format("%f %f %f", pos.x, pos.y, pos.z)
-      local q = safeQuat(rot)
-      o.rotation = string.format("%f %f %f %f", q.x, q.y, q.z, q.w)
-      o.scale = cfg.visualScale
-      o.collisionType = "None"
-      o.canSave = false
-      o:registerObject("")
+  local ok, obj = pcall(function()
+    local o = createObject("TSStatic")
+    if not o then return nil end
+
+    o:setField("shapeName", 0, VISUAL_DAE_PATH)
+    o:setField("position", 0, string.format("%f %f %f", pos.x, pos.y, pos.z))
+    o:setField("rotation", 0, string.format("%f %f %f %f", q.x, q.y, q.z, q.w))
+    o:setField("scale", 0, cfg.visualScale or "1 1 1")
+    o:setField("collisionType", 0, "None")
+    o.canSave = false
+
+    o:registerObject("jonesing_visual_dummy_" .. tostring(index))
+
+    if scenetree and scenetree.MissionGroup then
       scenetree.MissionGroup:addObject(o)
-      return o
-    end)
-
-    if ok and obj then
-      _visuals[index] = obj
-      return obj
     end
+
+    if o.postApply then o:postApply() end
+    return o
+  end)
+
+  if ok and obj then
+    _visuals[index] = obj
+    d("D", "Spawned visual DAE ped=%d path=%s", index, VISUAL_DAE_PATH)
+    return obj
+  else
+    d("W", "FAILED visual DAE ped=%d path=%s err=%s", index, tostring(VISUAL_DAE_PATH), tostring(obj))
   end
 
   return nil
@@ -531,7 +543,7 @@ local function recyclePed(i)
   ped.rot = pose.rot
   ped.speed = rand(cfg.walkSpeedMin, cfg.walkSpeedMax)
   ped.seed = math.random()
-  ped.nextActivationAt = os.clock() + cfg.activationCooldownSeconds
+  ped.nextActivationAt = _simTime + cfg.activationCooldownSeconds
 
   _recycles = _recycles + 1
   return true
@@ -548,7 +560,7 @@ local function releasePoolDummy(p, recycleAfter)
   if ped then
     ped.activeRagdoll = false
     ped.poolId = nil
-    ped.nextActivationAt = os.clock() + cfg.activationCooldownSeconds
+    ped.nextActivationAt = _simTime + cfg.activationCooldownSeconds
     ped.pos = groundSnap(ped.pos, cfg.markerGroundOffset)
     if recycleAfter then recyclePed(ped.index) end
   end
@@ -665,15 +677,51 @@ local function isThreatCandidate(ped, ppos, pfwd, speed)
   return pfwd:dot(toPed:normalized()) >= cfg.frontConeDot, d
 end
 
+local function acquireOrStealPoolDummy(newPedIndex)
+  local free = acquirePoolDummy()
+  if free then return free end
+
+  local veh = playerVeh()
+  if not veh then return nil end
+  local ppos = veh:getPosition()
+
+  local newPed = _peds[newPedIndex]
+  if not newPed then return nil end
+  local newD2 = dist2(newPed.pos, ppos)
+  local protectClose2 = cfg.closeNoDespawnDistance * cfg.closeNoDespawnDistance
+
+  local worstPool, worstD2 = nil, -1
+
+  for _, p in ipairs(_pool) do
+    if p.active and p.pedIndex then
+      local oldPed = _peds[p.pedIndex]
+      if oldPed then
+        local d2old = dist2(oldPed.pos, ppos)
+        if d2old > protectClose2 and d2old > worstD2 then
+          worstD2 = d2old
+          worstPool = p
+        end
+      end
+    end
+  end
+
+  -- Only steal if the new pedestrian is closer than the worst active ragdoll.
+  if worstPool and newD2 < worstD2 then
+    releasePoolDummy(worstPool, true)
+    return worstPool
+  end
+
+  return nil
+end
+
 local function activatePedRagdoll(i)
   local ped = _peds[i]
   if not ped or ped.activeRagdoll then return false end
 
-  local now = os.clock()
+  local now = _simTime
   if now < (ped.nextActivationAt or 0) then return false end
-  if activeRagdolls() >= cfg.maxActiveRagdolls then return false end
 
-  local p = acquirePoolDummy()
+  local p = acquireOrStealPoolDummy(i)
   if not p then return false end
 
   deleteVisualDummy(i)
@@ -697,9 +745,10 @@ local function updateRagdolls()
   local ppos, pfwd = vBasis()
   if not ppos then return end
 
-  local now = os.clock()
+  local now = _simTime
   local speed = playerSpeed()
   local recycle2 = cfg.recycleRadius * cfg.recycleRadius
+  local protectClose2 = cfg.closeNoDespawnDistance * cfg.closeNoDespawnDistance
 
   for _, p in ipairs(_pool) do
     if p.active then
@@ -712,15 +761,14 @@ local function updateRagdolls()
       else
         ped.pos = o:getPosition()
         local age = now - (p.activeSince or now)
-        local far = dist2(ped.pos, ppos) > recycle2 and age >= cfg.minActiveTime
-        local old = age >= cfg.maxActiveTime
+        local d2 = dist2(ped.pos, ppos)
+        local far = d2 > recycle2 and age >= cfg.minActiveTime
+        local old = age >= cfg.maxActiveTime and d2 > protectClose2
 
         if far or old then releasePoolDummy(p, true) end
       end
     end
   end
-
-  if activeRagdolls() >= cfg.maxActiveRagdolls then return end
 
   local bestI, bestD = nil, nil
 
@@ -801,6 +849,7 @@ function M.start(idList, optCfg)
   _enabled = true
   _accUpdate, _accRecycle, _accVisual, _accActivate = 0, 0, 0, 0
   _recycles = 0
+  _simTime = 0
 
   if #_peds == 0 then buildPedestrians() end
   if #_pool == 0 then buildPool() end
@@ -863,10 +912,15 @@ function M.onUpdate(dt)
   if not _enabled then return end
   if not playerVeh() then return end
 
-  _accUpdate = _accUpdate + dt
-  _accRecycle = _accRecycle + dt
-  _accVisual = _accVisual + dt
-  _accActivate = _accActivate + dt
+  local simScale = simTimescale()
+  local simDt = dt * simScale  -- 0 when paused, <dt during slow motion
+
+  _simTime = _simTime + simDt
+
+  _accUpdate = _accUpdate + simDt
+  _accRecycle = _accRecycle + simDt
+  _accVisual = _accVisual + simDt
+  _accActivate = _accActivate + simDt
 
   if _accUpdate >= cfg.updateInterval then
     updatePedestrians(_accUpdate)
