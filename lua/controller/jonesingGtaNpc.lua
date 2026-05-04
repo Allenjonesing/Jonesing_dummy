@@ -234,6 +234,14 @@ end
 local function updateGFX(dt)
     if dt <= 0 then return end
 
+    -- Respect game pause and slow motion.
+    -- updateGFX receives real wall-clock dt; scale it down so setNodePosition
+    -- teleportation stops when the game is paused (simScale=0) and slows
+    -- proportionally during slow motion (simScale<1).
+    local simScale = (Engine and Engine.getSimTimeScale and Engine.getSimTimeScale()) or 1.0
+    if simScale <= 0 then return end
+    dt = dt * simScale
+
     -- STANDING state: all position overrides are OFF.
     if state == "standing" then return end
 
