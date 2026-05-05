@@ -16,7 +16,7 @@ local cfg = {
   debug = true,
 
   totalCylinders = 100,
-  maxVisualDummies = 30,
+  maxVisualDummies = 20,
   physicsPoolSize = 5,
   maxActiveRagdolls = 5,
 
@@ -27,24 +27,13 @@ local cfg = {
   recycleRadius = 760,
 
   visualRadius = 200,
-  ragdollBaseDistance = 8,
-  ragdollHighSpeedDistance = 24,
-  speedActivationMultiplier = 0.23,
-  ragdollPredictionTime = 0.45,
-  ragdollPredictionMin = 8.0,
-  maxRagdollActivationsPerTick = 3,
+  ragdollBaseDistance = 7,
+  ragdollHighSpeedDistance = 18,
+  speedActivationMultiplier = 0.18,
 
   sidewalkMode = true,
   sidewalkOffset = 5.75,
   sidewalkRandomExtra = 2.25,
-  sidewalkOffsetMax = 20.0,
-  sidewalkOffsetStep = 2.0,
-  laneClearanceMin = 3.5,
-  laneCheckRadius = 6.5,
-  laneCheckSamples = 8,
-  minPedSeparation = 12.0,
-  spreadSampleAttempts = 10,
-  spreadRelaxPerAttempt = 1.25,
 
   farCylinderHeight = 1.45,
   farCylinderRadius = 0.30,
@@ -256,79 +245,6 @@ local function simTimescale()
   return (ok and type(s) == "number") and s or 1.0
 end
 
-local function laneDistanceAt(pos)
-  if not (traffic and traffic.roadGraph and traffic.roadGraph.getClosestLanePos) then
-    return math.huge
-  end
-
-  local ok, lanePos = pcall(function()
-    return traffic.roadGraph.getClosestLanePos(pos)
-  end)
-
-  if not (ok and type(lanePos) == "table" and lanePos.pos) then
-    return math.huge
-  end
-
-  local lp = lanePos.pos
-  local dx, dy, dz = pos.x - lp.x, pos.y - lp.y, pos.z - lp.z
-  return math.sqrt(dx * dx + dy * dy + dz * dz)
-end
-
-local function sidewalkLaneSafe(pos)
-  local minClear = cfg.laneClearanceMin or 3.5
-  if laneDistanceAt(pos) < minClear then return false end
-
-  local radius = cfg.laneCheckRadius or 0
-  local samples = math.max(1, cfg.laneCheckSamples or 8)
-  if radius <= 0 then return true end
-
-  for i = 1, samples do
-    local a = (i - 1) * (math.pi * 2 / samples)
-    local probe = vec3(pos.x + math.cos(a) * radius, pos.y + math.sin(a) * radius, pos.z)
-    if laneDistanceAt(probe) < minClear then return false end
-  end
-
-  return true
-end
-
-local function chooseSidewalkPos(roadPos, dir)
-  local lateral = vec3(-dir.y, dir.x, 0)
-  local preferred = math.random() < 0.5 and -1 or 1
-  local sides = { preferred, -preferred }
-  local baseOffset = cfg.sidewalkOffset + rand(0, cfg.sidewalkRandomExtra)
-  local maxOffset = math.max(baseOffset, cfg.sidewalkOffsetMax or baseOffset)
-  local step = math.max(0.5, cfg.sidewalkOffsetStep or 2.0)
-
-  local bestPos, bestScore = nil, -1
-
-  for _, side in ipairs(sides) do
-    for off = baseOffset, maxOffset, step do
-      local candidate = groundSnap(roadPos + lateral * off * side, cfg.markerGroundOffset)
-      local score = laneDistanceAt(candidate)
-      if score > bestScore then
-        bestScore = score
-        bestPos = candidate
-      end
-      if sidewalkLaneSafe(candidate) then
-        return candidate
-      end
-    end
-  end
-
-  return bestPos or groundSnap(roadPos + lateral * baseOffset * preferred, cfg.markerGroundOffset)
-end
-
-local function minDistanceToOtherPeds(pos, ignoreIndex)
-  local best = math.huge
-  for _, other in ipairs(_peds) do
-    if other.index ~= ignoreIndex and not other.activeRagdoll then
-      local d2 = dist2(pos, other.pos)
-      if d2 < best then best = d2 end
-    end
-  end
-  return best
-end
-
 local function color(_, alpha)
   return ColorF(0.60, 0.22, 0.02, alpha or 0.85)
 end
@@ -376,7 +292,12 @@ local function sampleAroundPlayer()
 
       if ok2 and roadPos and roadDir then
         local dir = safeNorm(flat(roadDir), fwd)
-        pos = chooseSidewalkPos(roadPos, dir)
+        local lateral = vec3(-dir.y, dir.x, 0)
+        local side = math.random() < 0.5 and -1 or 1
+        local offset = cfg.sidewalkOffset + rand(0, cfg.sidewalkRandomExtra)
+
+        pos = roadPos + lateral * offset * side
+        pos = groundSnap(pos, cfg.markerGroundOffset)
 
         return {
           pos = pos,
@@ -395,31 +316,6 @@ local function sampleAroundPlayer()
     dir = dir,
     rot = makeRotFromDir(dir, pos)
   }
-end
-
-local function sampleSpreadPose(ignoreIndex)
-  local attempts = math.max(1, cfg.spreadSampleAttempts or 10)
-  local minSep = cfg.minPedSeparation or 12.0
-  local relax = cfg.spreadRelaxPerAttempt or 1.25
-  local bestPose, bestD2 = nil, -1
-
-  for attempt = 1, attempts do
-    local pose = sampleAroundPlayer()
-    if pose then
-      local nearestD2 = minDistanceToOtherPeds(pose.pos, ignoreIndex)
-      if nearestD2 > bestD2 then
-        bestD2 = nearestD2
-        bestPose = pose
-      end
-
-      local targetSep = math.max(3.0, minSep - (attempt - 1) * relax)
-      if nearestD2 >= targetSep * targetSep then
-        return pose
-      end
-    end
-  end
-
-  return bestPose
 end
 
 local function restoreFocusSoon()
@@ -639,7 +535,7 @@ local function recyclePed(i)
 
   deleteVisualDummy(i)
 
-  local pose = sampleSpreadPose(i)
+  local pose = sampleAroundPlayer()
   if not pose then return false end
 
   ped.pos = pose.pos
@@ -675,7 +571,7 @@ local function releasePoolDummy(p, recycleAfter)
 end
 
 local function buildPed(i)
-  local pose = sampleSpreadPose(i)
+  local pose = sampleAroundPlayer()
   if not pose then return nil end
 
   return {
@@ -768,29 +664,17 @@ local function updateVisualLod()
 end
 
 local function isThreatCandidate(ped, ppos, pfwd, speed)
-  local toPedNow = flat(ped.pos - ppos)
-  local dNow = toPedNow:length()
-  if dNow < 0.01 then return true, dNow end
+  local toPed = flat(ped.pos - ppos)
+  local d = toPed:length()
+  if d < 0.01 then return true, d end
 
-  local predictionTime = cfg.ragdollPredictionTime or 0.45
-  local predictionLead = math.max(cfg.ragdollPredictionMin or 8.0, speed * predictionTime)
-  local dynDist = cfg.ragdollBaseDistance + speed * cfg.speedActivationMultiplier + predictionLead
+  local dynDist = cfg.ragdollBaseDistance + speed * cfg.speedActivationMultiplier
   dynDist = math.min(cfg.ragdollHighSpeedDistance, math.max(cfg.ragdollBaseDistance, dynDist))
 
-  local futurePpos = ppos + pfwd * predictionLead
-  local toPedFuture = flat(ped.pos - futurePpos)
-  local dFuture = toPedFuture:length()
-  local bestD = math.min(dNow, dFuture)
+  if d > dynDist then return false, d end
+  if d <= cfg.sideThreatDistance then return true, d end
 
-  if bestD > dynDist then return false, bestD end
-  if bestD <= cfg.sideThreatDistance then return true, bestD end
-
-  local dirNow = safeNorm(toPedNow, pfwd)
-  local dirFuture = safeNorm(toPedFuture, pfwd)
-  local aheadNow = pfwd:dot(dirNow) >= cfg.frontConeDot
-  local aheadFuture = pfwd:dot(dirFuture) >= cfg.frontConeDot
-
-  return aheadNow or aheadFuture, bestD
+  return pfwd:dot(toPed:normalized()) >= cfg.frontConeDot, d
 end
 
 local function acquireOrStealPoolDummy(newPedIndex)
@@ -886,27 +770,18 @@ local function updateRagdolls()
     end
   end
 
-  local candidates = {}
-  local activationsLeft = math.max(1, cfg.maxRagdollActivationsPerTick or 3)
+  local bestI, bestD = nil, nil
 
   for i, ped in ipairs(_peds) do
     if not ped.activeRagdoll and now >= (ped.nextActivationAt or 0) then
       local threat, d = isThreatCandidate(ped, ppos, pfwd, speed)
-      if threat then table.insert(candidates, { i = i, d = d }) end
+      if threat and (not bestD or d < bestD) then
+        bestI, bestD = i, d
+      end
     end
   end
 
-  if #candidates == 0 then return end
-
-  table.sort(candidates, function(a, b) return a.d < b.d end)
-
-  local activated = 0
-  for n = 1, #candidates do
-    if activated >= activationsLeft then break end
-    if activatePedRagdoll(candidates[n].i) then
-      activated = activated + 1
-    end
-  end
+  if bestI then activatePedRagdoll(bestI) end
 end
 
 local function drawCylinder(pos, height, radius, col)
