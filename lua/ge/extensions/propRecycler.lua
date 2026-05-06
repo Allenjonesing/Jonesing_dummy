@@ -15,28 +15,35 @@ local TAG = "propRecycler"
 local cfg = {
   debug = true,
 
-  totalCylinders = 100,
-  maxVisualDummies = 20,
+  totalCylinders = 72,
+  maxVisualDummies = 24,
   physicsPoolSize = 5,
   maxActiveRagdolls = 5,
 
   dummyModel = "agenty_dummy",
 
-  wideRadiusMin = 90,
-  wideRadiusMax = 650,
+  wideRadiusMin = 20,
+  wideRadiusMax = 500,
   recycleRadius = 760,
 
   visualRadius = 200,
-  ragdollBaseDistance = 7,
-  ragdollHighSpeedDistance = 18,
+  ragdollBaseDistance = 5,
+  ragdollHighSpeedDistance = 20,
   speedActivationMultiplier = 0.18,
 
   sidewalkMode = true,
   sidewalkOffset = 5.75,
   sidewalkRandomExtra = 2.25,
+  minPedSeparation = 14.0,
+  spreadSampleAttempts = 12,
+  spreadRelaxPerAttempt = 1.25,
+  spawnSectorCount = 12,
+  spawnSectorJitterDeg = 10.0,
 
   farCylinderHeight = 1.45,
   farCylinderRadius = 0.30,
+  visualYawOffsetDeg = 90.0,
+  ragdollYawOffsetDeg = 0.0,
 
   visualScale = "1 1 1",
 
@@ -231,11 +238,22 @@ local function makeRotFromDir(dir, pos)
 
   local f = safeNorm(flat(dir), vec3(0, 1, 0))
   local ok, rot = pcall(function()
-    return quatFromDir(vecY:rotated(quatFromDir(f, normal)), normal)
+    return quatFromDir(f, normal)
   end)
 
   if ok and rot then return rot end
   return quat(0, 0, 0, 1)
+end
+
+local function rotateDir2D(dir, deg)
+  local d = safeNorm(flat(dir), vec3(0, 1, 0))
+  local r = math.rad(deg or 0)
+  local c, s = math.cos(r), math.sin(r)
+  return vec3(d.x * c - d.y * s, d.x * s + d.y * c, 0)
+end
+
+local function rotFromWalkDir(dir, pos, yawOffsetDeg)
+  return makeRotFromDir(rotateDir2D(dir, yawOffsetDeg or 0), pos)
 end
 
 local function simTimescale()
@@ -249,12 +267,32 @@ local function color(_, alpha)
   return ColorF(0.60, 0.22, 0.02, alpha or 0.85)
 end
 
-local function sampleAroundPlayer()
+local function sectorAngle(sectorIndex)
+  local sectors = math.max(1, cfg.spawnSectorCount or 12)
+  local idx = ((sectorIndex or 1) - 1) % sectors
+  return (idx / sectors) * (math.pi * 2)
+end
+
+local function minDistanceToOtherPeds(pos, ignoreIndex)
+  local best = math.huge
+  for _, other in ipairs(_peds) do
+    if other.index ~= ignoreIndex and not other.activeRagdoll then
+      local d2 = dist2(pos, other.pos)
+      if d2 < best then best = d2 end
+    end
+  end
+  return best
+end
+
+local function sampleAroundPlayer(preferredSector)
   local ppos, fwd = vBasis()
   if not ppos then return nil end
 
-  local angle = rand(0, math.pi * 2)
+  local baseAngle = preferredSector and sectorAngle(preferredSector) or rand(0, math.pi * 2)
+  local jitter = math.rad(cfg.spawnSectorJitterDeg or 10.0)
+  local angle = baseAngle + rand(-jitter, jitter)
   local radius = rand(cfg.wideRadiusMin, cfg.wideRadiusMax)
+  local desiredDir = safeNorm(vec3(math.cos(angle), math.sin(angle), 0), fwd)
 
   local pos = vec3(
     ppos.x + math.cos(angle) * radius,
@@ -271,7 +309,7 @@ local function sampleAroundPlayer()
     local ok, spawnData = pcall(function()
       return gameplay_traffic_trafficUtils.findSafeSpawnPoint(
         ppos,
-        fwd,
+        desiredDir,
         cfg.wideRadiusMin,
         cfg.wideRadiusMax,
         radius,
@@ -302,20 +340,45 @@ local function sampleAroundPlayer()
         return {
           pos = pos,
           dir = dir,
-          rot = makeRotFromDir(dir, pos)
+          rot = rotFromWalkDir(dir, pos, cfg.ragdollYawOffsetDeg)
         }
       end
     end
   end
 
   pos = groundSnap(pos, cfg.markerGroundOffset)
-  local dir = safeNorm(vec3(-math.sin(angle), math.cos(angle), 0), fwd)
+  local dir = safeNorm(vec3(-desiredDir.y, desiredDir.x, 0), fwd)
 
   return {
     pos = pos,
     dir = dir,
-    rot = makeRotFromDir(dir, pos)
+    rot = rotFromWalkDir(dir, pos, cfg.ragdollYawOffsetDeg)
   }
+end
+
+local function sampleSpreadPose(ignoreIndex, preferredSector)
+  local attempts = math.max(1, cfg.spreadSampleAttempts or 12)
+  local minSep = cfg.minPedSeparation or 14.0
+  local relax = cfg.spreadRelaxPerAttempt or 1.25
+  local bestPose, bestD2 = nil, -1
+
+  for attempt = 1, attempts do
+    local pose = sampleAroundPlayer(preferredSector)
+    if pose then
+      local nearestD2 = minDistanceToOtherPeds(pose.pos, ignoreIndex)
+      if nearestD2 > bestD2 then
+        bestD2 = nearestD2
+        bestPose = pose
+      end
+
+      local targetSep = math.max(4.0, minSep - (attempt - 1) * relax)
+      if nearestD2 >= targetSep * targetSep then
+        return pose
+      end
+    end
+  end
+
+  return bestPose
 end
 
 local function restoreFocusSoon()
@@ -495,7 +558,7 @@ local function spawnVisualDummy(index)
   if not ped then return nil end
 
   local pos = groundSnap(ped.pos, cfg.visualGroundOffset)
-  local q = safeQuat(ped.rot or quat(0, 0, 0, 1))
+  local q = safeQuat(rotFromWalkDir(ped.dir, pos, cfg.visualYawOffsetDeg))
 
   local ok, obj = pcall(function()
     local o = createObject("TSStatic")
@@ -535,7 +598,7 @@ local function recyclePed(i)
 
   deleteVisualDummy(i)
 
-  local pose = sampleAroundPlayer()
+  local pose = sampleSpreadPose(i)
   if not pose then return false end
 
   ped.pos = pose.pos
@@ -571,7 +634,8 @@ local function releasePoolDummy(p, recycleAfter)
 end
 
 local function buildPed(i)
-  local pose = sampleAroundPlayer()
+  local sector = ((i - 1) % math.max(1, cfg.spawnSectorCount or 12)) + 1
+  local pose = sampleSpreadPose(i, sector)
   if not pose then return nil end
 
   return {
@@ -609,10 +673,14 @@ local function updatePedestrians(dt)
 
       ped.pos = ped.pos + ped.dir * ped.speed * dt
       ped.pos = groundSnap(ped.pos, cfg.markerGroundOffset)
-      ped.rot = makeRotFromDir(ped.dir, ped.pos)
+      ped.rot = rotFromWalkDir(ped.dir, ped.pos, cfg.ragdollYawOffsetDeg)
 
       local visual = _visuals[ped.index]
-      if visual then setVisualTransform(visual, groundSnap(ped.pos, cfg.visualGroundOffset), ped.rot) end
+      if visual then
+        local visPos = groundSnap(ped.pos, cfg.visualGroundOffset)
+        local visRot = rotFromWalkDir(ped.dir, visPos, cfg.visualYawOffsetDeg)
+        setVisualTransform(visual, visPos, visRot)
+      end
     end
   end
 end
@@ -728,7 +796,8 @@ local function activatePedRagdoll(i)
   restoreFocusSoon()
 
   local ragPos = groundSnap(ped.pos, cfg.ragdollGroundOffset)
-  teleportObject(p.id, ragPos, ped.rot)
+  local ragRot = rotFromWalkDir(ped.dir, ragPos, cfg.ragdollYawOffsetDeg)
+  teleportObject(p.id, ragPos, ragRot)
   queueFreeze(p.id, false)
 
   p.active = true
